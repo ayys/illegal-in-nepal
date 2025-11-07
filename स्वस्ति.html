@@ -7,37 +7,77 @@
     <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@400;700&display=swap"></noscript>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"></noscript>
     <link rel="stylesheet" href="/common.css">
     <style>
         body {
-            font-family: 'Noto Serif Devanagari', serif;
+            font-family: 'Poppins', serif;
             font-size: 1.2rem;
             line-height: 1.8;
         }
-        .line {
-            display: inline-block;
+        pre {
+            background: #f5f5f5;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: 'Poppins', serif;
+            font-size: 1rem;
+            line-height: 2;
+            counter-reset: line-number;
         }
-        .line:hover .link-icon {
-            opacity: 1;
+        @counter-style devanagari-numeric {
+            system: numeric;
+            symbols: ० १ २ ३ ४ ५ ६ ७ ८ ९;
         }
-        [id^="line-"]:target {
+        @media (prefers-color-scheme: dark) {
+            pre {
+                background: #1e1e1e;
+            }
+        }
+        code {
+            font-family: inherit;
+            display: block;
+        }
+        code > div:not(.line-empty) {
+            counter-increment: line-number;
+            position: relative;
+            padding-left: 3.5em;
+            cursor: pointer;
+        }
+        code > div:not(.line-empty)::before {
+            content: var(--line-num, counter(line-number, devanagari-numeric));
+            position: absolute;
+            left: 0;
+            width: 2.5em;
+            text-align: right;
+            padding-right: 1em;
+            color: #888;
+            user-select: none;
+            cursor: pointer;
+        }
+        code > div:not(.line-empty):hover::before {
             color: #0066cc;
         }
         @media (prefers-color-scheme: dark) {
-            [id^="line-"]:target {
+            code > div:not(.line-empty)::before {
+                color: #666;
+            }
+            code > div:not(.line-empty):hover::before {
                 color: #66b3ff;
             }
         }
-        .link-icon {
-            opacity: 0;
-            margin-left: 0.3rem;
-            font-size: 0.8rem;
-            color: #888;
-            text-decoration: none;
-            padding: 0.2rem 0.3rem;
-            display: inline-block;
+        code > div:target {
+            background-color: #fffacd;
+        }
+        @media (prefers-color-scheme: dark) {
+            code > div:target {
+                background-color: #3a3a2a;
+            }
+        }
+        code > div.line-empty {
+            min-height: 1.6em;
+            cursor: default;
         }
     </style>
 </head>
@@ -46,37 +86,59 @@
     <h1>स्वस्ति वचनम्</h1>
     <hr>
 
-    <p>
-        <span class="line"><span id="line-1">स्वस्ति प्रजाभ्यः परिपालयन्तां</span><a href="#line-1" class="link-icon">¶</a></span><br>
-        <span class="line"><span id="line-2">न्याय्येन मार्गेण महीं महीशाः ।</span><a href="#line-2" class="link-icon">¶</a></span><br>
-        <span class="line"><span id="line-3">गो-ब्राह्मणेभ्यः शुभमस्तु नित्यं</span><a href="#line-3" class="link-icon">¶</a></span><br>
-        <span class="line"><span id="line-4">लोकाः समस्ताः सुखिनो भवन्तु ॥ १ ॥</span><a href="#line-4" class="link-icon">¶</a></span>
-    </p>
+    <pre><code>
+स्वस्ति प्रजाभ्यः परिपालयन्तां
+न्याय्येन मार्गेण महीं महीशाः ।
+गो-ब्राह्मणेभ्यः शुभमस्तु नित्यं
+लोकाः समस्ताः सुखिनो भवन्तु ॥ १ ॥
 
-    <p>
-        <span class="line"><span id="line-5">काले वर्षतु पर्जन्यः पृथिवी सस्यशालिनी ।</span><a href="#line-5" class="link-icon">¶</a></span><br>
-        <span class="line"><span id="line-6">देशोऽयं क्षोभरहितः ब्राह्मणाः सन्तु निर्भयाः ॥ २ ॥</span><a href="#line-6" class="link-icon">¶</a></span>
-    </p>
+काले वर्षतु पर्जन्यः पृथिवी सस्यशालिनी ।
+देशोऽयं क्षोभरहितः ब्राह्मणाः सन्तु निर्भयाः ॥ २ ॥
 
-    <p>
-        <span class="line"><span id="line-7">सर्वे भवन्तु सुखिनः सर्वे सन्तु निरामयाः ।</span><a href="#line-7" class="link-icon">¶</a></span><br>
-        <span class="line"><span id="line-8">सर्वे भद्राणि पश्यन्तु मा कश्चिद्दुःखभाग्भवेत् ॥ ३ ॥</span><a href="#line-8" class="link-icon">¶</a></span>
-    </p>
+सर्वे भवन्तु सुखिनः सर्वे सन्तु निरामयाः ।
+सर्वे भद्राणि पश्यन्तु मा कश्चिद्दुःखभाग्भवेत् ॥ ३ ॥
 
-    <p>
-        <span class="line"><span id="line-9">असतो मा सद्गमय ।</span><a href="#line-9" class="link-icon">¶</a></span><br>
-        <span class="line"><span id="line-10">तमसो मा ज्योतिर्गमय ।</span><a href="#line-10" class="link-icon">¶</a></span><br>
-        <span class="line"><span id="line-11">मृत्योर्मा अमृतं गमय ॥ ४ ॥</span><a href="#line-11" class="link-icon">¶</a></span>
-    </p>
+असतो मा सद्गमय ।
+तमसो मा ज्योतिर्गमय ।
+मृत्योर्मा अमृतं गमय ॥ ४ ॥
 
-    <p>
-        <span class="line"><span id="line-12">पूर्णमदः पूर्णमिदं पूर्णात् पूर्णमुदच्यते ।</span><a href="#line-12" class="link-icon">¶</a></span><br>
-        <span class="line"><span id="line-13">पूर्णस्य पूर्णमादाय पूर्णमेवावशिष्यते ॥ ५ ॥</span><a href="#line-13" class="link-icon">¶</a></span>
-    </p>
+पूर्णमदः पूर्णमिदं पूर्णात् पूर्णमुदच्यते ।
+पूर्णस्य पूर्णमादाय पूर्णमेवावशिष्यते ॥ ५ ॥
 
-    <p>
-        <span class="line"><span id="line-14">ओं शान्तिः शान्तिः शान्तिः ॥</span><a href="#line-14" class="link-icon">¶</a></span>
-    </p>
+ओं शान्तिः शान्तिः शान्तिः ॥
+</code></pre>
+<script>
+(function() {
+    function toDevanagari(num) {
+        var devanagari = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
+        return String(num).split('').map(function(digit) {
+            return devanagari[parseInt(digit)];
+        }).join('');
+    }
+    
+    var code = document.querySelector('pre code');
+    var text = code.textContent;
+    var lines = text.split('\n');
+    var lineNum = 0;
+    
+    code.innerHTML = lines.map(function(line) {
+        if (line.trim() === '') {
+            return '<div class="line-empty"></div>';
+        }
+        lineNum++;
+        var devanagariNum = toDevanagari(lineNum);
+        return '<div id="line-' + lineNum + '" style="--line-num: \'' + devanagariNum + '\'">' + line + '</div>';
+    }).join('');
+    
+    document.querySelectorAll('code > div').forEach(function(div) {
+        div.addEventListener('click', function() {
+            if (this.id) {
+                window.location.hash = this.id;
+            }
+        });
+    });
+})();
+</script>
 </body>
 </html>
 
