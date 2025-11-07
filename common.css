@@ -1,0 +1,45 @@
+/* Common styles for all pages */
+body {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+h1, h3 {
+    font-weight: normal;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #ddd;
+}
+
+a {
+    color: #0066cc;
+    text-decoration: none;
+}
+
+a:visited {
+    color: #0066cc;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #121212;
+        color: #e0e0e0;
+    }
+    h1, h2, h3 {
+        color: #ffffff;
+    }
+    a {
+        color: #66b3ff;
+    }
+    a:visited {
+        color: #66b3ff;
+    }
+    hr {
+        border-top: 1px solid #333333;
+    }
+}
+
