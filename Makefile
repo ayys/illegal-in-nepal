@@ -1,6 +1,7 @@
 build:
 	make -C shabdakosh build
-	mv shabdakosh/output site/shabdakosh
+	rm -r site/shabdakosh || true
+	cp -R shabdakosh/output site/shabdakosh
 
 
 
