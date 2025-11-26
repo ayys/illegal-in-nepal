@@ -11,6 +11,7 @@ import os
 import re
 import json
 import asyncio
+import gzip
 import unicodedata
 import aiofiles
 from tqdm import tqdm
@@ -171,14 +172,21 @@ async def generate_word_pages(words_data, template):
 
 
 async def write_search_data(metadata):
-    """Writes search metadata into an ES module."""
+    """Writes search metadata into an ES module and creates a gzipped version."""
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     search_path = os.path.join(OUTPUT_DIR, SEARCH_DATA_FILENAME)
     js_payload = json.dumps(metadata, ensure_ascii=False)
     content = f"export const WORDS = {js_payload};\n"
 
+    # Write uncompressed version
     async with aiofiles.open(search_path, "w", encoding="utf-8") as f:
         await f.write(content)
+
+    # Write gzipped version
+    gz_path = f"{search_path}.gz"
+    async with aiofiles.open(gz_path, "wb") as f:
+        compressed = gzip.compress(content.encode("utf-8"))
+        await f.write(compressed)
 
     return search_path
 
@@ -190,21 +198,52 @@ async def write_search_worker():
     worker_content = (
         f"""
 import Fuse from "{FUSE_CDN}";
-import {{ WORDS }} from "./{SEARCH_DATA_FILENAME}";
 
-const fuse = new Fuse(WORDS, {{
-    keys: [
-        {{ name: "word", weight: 0.7 }},
-        {{ name: "preview", weight: 0.25 }},
-        {{ name: "grammar", weight: 0.05 }}
-    ],
-    minMatchCharLength: 1,
-    threshold: 0.3,
-    ignoreLocation: true,
-    includeScore: true
-}});
+let fuse = null;
+let wordsLoaded = false;
 
-self.onmessage = (event) => {{
+const loadWords = async () => {{
+    if (wordsLoaded) return;
+    
+    // Try to load gzipped version first (much smaller ~4MB vs ~27MB)
+    let WORDS;
+    try {{
+        const gzResponse = await fetch("./{SEARCH_DATA_FILENAME}.gz");
+        if (gzResponse.ok) {{
+            // Use browser's built-in DecompressionStream API
+            const stream = gzResponse.body.pipeThrough(new DecompressionStream("gzip"));
+            const decompressed = await new Response(stream).text();
+            // Create a blob URL and import it as a module
+            const blob = new Blob([decompressed], {{ type: "application/javascript" }});
+            const url = URL.createObjectURL(blob);
+            const module = await import(url);
+            WORDS = module.WORDS;
+            URL.revokeObjectURL(url);
+        }} else {{
+            throw new Error("Gzip version not available");
+        }}
+    }} catch (e) {{
+        // Fallback to uncompressed version
+        const module = await import("./{SEARCH_DATA_FILENAME}");
+        WORDS = module.WORDS;
+    }}
+    
+    fuse = new Fuse(WORDS, {{
+        keys: [
+            {{ name: "word", weight: 0.7 }},
+            {{ name: "preview", weight: 0.25 }},
+            {{ name: "grammar", weight: 0.05 }}
+        ],
+        minMatchCharLength: 1,
+        threshold: 0.3,
+        ignoreLocation: true,
+        includeScore: true
+    }});
+    
+    wordsLoaded = true;
+}};
+
+self.onmessage = async (event) => {{
     const data = event.data || {{}};
     const id = data.id ?? 0;
     const query = (data.query || "").trim();
@@ -214,6 +253,9 @@ self.onmessage = (event) => {{
         return;
     }}
 
+    // Lazy load words data only when first search is performed
+    await loadWords();
+    
     const matches = fuse.search(query, {{ limit: 20 }}).map((match) => match.item);
     self.postMessage({{ id, results: matches }});
 }};
@@ -369,8 +411,10 @@ async def generate_index_page(links_list):
     <script type="module">
         const input = document.getElementById("search-input");
         const resultsContainer = document.getElementById("search-results");
-        const worker = new Worker("./{SEARCH_WORKER_FILENAME}", {{ type: "module" }});
+        let worker = null;
+        let workerReady = false;
         let requestId = 0;
+        let pendingQuery = null;
 
         const renderResults = (items) => {{
             if (!items.length) {{
@@ -391,22 +435,85 @@ async def generate_index_page(links_list):
             resultsContainer.innerHTML = markup;
         }};
 
-        worker.addEventListener("message", (event) => {{
-            const {{ id, results }} = event.data || {{}};
-            if (id !== requestId) {{
+        const initWorker = async () => {{
+            if (workerReady) return;
+            
+            try {{
+                resultsContainer.innerHTML = "<p>खोज प्रणाली लोड हुँदैछ...</p>";
+                worker = new Worker("./{SEARCH_WORKER_FILENAME}", {{ type: "module" }});
+                
+                worker.addEventListener("message", (event) => {{
+                    const {{ id, results }} = event.data || {{}};
+                    if (id !== requestId) {{
+                        return;
+                    }}
+                    workerReady = true;
+                    renderResults(results);
+                    
+                    // Process pending query if any
+                    if (pendingQuery !== null) {{
+                        const query = pendingQuery;
+                        pendingQuery = null;
+                        performSearch(query);
+                    }}
+                }});
+                
+                // Trigger worker initialization by sending empty message
+                worker.postMessage({{ id: 0, query: "" }});
+            }} catch (error) {{
+                resultsContainer.innerHTML = "<p>खोज प्रणाली लोड गर्न असफल। कृपया पृष्ठ पुनः लोड गर्नुहोस्।</p>";
+                console.error("Worker initialization failed:", error);
+            }}
+        }};
+
+        const performSearch = async (value) => {{
+            const query = value.trim();
+            
+            if (!query) {{
+                resultsContainer.innerHTML = "";
                 return;
             }}
-            renderResults(results);
-        }});
-
-        const performSearch = (value) => {{
-            const query = value.trim();
-            resultsContainer.innerHTML = query ? "<p>खोज्दै...</p>" : "";
+            
+            // Initialize worker if not ready
+            if (!workerReady) {{
+                if (!worker) {{
+                    await initWorker();
+                }}
+                // Store query to process after worker is ready
+                if (!workerReady) {{
+                    pendingQuery = query;
+                    resultsContainer.innerHTML = "<p>खोज प्रणाली लोड हुँदैछ...</p>";
+                    return;
+                }}
+            }}
+            
+            resultsContainer.innerHTML = "<p>खोज्दै...</p>";
             const currentRequest = ++requestId;
             worker.postMessage({{ id: currentRequest, query }});
         }};
 
-        input.addEventListener("input", (event) => performSearch(event.target.value));
+        // Lazy load worker only when user starts typing
+        let inputTimeout;
+        input.addEventListener("input", (event) => {{
+            const query = event.target.value.trim();
+            
+            // Clear previous timeout
+            clearTimeout(inputTimeout);
+            
+            if (query) {{
+                // Small delay to avoid loading on every keystroke
+                inputTimeout = setTimeout(() => performSearch(query), 100);
+            }} else {{
+                resultsContainer.innerHTML = "";
+            }}
+        }});
+
+        // Also initialize on focus (user might want to search)
+        input.addEventListener("focus", () => {{
+            if (!worker && !workerReady) {{
+                initWorker();
+            }}
+        }});
 
         if (window.matchMedia("(pointer: fine)").matches) {{
             input.focus();
