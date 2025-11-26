@@ -1,0 +1,64 @@
+#+title: युनिक्स जोगी
+#+author: आयुष झा
+#+language: नेपाली
+
+
+
+* English text
+
+A UNIX  wizard hears cries  of torment from his  apprentice's computer
+room where the apprentice is studying, and goes to investigate.
+
+He finds  the apprentice in obvious  distress, nearly on the  verge of
+tears. "What's the problem?" he asks. "Why did you cry out?"
+
+"It's terrible using this system. I  must use four editors each day to
+get my studies done, because not one of them does everything."
+
+The wizard  nods sagely, and  asks, "And  what would you  propose that
+will solve this obvious dilemma?"
+
+The student  thinks carefully for  several minutes, and his  face then
+lights up in delight. Excitedly, he  says, "Well, it's obvious. I will
+write the  best editor ever. It  will do everything that  the existing
+four editors do, but do their  jobs better, and faster. And because of
+my new editor, the world will be a better place."
+
+The wizard  quickly raises his hand  and smacks the apprentice  on the
+side of  his head.  The wizard  is old and  frail, and  the apprentice
+isn't physically hurt,  but is shocked by what has  happened. He turns
+his head to face the wizard. "What have I done wrong?" he asks.
+
+"Fool!" says  the wizard. "Do  you think I  want to learn  yet another
+editor?"
+
+
+Immediately, hte apprentice is enlightened.
+
+* नेपाली अनुवाद्
+
+एक युनिक्स जोगीले शिष्य अध्ययन गरिरहेको कोठाबाट रुवाबासी सुन्छन् र के भयो भनेर
+बुझ्न जान्छन्।
+
+उनले शिष्यलाई रुन लागेको अवस्थामा भेट्टाउँछन्। "के भयो फेरि?" जोगीले सोध्छन्। "किन
+चिच्याएको?"
+
+
+"यो प्रणाली कति गार्हो हो!", शिष्यले भन्छ, "मैले पढाई गर्न दिनहुँ चारवटा
+एडिटर चलाउनु गर्नुपर्छ, कुनै एउटाले सबै काम गरे हुन्थ्यो नी!"
+
+"ए...", जोगीले गहिरो अनुहार बनाएर टाउको हल्लाउँदै सोध्छन्, "यो स्पष्ट समस्यालाई
+समाधान गर्न तिमी के प्रस्ताव गर्छौ?"
+
+शिष्यले केही मिनेट ध्यानपूर्वक सोच्छ, र त्यसपछि उसको अनुहार खुशीले चम्कन्छ। उत्साहित
+हुँदै, ऊ भन्छ, "ल, यो त स्पष्ट छ। म अहिलेसम्मकै सबैभन्दा राम्रो एडिटर लेख्नेछु। यसले
+अहिले भएका चारवटै एडिटरले गर्ने सबै काम गर्नेछ, तर तिनीहरूको काम अझ राम्रो र
+छिटो गर्नेछ। र मेरो नयाँ एडिटरको कारणले, संसार अझ राम्रो ठाउँ हुनेछ।"
+
+जोगीले तुरुन्तै हात उठाएर शिष्यको टाउकोको छेउमा बिस्तारै थप्पड मार्छन्। जोगी वृद्ध र
+कमजोर छन्, त्यसैले शिष्यलाई शारीरिक रूपमा चोट लाग्दैन, तर ऊ भएको घटनाले चकित
+हुन्छ। उसले जोगीतिर फर्केर सोध्छ, "मैले के गल्ती गरें?"
+
+"मूर्ख!" जोगी भन्छन्। "के तिमीलाई लाग्छ कि म अर्को एउटा एडिटर सिक्न चाहन्छु र?"
+
+तत्कालै, शिष्य ज्ञानले भरिन्छ (वा उसले कुरा बुझ्छ)।
