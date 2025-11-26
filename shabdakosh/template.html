@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }}</title>
+    <style>
+        :root {
+            color-scheme: light dark;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: "Noto Sans Devanagari", "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            margin: 0;
+            padding: 2rem clamp(1rem, 4vw, 4rem);
+            line-height: 1.6;
+            background: #f9fafb;
+            color: #1f2933;
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 20px 40px rgb(15 23 42 / 8%);
+            padding: clamp(1.5rem, 3vw, 3rem);
+        }
+
+        header {
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(2.2rem, 5vw, 3rem);
+            color: #0f172a;
+        }
+
+        .gram-tag {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.15rem 0.6rem;
+            border-radius: 999px;
+            background: #e0f2fe;
+            color: #0369a1;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-left: 0.75rem;
+        }
+
+        .entry-source {
+            margin: 0.5rem 0 0;
+            color: #475467;
+            font-size: 1rem;
+        }
+
+        .definition-section {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .main-definition {
+            border-left: 4px solid #0ea5e9;
+            padding: 0.5rem 1rem;
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            margin: 0;
+        }
+
+        blockquote {
+            margin: 0;
+            padding: 1rem 1.25rem;
+            background: #fff7ed;
+            border-left: 4px solid #f97316;
+            border-radius: 0.5rem;
+            color: #9a3412;
+        }
+
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        a {
+            color: #0f62fe;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <header>
+            <h1>{{ word }} {{ grammar_tag }}</h1>
+            {{ source_p }}
+        </header>
+        <section class="definition-section">
+            {{ main_def_p }}
+            {{ blockquote_content }}
+        </section>
+        <footer>
+            <a href="./index.html">⟵ फेरि सूचीमा जानुहोस्</a>
+        </footer>
+    </main>
+</body>
+</html>
+
