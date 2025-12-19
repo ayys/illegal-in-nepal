@@ -422,6 +422,7 @@ async def write_search_worker():
     worker_content = (
         f"""
 import Fuse from "{FUSE_CDN}";
+import pako from "https://cdn.jsdelivr.net/npm/pako@2.1.0/+esm";
 
 let fuse = null;
 let wordsLoaded = false;
@@ -434,20 +435,42 @@ const loadWords = async () => {{
     try {{
         const gzResponse = await fetch("./{SEARCH_DATA_FILENAME}.gz");
         if (gzResponse.ok) {{
-            // Use browser's built-in DecompressionStream API
-            const stream = gzResponse.body.pipeThrough(new DecompressionStream("gzip"));
-            const decompressed = await new Response(stream).text();
-            // Create a blob URL and import it as a module
-            const blob = new Blob([decompressed], {{ type: "application/javascript" }});
-            const url = URL.createObjectURL(blob);
-            const module = await import(url);
-            WORDS = module.WORDS;
-            URL.revokeObjectURL(url);
+            const arrayBuffer = await gzResponse.arrayBuffer();
+            const uint8Array = new Uint8Array(arrayBuffer);
+            
+            // Try native DecompressionStream first (modern browsers)
+            if (typeof DecompressionStream !== 'undefined') {{
+                try {{
+                    console.log("Using native DecompressionStream API");
+                    const blob = new Blob([uint8Array]);
+                    const stream = blob.stream().pipeThrough(new DecompressionStream("gzip"));
+                    const decompressed = await new Response(stream).text();
+                    // Create a blob URL and import it as a module
+                    const blobUrl = new Blob([decompressed], {{ type: "application/javascript" }});
+                    const url = URL.createObjectURL(blobUrl);
+                    const module = await import(url);
+                    WORDS = module.WORDS;
+                    URL.revokeObjectURL(url);
+                }} catch (streamError) {{
+                    console.warn("DecompressionStream failed:", streamError);
+                    throw new Error("DecompressionStream failed: " + streamError.message);
+                }}
+            }} else {{
+                // Fallback to pako for older browsers (iOS Safari < 16.4, etc.)
+                console.log("Using pako.js polyfill for gzip decompression");
+                const decompressed = pako.ungzip(uint8Array, {{ to: 'string' }});
+                const blob = new Blob([decompressed], {{ type: "application/javascript" }});
+                const url = URL.createObjectURL(blob);
+                const module = await import(url);
+                WORDS = module.WORDS;
+                URL.revokeObjectURL(url);
+            }}
         }} else {{
             throw new Error("Gzip version not available");
         }}
     }} catch (e) {{
-        // Fallback to uncompressed version
+        console.warn("Gzip loading failed, falling back to uncompressed:", e);
+        // Final fallback to uncompressed version
         const module = await import("./{SEARCH_DATA_FILENAME}");
         WORDS = module.WORDS;
     }}
