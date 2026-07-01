@@ -431,6 +431,28 @@ const ensureLibraries = () => {{
     libsLoaded = true;
 }};
 
+const parseWordsPayload = (rawText) => {{
+    const trimmed = (rawText || "").trim();
+    if (!trimmed) {{
+        throw new Error("Search payload is empty.");
+    }}
+
+    try {{
+        return JSON.parse(trimmed);
+    }} catch (jsonError) {{
+        // Backward compatibility: accept legacy JS module payloads.
+        const exportPrefix = "export const WORDS =";
+        if (trimmed.startsWith(exportPrefix)) {{
+            let body = trimmed.slice(exportPrefix.length).trim();
+            if (body.endsWith(";")) {{
+                body = body.slice(0, -1).trim();
+            }}
+            return JSON.parse(body);
+        }}
+        throw jsonError;
+    }}
+}};
+
 const loadWords = async () => {{
     if (wordsLoaded) return;
     let words = null;
@@ -441,14 +463,21 @@ const loadWords = async () => {{
         if (gzResponse.ok) {{
             const arrayBuffer = await gzResponse.arrayBuffer();
             const uint8Array = new Uint8Array(arrayBuffer);
+            const isGzip = uint8Array.length >= 2 && uint8Array[0] === 0x1f && uint8Array[1] === 0x8b;
+
+            // Some hosts may auto-decompress .gz responses.
+            if (!isGzip) {{
+                const plainText = new TextDecoder("utf-8").decode(uint8Array);
+                words = parseWordsPayload(plainText);
+            }}
 
             // Prefer native DecompressionStream when available.
-            if (typeof DecompressionStream !== 'undefined') {{
+            if (!words && typeof DecompressionStream !== 'undefined') {{
                 try {{
                     const blob = new Blob([uint8Array]);
                     const stream = blob.stream().pipeThrough(new DecompressionStream("gzip"));
                     const decompressed = await new Response(stream).text();
-                    words = JSON.parse(decompressed);
+                    words = parseWordsPayload(decompressed);
                 }} catch (streamError) {{
                     console.warn("DecompressionStream failed:", streamError);
                 }}
@@ -457,8 +486,9 @@ const loadWords = async () => {{
             // Fallback for browsers without reliable native decompression.
             if (!words) {{
                 ensureLibraries();
-                const decompressed = pako.ungzip(uint8Array, {{ to: 'string' }});
-                words = JSON.parse(decompressed);
+                const decompressedBytes = pako.ungzip(uint8Array);
+                const decompressedText = new TextDecoder("utf-8").decode(decompressedBytes);
+                words = parseWordsPayload(decompressedText);
             }}
         }} else {{
             throw new Error("Gzip version not available");
@@ -473,7 +503,8 @@ const loadWords = async () => {{
         if (!response.ok) {{
             throw new Error("Search data could not be loaded.");
         }}
-        words = await response.json();
+        const plainText = await response.text();
+        words = parseWordsPayload(plainText);
     }}
 
     ensureLibraries();
