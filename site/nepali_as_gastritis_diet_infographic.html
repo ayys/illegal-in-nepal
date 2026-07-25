@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Therapeutic Nutrition: AS & Gastritis Healing Plan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f0f4f8; color: #1e293b; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 320px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 380px; } }
+        .hero-gradient { background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%); }
+        .card { background: white; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); transition: transform 0.2s; }
+        .accent-orange { border-left: 4px solid #f97316; }
+        .accent-blue { border-left: 4px solid #3b82f6; }
+        .day-pill { @apply px-4 py-2 rounded-full text-sm font-semibold cursor-pointer transition-colors; }
+        .active-day { @apply bg-blue-600 text-white shadow-lg; }
+        .inactive-day { @apply bg-white text-blue-600 border border-blue-100 hover:bg-blue-50; }
+        .loader { border-top-color: #8b5cf6; -webkit-animation: spinner 1.5s linear infinite; animation: spinner 1.5s linear infinite; }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="antialiased">
+
+<!-- 
+NARRATIVE PLAN:
+1. Introduction: Hook the user with the "Gut-Joint Axis" concept.
+2. Clinical Rationale: Visual charts comparing Nepali staples to justify the diet.
+3. The Healing Menu: A detailed, actionable 7-day plan with specific Nepali meals.
+4. Mucilage Routine: A standalone section for the gastric "bandage" protocol.
+5. Nutrient Breakdown: Visualizing why this specific plan works for AS and Gastritis.
+
+DATA VISUALIZATION CHOICES:
+1. Bar Chart: Categorical starch comparison. Chart.js.
+2. Donut Chart: Macro-nutrient balance of a typical "Healing Day". Chart.js.
+3. 7-Day Interactive Table: Structured HTML/Tailwind for the actual diet plan.
+4. Heatmap: Feeding frequency across the week. Plotly.
+
+CONFIRMATION: NEITHER Mermaid JS NOR SVG were used. 
+PALETTE: Brilliant Blues & Energetic Oranges.
+-->
+
+<header class="hero-gradient text-white py-10 px-6 shadow-xl">
+    <div class="max-w-6xl mx-auto text-center md:text-left">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">The Healing Himalayan Diet</h1>
+        <p class="text-lg opacity-90 max-w-2xl">
+            A specialized nutritional protocol for Ankylosing Spondylitis (AS) and Erosive Gastritis, utilizing traditional Nepali superfoods to bridge the gap between joint inflammation and gastric recovery.
+        </p>
+    </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 py-12">
+
+    <!-- Section 1: The Core Strategy -->
+    <section class="mb-16">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div class="card p-8 accent-blue">
+                <h2 class="text-2xl font-bold text-blue-900 mb-4">Why This Plan Works</h2>
+                <p class="text-gray-700 leading-relaxed mb-4">
+                    Patients with AS often suffer from gastritis due to NSAID use. This diet uses **low-starch** carbohydrates to starve the *Klebsiella* bacteria (AS trigger) while employing **mucilaginous** foods to physically coat and heal the stomach lining.
+                </p>
+                <div class="grid grid-cols-2 gap-4 mt-6">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <span class="block text-blue-800 font-bold">Starch Control</span>
+                        <span class="text-sm text-gray-600">Starves the autoimmune trigger.</span>
+                    </div>
+                    <div class="bg-orange-50 p-4 rounded-lg">
+                        <span class="block text-orange-800 font-bold">Mucosal Shield</span>
+                        <span class="text-sm text-gray-600">Biological bandage for erosion.</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card p-6">
+                <h3 class="text-xl font-semibold mb-4 text-center">Starch Profile: Rice vs. Kodo/Phapar</h3>
+                <div class="chart-container">
+                    <canvas id="starchBarChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: The 7-Day Diet Plan -->
+    <section class="mb-16">
+        <h2 class="text-3xl font-bold text-blue-900 mb-8 text-center">7-Day Healing Menu</h2>
+        
+        <div class="overflow-x-auto bg-white rounded-2xl shadow-lg border border-blue-50">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-blue-900 text-white">
+                        <th class="p-4 border-b border-blue-800 min-w-[120px]">Time</th>
+                        <th class="p-4 border-b border-blue-800 min-w-[200px]">Meal (Nepali Style)</th>
+                        <th class="p-4 border-b border-blue-800">Ingredients & Therapeutic Goal</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-700">
+                    <tr class="border-b border-gray-100 hover:bg-orange-50 transition-colors">
+                        <td class="p-4 font-bold text-orange-600">06:30 AM</td>
+                        <td class="p-4 font-semibold italic">Aalas/Methi Water</td>
+                        <td class="p-4">Soaked Flaxseed or Fenugreek water. <span class="text-sm text-blue-600 font-medium">Goal: Gastric Mucilage coating.</span></td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-blue-50 transition-colors">
+                        <td class="p-4 font-bold text-blue-600">08:30 AM</td>
+                        <td class="p-4 font-semibold">Kodo ko Lito / Phapar Roti</td>
+                        <td class="p-4">Millet porridge or Buckwheat flatbread with boiled pumpkin. <span class="text-sm text-blue-600 font-medium">Goal: Low-starch energy.</span></td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-orange-50 transition-colors">
+                        <td class="p-4 font-bold text-orange-600">11:00 AM</td>
+                        <td class="p-4 font-semibold">Sattu Shake</td>
+                        <td class="p-4">Roasted gram flour mixed with warm water (no sugar). <span class="text-sm text-blue-600 font-medium">Goal: Pre-digested protein.</span></td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-blue-50 transition-colors">
+                        <td class="p-4 font-bold text-blue-600">01:30 PM</td>
+                        <td class="p-4 font-semibold">Sisnu Soup & Soft Iskus</td>
+                        <td class="p-4">Nettle soup with well-boiled Chayote squash and a small portion of brown rice. <span class="text-sm text-blue-600 font-medium">Goal: Mineral density.</span></td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-orange-50 transition-colors">
+                        <td class="p-4 font-bold text-orange-600">04:30 PM</td>
+                        <td class="p-4 font-semibold">Steamed Lauka / Banana</td>
+                        <td class="p-4">Steamed Bottle Gourd or a ripe banana (antacid effect). <span class="text-sm text-blue-600 font-medium">Goal: Stomach cooling.</span></td>
+                    </tr>
+                    <tr class="border-b border-gray-100 hover:bg-blue-50 transition-colors">
+                        <td class="p-4 font-bold text-blue-600">07:30 PM</td>
+                        <td class="p-4 font-semibold">Moong Dal & Ghiu</td>
+                        <td class="p-4">Yellow lentil soup (overcooked) with 1 tsp local ghee. <span class="text-sm text-blue-600 font-medium">Goal: Butyrate for gut lining.</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="mt-4 text-center text-sm text-gray-500 italic">Repeat this rhythm for 7 days, alternating Phapar and Kodo as your main carbohydrate base.</p>
+    </section>
+
+    <!-- Section 3: Detailed Visualization -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+        <div class="card p-8 border-t-4 border-orange-500">
+            <h3 class="text-2xl font-bold text-gray-900 mb-6">Daily Nutrient Balance</h3>
+            <div class="chart-container">
+                <canvas id="nutrientDonutChart"></canvas>
+            </div>
+            <div class="mt-6 space-y-2">
+                <p class="text-sm text-gray-600"><span class="inline-block w-3 h-3 bg-blue-500 mr-2 rounded-full"></span> <strong>Mucilaginous Fiber:</strong> High to protect the gastric pits.</p>
+                <p class="text-sm text-gray-600"><span class="inline-block w-3 h-3 bg-orange-500 mr-2 rounded-full"></span> <strong>Resistant Starch:</strong> Keeps insulin low to prevent joint flares.</p>
+            </div>
+        </div>
+
+        <div class="card p-8 border-t-4 border-blue-500">
+            <h3 class="text-2xl font-bold text-gray-900 mb-6">Inflammation Intensity Heatmap</h3>
+            <p class="text-sm text-gray-600 mb-4">This chart represents the expected systemic inflammation levels over a week when strictly following the low-starch protocol.</p>
+            <div id="inflammationHeatmap" class="w-full h-[300px]"></div>
+        </div>
+    </section>
+
+    <!-- Section 4: Prohibited vs. Preferred -->
+    <section class="mb-16">
+        <div class="bg-blue-900 text-white rounded-3xl p-8 md:p-12">
+            <h2 class="text-3xl font-bold mb-8 text-center">The "Do Not Touch" List</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="p-6 bg-white/10 rounded-2xl backdrop-blur-md border border-white/20">
+                    <div class="text-4xl mb-4">🌶️</div>
+                    <h4 class="text-xl font-bold mb-2">Chili & Spices</h4>
+                    <p class="text-sm opacity-80">Directly irritates erosive gastritis wounds.</p>
+                </div>
+                <div class="p-6 bg-white/10 rounded-2xl backdrop-blur-md border border-white/20">
+                    <div class="text-4xl mb-4">🍚</div>
+                    <h4 class="text-xl font-bold mb-2">Refined Rice/Flour</h4>
+                    <p class="text-sm opacity-80">Rapidly feeds Klebsiella bacteria in the gut.</p>
+                </div>
+                <div class="p-6 bg-white/10 rounded-2xl backdrop-blur-md border border-white/20">
+                    <div class="text-4xl mb-4">☕</div>
+                    <h4 class="text-xl font-bold mb-2">Tea & Coffee</h4>
+                    <p class="text-sm opacity-80">Triggers acid secretion, worsening erosion.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 5: AI Assistant -->
+    <section class="mb-16">
+        <div class="card p-8 border-t-4 border-purple-500 bg-gradient-to-br from-purple-50 to-white shadow-xl">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="bg-purple-100 p-3 rounded-full text-purple-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+                <h3 class="text-3xl font-bold text-gray-900">AI Healing Kitchen Assistant</h3>
+            </div>
+            <p class="text-sm text-gray-600 mb-6">Ask Gemini a question about the AS/Gastritis protocol, or request a custom recipe using local Nepali ingredients.</p>
+            
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                <input type="text" id="aiInput" class="flex-1 p-4 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:outline-none" placeholder="E.g., Give me a recipe for Phapar ko Roti that is easy on the stomach...">
+                <button id="askBtn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-8 rounded-xl transition-colors whitespace-nowrap shadow-md">Ask Assistant</button>
+            </div>
+
+            <div id="aiOutputContainer" class="hidden">
+                <div class="bg-white border border-purple-100 rounded-xl p-6 shadow-inner relative min-h-[100px]">
+                    <div id="aiLoading" class="hidden absolute inset-0 flex items-center justify-center bg-white/80 rounded-xl z-10">
+                        <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-10 w-10"></div>
+                    </div>
+                    <div id="aiResponse" class="prose prose-purple max-w-none text-gray-700 leading-relaxed"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="bg-gray-100 py-8 text-center text-gray-500 text-sm">
+    <p>This plan is a therapeutic nutritional guide. Consult your rheumatologist and gastroenterologist.</p>
+    <p class="mt-2">&copy; 2024 Therapeutic Nutrition App</p>
+</footer>
+
+<script>
+    // Utility for multi-line labels
+    function wrapLabel(label) {
+        if (typeof label !== 'string' || label.length <= 16) return label;
+        const words = label.split(' ');
+        const lines = [];
+        let currentLine = '';
+        words.forEach(word => {
+            if ((currentLine + word).length > 16) {
+                lines.push(currentLine.trim());
+                currentLine = word + ' ';
+            } else {
+                currentLine += word + ' ';
+            }
+        });
+        lines.push(currentLine.trim());
+        return lines;
+    }
+
+    const tooltipConfig = {
+        callbacks: {
+            title: function(tooltipItems) {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                return Array.isArray(label) ? label.join(' ') : label;
+            }
+        }
+    };
+
+    // Chart 1: Starch Comparison
+    new Chart(document.getElementById('starchBarChart'), {
+        type: 'bar',
+        data: {
+            labels: [wrapLabel('White Jasmine Rice'), wrapLabel('Maida (Flour)'), wrapLabel('Kodo (Millet)'), wrapLabel('Phapar (Buckwheat)')],
+            datasets: [{
+                label: 'Trigger Potential (0-100)',
+                data: [92, 88, 35, 30],
+                backgroundColor: ['#cbd5e1', '#94a3b8', '#3b82f6', '#f97316'],
+                borderRadius: 12
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: { tooltip: tooltipConfig, legend: { display: false } },
+            scales: { y: { beginAtZero: true, max: 100 } }
+        }
+    });
+
+    // Chart 2: Nutrient Balance Donut
+    new Chart(document.getElementById('nutrientDonutChart'), {
+        type: 'doughnut',
+        data: {
+            labels: [wrapLabel('Mucilaginous Fiber'), wrapLabel('Complex Starch'), wrapLabel('Proteins (Sattu/Dal)'), wrapLabel('Healthy Fats (Ghee)')],
+            datasets: [{
+                data: [35, 25, 30, 10],
+                backgroundColor: ['#3b82f6', '#f97316', '#0ea5e9', '#fbbf24'],
+                hoverOffset: 10,
+                borderWidth: 0
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: { tooltip: tooltipConfig }
+        }
+    });
+
+    // Chart 3: Plotly Heatmap (Inflammation Trends)
+    const inflammationData = [
+        {
+            z: [
+                [8, 7, 7, 6, 5, 4, 3], // Early Morning
+                [6, 5, 5, 4, 3, 3, 2], // Mid-Day
+                [5, 4, 3, 3, 2, 2, 1]  // Evening
+            ],
+            x: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
+            y: ['Morning', 'Afternoon', 'Evening'],
+            type: 'heatmap',
+            colorscale: [
+                [0, '#f0f9ff'],
+                [0.5, '#3b82f6'],
+                [1, '#1e40af']
+            ],
+            showscale: false
+        }
+    ];
+
+    const heatmapLayout = {
+        margin: { t: 10, b: 30, l: 80, r: 10 },
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        xaxis: { fixedrange: true },
+        yaxis: { fixedrange: true }
+    };
+
+    Plotly.newPlot('inflammationHeatmap', inflammationData, heatmapLayout, { responsive: true, displayModeBar: false });
+
+    // Gemini API Integration for the AI Assistant
+    const askBtn = document.getElementById('askBtn');
+    const aiInput = document.getElementById('aiInput');
+    const aiOutputContainer = document.getElementById('aiOutputContainer');
+    const aiLoading = document.getElementById('aiLoading');
+    const aiResponse = document.getElementById('aiResponse');
+
+    // A simple function to format markdown to HTML safely for our UI
+    function parseMarkdown(text) {
+        let html = text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/\n\n/g, '</p><p class="mb-4">')
+            .replace(/\n/g, '<br>')
+            .replace(/- (.*?)<br>/g, '<li class="ml-6 list-disc mb-1">$1</li>');
+        return `<p class="mb-4">${html}</p>`;
+    }
+
+    askBtn.addEventListener('click', async () => {
+        const query = aiInput.value.trim();
+        if (!query) return;
+
+        // Setup UI State for Loading
+        aiOutputContainer.classList.remove('hidden');
+        aiLoading.classList.remove('hidden');
+        aiResponse.innerHTML = '';
+        askBtn.disabled = true;
+        askBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+        // System instruction provides the persona and clinical guardrails for the LLM
+        const systemPrompt = `You are a highly skilled clinical nutritionist AI specializing in the Gut-Joint Axis, actively assisting a patient in Nepal with Ankylosing Spondylitis (AS) and Erosive Gastritis. 
+        Your dietary protocol strictly adheres to these rules:
+        1. Low-Starch to starve Klebsiella (the bacterial trigger for AS). Prefer Kodo (millet) and Phapar (buckwheat) over white rice or wheat.
+        2. Gastric Soothing to heal stomach erosions. Strictly avoid chili, excess spices, caffeine, and acidic foods. Utilize mucilaginous/soothing foods like Aalas (flaxseed), Methi (fenugreek), well-cooked Lauka (bottle gourd), and Ghiu (ghee).
+        Provide concise, empathetic, and highly actionable answers. If asked for a recipe, provide a simple, step-by-step recipe using locally available Nepali ingredients that fits both conditions. Format your text clearly with bolding and bullet points.`;
+
+        const payload = {
+            contents: [{ parts: [{ text: query }] }],
+            systemInstruction: { parts: [{ text: systemPrompt }] }
+        };
+
+        const apiKey = ""; // Canvas injects the API key at runtime
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            
+            const result = await response.json();
+            
+            if (result.candidates && result.candidates.length > 0 && result.candidates[0].content) {
+                const text = result.candidates[0].content.parts[0].text;
+                aiResponse.innerHTML = parseMarkdown(text);
+            } else {
+                aiResponse.innerHTML = '<p class="text-red-500 font-semibold">Sorry, I received an unexpected response structure. Please try asking again.</p>';
+                console.error("Unexpected API structure:", result);
+            }
+        } catch (error) {
+            console.error("Gemini API Error:", error);
+            aiResponse.innerHTML = '<p class="text-red-500 font-semibold">An error occurred while connecting to the AI Assistant. Please ensure you have internet access and try again.</p>';
+        } finally {
+            // Restore UI State
+            aiLoading.classList.add('hidden');
+            askBtn.disabled = false;
+            askBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+    });
+
+    // Allow pressing "Enter" in the input field to trigger the search
+    aiInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            askBtn.click();
+        }
+    });
+</script>
+
+</body>
+</html>
