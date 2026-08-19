@@ -17,5 +17,7 @@ tasks:
 - package: |
     cd illegal-in-nepal
     make build
-# - upload: |
-#     hut pages publish -d illegal-in-nepal site.tar.gz
+    tar cvf site.tar.gz site/
+
+- upload: |
+    hut pages publish site.tar.gz
