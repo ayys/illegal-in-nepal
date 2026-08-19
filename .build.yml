@@ -6,7 +6,7 @@ submitter:
       - "refs/tags/*"
 
 
-image: alpine/edge
+image: archlinux
 oauth: pages.sr.ht/PAGES:RW
 packages:
 - hut
