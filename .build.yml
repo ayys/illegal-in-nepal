@@ -20,4 +20,4 @@ tasks:
     tar cvf site.tar.gz site/
 
 - upload: |
-    hut pages publish site.tar.gz
+    hut pages publish -d illegal-in-nepal site.tar.gz
