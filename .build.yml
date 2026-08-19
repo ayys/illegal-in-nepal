@@ -17,7 +17,7 @@ tasks:
 - package: |
     cd illegal-in-nepal
     make build
-    tar cvf site.tar.gz site/
+    tar cvzf site.tar.gz site/
 
 - upload: |
-    hut pages publish -d illegal-in-nepal site.tar.gz
+    hut pages publish -d ayys.srht.site site.tar.gz
