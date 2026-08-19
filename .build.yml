@@ -14,10 +14,8 @@ packages:
 environment:
   site: ayys.srht.site
 tasks:
-- package: |
+- build: |
     cd illegal-in-nepal
     make build
-    tar cvzf site.tar.gz site/
-
-- upload: |
+    tar czf site.tar.gz site/
     hut pages publish -d ayys.srht.site site.tar.gz
