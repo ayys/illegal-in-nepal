@@ -21,9 +21,10 @@ OUTPUT_DIR = "output"
 INDEX_FILENAME = "index.html"
 TEMPLATE_FILENAME = "template.html"
 DATA_FILENAME = "shabdakosh.json"
-SEARCH_DATA_FILENAME = "search-data.js"
+SEARCH_DATA_FILENAME = "search-data.json"
 SEARCH_WORKER_FILENAME = "search-worker.js"
-FUSE_CDN = "https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/+esm"
+FUSE_CDN = "https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"
+PAKO_CDN = "https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"
 MAX_CONCURRENT_FILES = 1000  # Limit concurrent file operations
 
 
@@ -396,11 +397,10 @@ async def generate_word_pages(words_data, template):
 
 
 async def write_search_data(metadata):
-    """Writes search metadata into an ES module and creates a gzipped version."""
+    """Writes search metadata as JSON and creates a gzipped version."""
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     search_path = os.path.join(OUTPUT_DIR, SEARCH_DATA_FILENAME)
-    js_payload = json.dumps(metadata, ensure_ascii=False)
-    content = f"export const WORDS = {js_payload};\n"
+    content = json.dumps(metadata, ensure_ascii=False)
 
     # Write uncompressed version
     async with aiofiles.open(search_path, "w", encoding="utf-8") as f:
@@ -416,66 +416,68 @@ async def write_search_data(metadata):
 
 
 async def write_search_worker():
-    """Writes the web worker that performs Fuse.js searches off the main thread."""
+    """Writes a mobile-safe worker that performs searches off the main thread."""
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     worker_path = os.path.join(OUTPUT_DIR, SEARCH_WORKER_FILENAME)
     worker_content = (
         f"""
-import Fuse from "{FUSE_CDN}";
-import pako from "https://cdn.jsdelivr.net/npm/pako@2.1.0/+esm";
-
 let fuse = null;
 let wordsLoaded = false;
+let libsLoaded = false;
+
+const ensureLibraries = () => {{
+    if (libsLoaded) return;
+    importScripts("{FUSE_CDN}", "{PAKO_CDN}");
+    libsLoaded = true;
+}};
 
 const loadWords = async () => {{
     if (wordsLoaded) return;
-    
-    // Try to load gzipped version first (much smaller ~4MB vs ~27MB)
-    let WORDS;
+    let words = null;
+
+    // Try gzipped JSON first (smaller payload).
     try {{
         const gzResponse = await fetch("./{SEARCH_DATA_FILENAME}.gz");
         if (gzResponse.ok) {{
             const arrayBuffer = await gzResponse.arrayBuffer();
             const uint8Array = new Uint8Array(arrayBuffer);
-            
-            // Try native DecompressionStream first (modern browsers)
+
+            // Prefer native DecompressionStream when available.
             if (typeof DecompressionStream !== 'undefined') {{
                 try {{
-                    console.log("Using native DecompressionStream API");
                     const blob = new Blob([uint8Array]);
                     const stream = blob.stream().pipeThrough(new DecompressionStream("gzip"));
                     const decompressed = await new Response(stream).text();
-                    // Create a blob URL and import it as a module
-                    const blobUrl = new Blob([decompressed], {{ type: "application/javascript" }});
-                    const url = URL.createObjectURL(blobUrl);
-                    const module = await import(url);
-                    WORDS = module.WORDS;
-                    URL.revokeObjectURL(url);
+                    words = JSON.parse(decompressed);
                 }} catch (streamError) {{
                     console.warn("DecompressionStream failed:", streamError);
-                    throw new Error("DecompressionStream failed: " + streamError.message);
                 }}
-            }} else {{
-                // Fallback to pako for older browsers (iOS Safari < 16.4, etc.)
-                console.log("Using pako.js polyfill for gzip decompression");
+            }}
+
+            // Fallback for browsers without reliable native decompression.
+            if (!words) {{
+                ensureLibraries();
                 const decompressed = pako.ungzip(uint8Array, {{ to: 'string' }});
-                const blob = new Blob([decompressed], {{ type: "application/javascript" }});
-                const url = URL.createObjectURL(blob);
-                const module = await import(url);
-                WORDS = module.WORDS;
-                URL.revokeObjectURL(url);
+                words = JSON.parse(decompressed);
             }}
         }} else {{
             throw new Error("Gzip version not available");
         }}
     }} catch (e) {{
         console.warn("Gzip loading failed, falling back to uncompressed:", e);
-        // Final fallback to uncompressed version
-        const module = await import("./{SEARCH_DATA_FILENAME}");
-        WORDS = module.WORDS;
     }}
-    
-    fuse = new Fuse(WORDS, {{
+
+    // Final fallback to plain JSON.
+    if (!words) {{
+        const response = await fetch("./{SEARCH_DATA_FILENAME}");
+        if (!response.ok) {{
+            throw new Error("Search data could not be loaded.");
+        }}
+        words = await response.json();
+    }}
+
+    ensureLibraries();
+    fuse = new Fuse(words, {{
         keys: [
             {{ name: "word", weight: 0.7 }},
             {{ name: "preview", weight: 0.25 }},
@@ -501,10 +503,14 @@ self.onmessage = async (event) => {{
     }}
 
     // Lazy load words data only when first search is performed
-    await loadWords();
-    
-    const matches = fuse.search(query, {{ limit: 20 }}).map((match) => match.item);
-    self.postMessage({{ id, results: matches }});
+    try {{
+        await loadWords();
+        const matches = fuse.search(query, {{ limit: 20 }}).map((match) => match.item);
+        self.postMessage({{ id, results: matches }});
+    }} catch (error) {{
+        console.error("Search failed:", error);
+        self.postMessage({{ id, results: [], error: "search-failed" }});
+    }}
 }};
 """.strip()
         + "\n"
@@ -729,7 +735,7 @@ async def generate_index_page(links_list):
             </noscript>
         </section>
     </div>
-    <script type="module">
+    <script>
         const input = document.getElementById("search-input");
         const resultsContainer = document.getElementById("search-results");
         let worker = null;
@@ -761,7 +767,7 @@ async def generate_index_page(links_list):
             
             try {{
                 resultsContainer.innerHTML = "<p>खोज प्रणाली लोड हुँदैछ...</p>";
-                worker = new Worker("./{SEARCH_WORKER_FILENAME}", {{ type: "module" }});
+                worker = new Worker("./{SEARCH_WORKER_FILENAME}");
                 
                 worker.addEventListener("message", (event) => {{
                     const {{ id, results }} = event.data || {{}};
