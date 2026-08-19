@@ -10,11 +10,12 @@ image: alpine/edge
 oauth: pages.sr.ht/PAGES:RW
 packages:
 - hut
+- uv
 environment:
   site: ayys.srht.site
 tasks:
 - package: |
     cd illegal-in-nepal
-    ls
+    make build
 # - upload: |
 #     hut pages publish -d illegal-in-nepal site.tar.gz
