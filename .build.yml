@@ -1,0 +1,20 @@
+submitter:
+  git.sr.ht:
+    enabled: true
+    allow-refs:
+      - refs/heads/master
+      - "refs/tags/*"
+
+
+image: alpine/edge
+oauth: pages.sr.ht/PAGES:RW
+packages:
+- hut
+environment:
+  site: ayys.srht.site
+tasks:
+- package: |
+    cd illegal-in-nepal
+    ls
+# - upload: |
+#     hut pages publish -d illegal-in-nepal site.tar.gz
