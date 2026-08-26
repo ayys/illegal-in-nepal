@@ -317,26 +317,26 @@
         </script>
         <script>
          (function() {
-             
+
              const canvas = document.getElementById('sleeping-cat');
              const ctx = canvas.getContext('2d');
-             
+
              let currentFrame = 0;
-             
+
              function drawFrame(frameData) {
                  // Clear canvas (transparent background)
                  ctx.clearRect(0, 0, 32, 32);
-                 
+
                  // Body white, outline blue
                  const outlineColor = '#61aaf3';
                  const bodyColor = '#ffffff';
-                 
+
                  // Split into lines (32 lines of 32 characters each)
                  const lines = [];
                  for (let i = 0; i < 32; i++) {
                      lines.push(frameData.substring(i * 32, (i + 1) * 32));
                  }
-                 
+
                  for (let y = 0; y < 32; y++) {
                      const line = lines[y];
                      for (let x = 0; x < 32; x++) {
@@ -351,14 +351,13 @@
                      }
                  }
              }
-             
+
              function animate() {
                  if (animations.sleeping && animations.sleeping.length > 0) {
                      drawFrame(animations.sleeping[currentFrame]);
                      currentFrame = (currentFrame + 1) % animations.sleeping.length;
                  }
              }
-             
              // Start animation
              animate();
              setInterval(animate, 200);
