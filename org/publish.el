@@ -77,26 +77,9 @@ Public notes have the `blog' keyword and do not have `draft'."
 
 (defconst blog-html-head
   (concat
+   "<meta name=\"color-scheme\" content=\"only light\">\n"
    "<link rel=\"icon\" href=\"/assets/favicon.ico\" type=\"image/x-icon\">\n"
-   "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n"
-   "<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n"
-   "<link rel=\"preload\" href=\"https://fonts.googleapis.com/css2?family=Poppins&display=swap\" as=\"style\" onload=\"this.onload=null;this.rel='stylesheet'\">\n"
-   "<noscript><link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Poppins&display=swap\"></noscript>\n"
-   "<link rel=\"stylesheet\" href=\"/common.css\">\n"
-   "<style>\n"
-   "body { font-family: 'Poppins', serif; }\n"
-   ".blog-nav { margin-bottom: 1.5rem; }\n"
-   ".blog-meta { color: #666; margin-top: 2rem; }\n"
-   ".blog-index { list-style: none; padding: 0; }\n"
-   ".blog-index li { margin: 0.75rem 0; }\n"
-   ".blog-index time { color: #666; margin-left: 0.75rem; font-size: 0.9rem; }\n"
-   "pre { background: #f5f5f5; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; }\n"
-   "img { max-width: 100%; height: auto; }\n"
-   "@media (prefers-color-scheme: dark) {\n"
-   "  .blog-meta, .blog-index time { color: #999; }\n"
-   "  pre { background: #1e1e1e; }\n"
-   "}\n"
-   "</style>\n"))
+   "<link rel=\"stylesheet\" href=\"/common.css\">\n"))
 
 (defconst blog-preamble
   (concat

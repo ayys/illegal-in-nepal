@@ -3,25 +3,11 @@
 
     <head>
         <style>
-         body {
-             font-family: 'Poppins', serif;
-         }
-
-         .heading {
-             font-style: italic;
-             margin-bottom: 1.5rem;
-         }
-
-         .home-nav {
-             margin: -0.5rem 0 1.5rem;
-         }
-
          #weather {
              position: fixed;
              top: 1rem;
              left: 1rem;
          }
-
 
          #navlinkad {
              position: fixed;
@@ -29,7 +15,6 @@
              right: 1rem;
          }
 
-         /* Sleeping Cat Animation */
          #sleeping-cat {
              position: fixed;
              bottom: 1rem;
@@ -40,17 +25,21 @@
              image-rendering: crisp-edges;
              cursor: pointer;
          }
+
+         @media (max-width: 720px) {
+             #weather,
+             #navlinkad {
+                 display: none;
+             }
+         }
         </style>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="color-scheme" content="only light">
         <script src="https://u.widget.st/ar.js"></script>
         <title>आयुष झा | Ayush Jha</title>
         <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"></noscript>
         <link rel="stylesheet" href="/common.css">
     </head>
 
@@ -59,13 +48,25 @@
             <p class="heading">
                 मेरो अवैध अन्तर्जाले कोठामा स्वागत छ 🙏
             </p>
-            <nav class="home-nav">
-                <a href="/blog/">ब्लग</a>
+            <nav class="site-nav">
+                <a href="/blog/">ब्लग</a> ·
+                <a href="/shabdakosh">शब्दकोश</a> ·
+                <a href="/xlib/introduction">Xlib</a> ·
+                <a href="https://ayys.atabook.org">पाहुना बही</a>
             </nav>
-            <img src="/assets/avatar.webp"
-                 fetchpriority=high
-                 alt="Ayush Jha GitHub Avatar"
-                 style="width: 150px; height: 150px; border-radius: 50%; display: block; margin: 0 auto 1.5rem;">
+            <div class="cat-row" aria-hidden="true">
+                <img class="loaf" src="/assets/cat-loaf.svg" alt="">
+                <img class="sit" src="/assets/cat-sit.svg" alt="">
+                <img class="stretch" src="/assets/cat-stretch.svg" alt="">
+            </div>
+            <div class="portrait-wrap">
+                <span class="ear left" aria-hidden="true"></span>
+                <span class="ear right" aria-hidden="true"></span>
+                <img class="portrait" src="/assets/avatar.webp"
+                     fetchpriority=high
+                     alt="Ayush Jha">
+            </div>
+            <img class="corner-cat bottom-left" src="/assets/cat-loaf.svg" alt="">
             <ws-widget id="weather" type="moon" iid="7171" embed="iframe"></ws-widget>
             <canvas id="sleeping-cat" width="32" height="32"></canvas>
             <iframe id="navlinkad" width="180" height="180" style="border:none" src="https://nvlk.dimden.dev/" name="neolink"></iframe>
@@ -79,35 +80,35 @@
             <hr>
             <h2>सम्पर्क</h2>
 
-            <table style="border-collapse: collapse;">
+            <table class="directory">
                 <tbody>
                     <tr>
-                        <td style="padding: 8px;">ईमेल (Email)</td>
-                        <td style="padding: 8px;"><a href="mailto:ayys@duck.com">ayys@duck.com</a></td>
+                        <td>ईमेल (Email)</td>
+                        <td><a href="mailto:ayys@duck.com">ayys@duck.com</a></td>
                     </tr>
                     <tr>
-                        <td style="padding: 8px;">Keyoxide</td>
-                        <td style="padding: 8px;"><a href="https://keyoxide.org/hkp/47ED437AFA0AB508A9E27D2E8D0723A80F4F6443" target="_blank">8D0723A80F4F6443</a></td>
+                        <td>Keyoxide</td>
+                        <td><a href="https://keyoxide.org/hkp/47ED437AFA0AB508A9E27D2E8D0723A80F4F6443" target="_blank">8D0723A80F4F6443</a></td>
                     </tr>
                     <tr>
-                        <td style="padding: 8px;">सोर्सहट (sourcehut)</td>
-                        <td style="padding: 8px;"><a href="https://sr.ht/~ayys/" target="_blank">~ayys</a></td>
+                        <td>सोर्सहट (sourcehut)</td>
+                        <td><a href="https://sr.ht/~ayys/" target="_blank">~ayys</a></td>
                     </tr>
                     <tr>
-                        <td style="padding: 8px;">कोडबर्ग (Codeberg)</td>
-                        <td style="padding: 8px;"><a href="https://codeberg.org/ayys" target="_blank">ayys</a></td>
+                        <td>कोडबर्ग (Codeberg)</td>
+                        <td><a href="https://codeberg.org/ayys" target="_blank">ayys</a></td>
                     </tr>
                     <tr>
-                        <td style="padding: 8px;">गिटहब (GitHub)</td>
-                        <td style="padding: 8px;"><a href="https://github.com/ayys" target="_blank">ayys</a></td>
+                        <td>गिटहब (GitHub)</td>
+                        <td><a href="https://github.com/ayys" target="_blank">ayys</a></td>
                     </tr>
                     <tr>
-                        <td style="padding: 8px;">गिटलाब (GitLab)</td>
-                        <td style="padding: 8px;"><a href="https://gitlab.com/ayys" target="_blank">ayys</a></td>
+                        <td>गिटलाब (GitLab)</td>
+                        <td><a href="https://gitlab.com/ayys" target="_blank">ayys</a></td>
                     </tr>
                     <tr>
-                        <td style="padding: 8px;">PGP कुञ्जी (PGP Key)</td>
-                        <td style="padding: 8px;"><a href="https://keys.openpgp.org/vks/v1/by-fingerprint/47ED437AFA0AB508A9E27D2E8D0723A80F4F6443" target="_blank">8D0723A80F4F6443</a></td>
+                        <td>PGP कुञ्जी (PGP Key)</td>
+                        <td><a href="https://keys.openpgp.org/vks/v1/by-fingerprint/47ED437AFA0AB508A9E27D2E8D0723A80F4F6443" target="_blank">8D0723A80F4F6443</a></td>
                     </tr>
                 </tbody>
             </table>
@@ -119,7 +120,7 @@
                 <li><a href="/shabdakosh">शब्दकोश</a></li>
             </ul>
             <hr>
-            <p style="margin-top: 5rem;">
+            <p>
                 <a href="/%E0%A4%B8%E0%A5%8D%E0%A4%B5%E0%A4%B8%E0%A5%8D%E0%A4%A4%E0%A4%BF.html#line-4">लोकाः समस्ताः सुखिनो भवन्तु ।</a>
             </p>
         </div>

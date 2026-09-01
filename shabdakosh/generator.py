@@ -565,7 +565,7 @@ async def generate_index_page(links_list):
     <title>शब्दकोष अनुक्रमणिका (Dictionary Index)</title>
     <style>
         :root {{
-            color-scheme: light dark;
+            color-scheme: light only;
             font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
         }}
 
@@ -689,48 +689,6 @@ async def generate_index_page(links_list):
 
         @media (max-width: 900px) {{
             .word-list {{ column-count: 2; }}
-        }}
-        @media (prefers-color-scheme: dark) {{
-            body {{
-                background: #0f172a;
-                color: #e2e8f0;
-            }}
-            
-            h1 {{
-                color: #f1f5f9;
-            }}
-            
-            .search-box {{
-                background: #1e293b;
-                border-color: #334155;
-            }}
-            
-            .search-box input {{
-                color: #f1f5f9;
-            }}
-            
-            .search-box input::placeholder {{
-                color: #64748b;
-            }}
-            
-            .result-item {{
-                background: #1e293b;
-                border-color: #334155;
-                color: #e2e8f0;
-            }}
-            
-            .result-item:hover {{
-                background: #334155;
-                border-color: #0ea5e9;
-            }}
-            
-            .result-word {{
-                color: #f1f5f9;
-            }}
-            
-            .result-preview {{
-                color: #94a3b8;
-            }}
         }}
 
         @media (max-width: 600px) {{
