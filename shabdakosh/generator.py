@@ -25,7 +25,8 @@ DATA_FILENAME = "shabdakosh.json"
 WOTD_PAGE_FILENAME = "आजको-शब्द.html"
 WOTD_BANNER_FILENAME = "banner.html"
 WOTD_JS_FILENAME = "wotd.js"
-WOTD_DATA_FILENAME = "wotd-data.json"
+WOTD_META_FILENAME = "wotd.json"
+WOTD_SHARD_DIRNAME = "wotd"
 SEARCH_DATA_FILENAME = "search-data.json"
 SEARCH_WORKER_FILENAME = "search-worker.js"
 FUSE_CDN = "https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"
@@ -421,24 +422,41 @@ async def write_search_data(metadata):
 
 
 async def write_wotd(words_data):
-    """Write word-of-the-day JSON and HTML (same pick list as the X bot)."""
-    from wotd_lib import flatten_entries
+    """Write sharded word-of-the-day pairs and copy the HTML/JS pages."""
+    from wotd_lib import SHARD_SIZE, flatten_entries
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     entries = flatten_entries(words_data)
-    content = json.dumps(entries, ensure_ascii=False, separators=(",", ":"))
-    data_path = os.path.join(OUTPUT_DIR, WOTD_DATA_FILENAME)
-    async with aiofiles.open(data_path, "w", encoding="utf-8") as f:
-        await f.write(content)
-    async with aiofiles.open(data_path + ".gz", "wb") as f:
-        await f.write(gzip.compress(content.encode("utf-8")))
+    pairs = [[e["word"], e["sense"]] for e in entries]
+    n = len(pairs)
+
+    out = Path(OUTPUT_DIR)
+    for stale in (out / "wotd-data.json", out / "wotd-data.json.gz"):
+        stale.unlink(missing_ok=True)
+
+    shard_dir = out / WOTD_SHARD_DIRNAME
+    if shard_dir.exists():
+        for old in shard_dir.glob("*.json.gz"):
+            old.unlink()
+    else:
+        shard_dir.mkdir()
+
+    shard_count = (n + SHARD_SIZE - 1) // SHARD_SIZE if n else 0
+    for i in range(shard_count):
+        chunk = pairs[i * SHARD_SIZE : (i + 1) * SHARD_SIZE]
+        payload = json.dumps(chunk, ensure_ascii=False, separators=(",", ":")).encode()
+        (shard_dir / f"{i}.json.gz").write_bytes(gzip.compress(payload, compresslevel=9))
+
+    meta = {"n": n, "shard": SHARD_SIZE}
+    (out / WOTD_META_FILENAME).write_text(
+        json.dumps(meta, separators=(",", ":")), encoding="utf-8"
+    )
 
     src_dir = Path(__file__).resolve().parent
     for name in (WOTD_PAGE_FILENAME, WOTD_BANNER_FILENAME, WOTD_JS_FILENAME):
-        dest = Path(OUTPUT_DIR) / name
-        dest.write_bytes((src_dir / name).read_bytes())
-    print(f"Wrote word-of-the-day data ({len(entries)} entries)")
-    return data_path
+        (out / name).write_bytes((src_dir / name).read_bytes())
+    print(f"Wrote word-of-the-day shards ({n} entries, {shard_count} files)")
+    return out / WOTD_META_FILENAME
 
 
 async def write_search_worker():

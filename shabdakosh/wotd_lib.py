@@ -12,6 +12,8 @@ from zoneinfo import ZoneInfo
 
 NEPAL = ZoneInfo("Asia/Kathmandu")
 MIN_WORD_LEN = 2
+# Client downloads one shard (word, sense pairs). Keep in sync with wotd.js.
+SHARD_SIZE = 512
 
 
 def slugify(word: str) -> str:
