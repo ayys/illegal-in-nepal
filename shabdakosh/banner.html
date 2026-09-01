@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="only light">
+    <title>आजको शब्द</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam&family=Tiro+Devanagari+Hindi&display=swap">
+    <style>
+        html, body {
+            margin: 0;
+            height: 100%;
+            background: #fff6ee;
+            color: #2c1810;
+            font-family: "Tiro Devanagari Hindi", Georgia, serif;
+        }
+        a.banner {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-sizing: border-box;
+            height: 100%;
+            padding: 10px 12px 8px;
+            text-decoration: none;
+            color: inherit;
+            border: 3px solid #e07a3a;
+            background: #fff6ee url("/assets/paws.svg");
+            background-size: 90px 90px;
+        }
+        .label {
+            font-family: "Kalam", serif;
+            font-size: 13px;
+            color: #8a6456;
+            margin: 0;
+        }
+        .word {
+            font-family: "Kalam", serif;
+            font-size: 28px;
+            line-height: 1.15;
+            margin: 2px 0 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .sense {
+            font-size: 13px;
+            line-height: 1.35;
+            margin: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .fail { padding: 12px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <a class="banner" id="link" target="_blank" rel="noopener noreferrer" href="./आजको-शब्द.html">
+        <p class="label">आजको शब्द · अवैध अन्तर्जाले कोठा</p>
+        <p class="word" id="word">…</p>
+        <p class="sense" id="sense"></p>
+    </a>
+    <script src="./wotd.js"></script>
+    <script>
+        (async () => {
+            try {
+                const picked = await Wotd.today("./");
+                document.getElementById("word").textContent = picked.word;
+                document.getElementById("sense").textContent = picked.sense;
+                document.getElementById("link").href =
+                    location.origin + "/shabdakosh/" +
+                    encodeURIComponent(picked.slug) + ".html";
+            } catch (err) {
+                document.body.innerHTML =
+                    '<p class="fail">आजको शब्द लोड गर्न सकिएन।</p>';
+                console.error(err);
+            }
+        })();
+    </script>
+</body>
+</html>

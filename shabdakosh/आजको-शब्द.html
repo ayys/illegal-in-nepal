@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="only light">
+    <title>आजको शब्द</title>
+    <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/common.css">
+    <style>
+        .wotd-date { color: var(--mute); }
+        .wotd-word {
+            font-family: "Kalam", serif;
+            font-size: 2.4rem;
+            margin: 0.4rem 0 1rem;
+        }
+        .wotd-sense { font-size: 1.15rem; }
+        .wotd-status { color: var(--mute); }
+        .kosh-nav { margin-bottom: 1rem; }
+        .embed {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px dashed var(--rule);
+        }
+        .embed iframe {
+            width: 300px;
+            height: 128px;
+            border: 0;
+            overflow: hidden;
+        }
+        .embed textarea {
+            display: block;
+            width: 100%;
+            min-height: 5.5rem;
+            margin-top: 0.6rem;
+            font-family: ui-monospace, monospace;
+            font-size: 0.85rem;
+            padding: 0.5rem;
+            background: var(--chip);
+            color: var(--ink);
+            border: 2px dashed var(--rule);
+            border-radius: 0.6rem;
+        }
+    </style>
+</head>
+<body>
+    <p class="kosh-nav"><a href="/">गृह</a> · <a href="/shabdakosh/">शब्दकोश</a></p>
+    <p class="heading">आजको शब्द</p>
+    <p id="date" class="wotd-date"></p>
+    <p id="status" class="wotd-status">शब्द खोजिँदैछ…</p>
+    <div id="card" hidden>
+        <h1 id="word" class="wotd-word"></h1>
+        <p id="sense" class="wotd-sense"></p>
+        <p><a id="entry-link" href="#">पूरा परिभाषा पढ्नुहोस् →</a></p>
+    </div>
+    <section class="embed">
+        <h2>ब्यानर</h2>
+        <p>यो ब्यानर आफ्नो साइटमा राख्न सकिन्छ। शब्द हरेक दिन आफैं बदलिन्छ।</p>
+        <iframe src="./banner.html" title="आजको शब्द" loading="lazy"></iframe>
+        <textarea readonly id="embed-code" onclick="this.select()"></textarea>
+    </section>
+    <noscript>
+        <p>आजको शब्द देखाउन JavaScript चाहिन्छ।</p>
+    </noscript>
+    <script src="./wotd.js"></script>
+    <script>
+        const embed = `<iframe src="https://illegal-in-nepal.org/shabdakosh/banner.html" width="300" height="128" style="border:0;overflow:hidden" title="आजको शब्द" loading="lazy"></iframe>`;
+        document.getElementById("embed-code").value = embed;
+
+        (async () => {
+            const status = document.getElementById("status");
+            const day = Wotd.nepalDay();
+            document.getElementById("date").textContent = day;
+            try {
+                const picked = await Wotd.today("./");
+                document.getElementById("word").textContent = picked.word;
+                document.getElementById("sense").textContent = picked.sense;
+                document.getElementById("entry-link").href =
+                    "./" + encodeURIComponent(picked.slug) + ".html";
+                document.getElementById("card").hidden = false;
+                status.hidden = true;
+            } catch (err) {
+                status.textContent = "आजको शब्द लोड गर्न सकिएन।";
+                console.error(err);
+            }
+        })();
+    </script>
+</body>
+</html>

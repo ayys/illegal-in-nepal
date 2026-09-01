@@ -14,6 +14,7 @@ import asyncio
 import gzip
 import unicodedata
 import aiofiles
+from pathlib import Path
 from tqdm import tqdm
 
 
@@ -21,6 +22,10 @@ OUTPUT_DIR = "output"
 INDEX_FILENAME = "index.html"
 TEMPLATE_FILENAME = "template.html"
 DATA_FILENAME = "shabdakosh.json"
+WOTD_PAGE_FILENAME = "आजको-शब्द.html"
+WOTD_BANNER_FILENAME = "banner.html"
+WOTD_JS_FILENAME = "wotd.js"
+WOTD_DATA_FILENAME = "wotd-data.json"
 SEARCH_DATA_FILENAME = "search-data.json"
 SEARCH_WORKER_FILENAME = "search-worker.js"
 FUSE_CDN = "https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"
@@ -415,6 +420,27 @@ async def write_search_data(metadata):
     return search_path
 
 
+async def write_wotd(words_data):
+    """Write word-of-the-day JSON and HTML (same pick list as the X bot)."""
+    from wotd_lib import flatten_entries
+
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    entries = flatten_entries(words_data)
+    content = json.dumps(entries, ensure_ascii=False, separators=(",", ":"))
+    data_path = os.path.join(OUTPUT_DIR, WOTD_DATA_FILENAME)
+    async with aiofiles.open(data_path, "w", encoding="utf-8") as f:
+        await f.write(content)
+    async with aiofiles.open(data_path + ".gz", "wb") as f:
+        await f.write(gzip.compress(content.encode("utf-8")))
+
+    src_dir = Path(__file__).resolve().parent
+    for name in (WOTD_PAGE_FILENAME, WOTD_BANNER_FILENAME, WOTD_JS_FILENAME):
+        dest = Path(OUTPUT_DIR) / name
+        dest.write_bytes((src_dir / name).read_bytes())
+    print(f"Wrote word-of-the-day data ({len(entries)} entries)")
+    return data_path
+
+
 async def write_search_worker():
     """Writes a mobile-safe worker that performs searches off the main thread."""
     os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -653,7 +679,7 @@ async def generate_index_page(links_list):
     </style>
 </head>
 <body>
-    <p><a href="/">गृह</a></p>
+    <p><a href="/">गृह</a> · <a href="./आजको-शब्द.html">आजको शब्द</a></p>
     <h1>नेपाली बृहत शब्दकोश</h1>
         <div class="search-box">
             <input id="search-input" type="search" placeholder="शब्द छान्नुहोस्…" aria-label="शब्द खोज्नुहोस्">
@@ -812,6 +838,8 @@ async def main():
         return
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+    await write_wotd(words_data)
 
     links, metadata = await generate_word_pages(words_data, template)
     print(f"Successfully generated {len(links)} word pages.")
