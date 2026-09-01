@@ -238,7 +238,7 @@ def link_words_in_text(text, word_to_filename, current_word=None):
             continue
         
         # Create link - use the word as found in text
-        link_html = f'<a href="./{filename}" style="color: #0f62fe; text-decoration: underline;">{word}</a>'
+        link_html = f'<a href="./{filename}">{word}</a>'
         linked_text = linked_text[:start_pos] + link_html + linked_text[end_pos:]
         linked_positions.append((start_pos, start_pos + len(link_html)))
     
@@ -562,117 +562,75 @@ async def generate_index_page(links_list):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="only light">
     <title>शब्दकोष अनुक्रमणिका (Dictionary Index)</title>
+    <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/common.css">
     <style>
-        :root {{
-            color-scheme: light only;
-            font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
-        }}
-
-        body {{
-            margin: 0;
-            background: #f5f7fb;
-            min-height: 100vh;
-            color: #111827;
-        }}
-
-        .hero {{
-            max-width: 900px;
-            margin: 0 auto;
-            padding: clamp(2rem, 4vw, 4rem);
-        }}
-
-        h1 {{
-            text-align: center;
-            font-size: clamp(2.5rem, 6vw, 3.5rem);
-            margin-bottom: 1rem;
-            color: #0f172a;
-        }}
-
         .search-box {{
             display: flex;
             align-items: center;
-            gap: 1rem;
-            background: #ffffff;
-            padding: 0.75rem 1.25rem;
-            border-radius: 999px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
-            border: 1px solid #e5e7eb;
-            transition: box-shadow 150ms ease, border-color 150ms ease;
-        }}
-
-        .search-box:focus-within {{
-            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.15), 0 2px 4px rgba(0, 0, 0, 0.06);
-            border-color: #0ea5e9;
+            padding: 0.4rem 0.7rem;
+            background: var(--chip);
+            border: 2px dashed var(--rule);
+            border-radius: 0.8rem;
         }}
 
         .search-box input {{
             flex: 1;
-            font-size: 1.1rem;
+            font: inherit;
+            font-size: 1.05rem;
             border: none;
             outline: none;
             background: transparent;
-            color: #111827;
+            color: var(--ink);
         }}
 
         .search-box input::placeholder {{
-            color: #9ca3af;
+            color: var(--mute);
         }}
 
         .results {{
-            margin-top: 2rem;
+            margin-top: 1.4rem;
             display: grid;
-            gap: 0.75rem;
+            gap: 0.9rem;
         }}
 
         .result-item {{
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
-            padding: 1rem 1.25rem;
-            border-radius: 0.85rem;
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
+            gap: 0.15rem;
+            padding: 0.35rem 0;
+            border-bottom: 1px dashed var(--rule);
             text-decoration: none;
-            color: #111827;
-            transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+            color: inherit;
         }}
 
         .result-item:hover {{
-            transform: translateY(-2px);
-            border-color: #0ea5e9;
-            box-shadow: 0 8px 16px rgba(14, 165, 233, 0.12), 0 2px 4px rgba(0, 0, 0, 0.06);
-            background: #f8fafc;
+            color: var(--ginger);
         }}
 
         .result-word {{
-            font-size: 1.4rem;
-            font-weight: 600;
+            font-family: "Kalam", serif;
+            font-size: 1.35rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            color: #0f172a;
         }}
 
         .result-grammar {{
+            font-family: "Tiro Devanagari Hindi", serif;
             font-size: 0.9rem;
-            color: #0369a1;
-            background: #e0f2fe;
-            padding: 0.2rem 0.65rem;
-            border-radius: 999px;
-            font-weight: 500;
-            white-space: nowrap;
+            color: var(--mute);
         }}
 
         .result-preview {{
-            color: #64748b;
+            color: var(--mute);
             font-size: 0.95rem;
-            line-height: 1.5;
-            margin-top: 0.25rem;
         }}
 
         .fallback {{
-            margin-top: 3rem;
+            margin-top: 2rem;
         }}
 
         .word-list {{
@@ -682,38 +640,21 @@ async def generate_index_page(links_list):
             margin: 1.5rem 0 0;
         }}
 
-        .word-list a {{
-            color: #0f62fe;
-            text-decoration: none;
-        }}
-
         @media (max-width: 900px) {{
             .word-list {{ column-count: 2; }}
         }}
 
         @media (max-width: 600px) {{
             .word-list {{ column-count: 1; }}
-            .search-box {{ 
-                border-radius: 1.5rem; 
-                flex-direction: column; 
-                align-items: stretch; 
-                padding: 0.5rem 1rem;
-            }}
             .search-box input {{
-                font-size: 16px; /* Prevents zoom on iOS */
-            }}
-            .result-item {{
-                padding: 0.75rem 1rem;
-            }}
-            .result-word {{
-                font-size: 1.2rem;
+                font-size: 16px;
             }}
         }}
     </style>
 </head>
 <body>
-    <div class="hero">
-        <h1>नेपाली बृहत शब्दकोश</h1>
+    <p><a href="/">गृह</a></p>
+    <h1>नेपाली बृहत शब्दकोश</h1>
         <div class="search-box">
             <input id="search-input" type="search" placeholder="शब्द छान्नुहोस्…" aria-label="शब्द खोज्नुहोस्">
         </div>
@@ -723,7 +664,6 @@ async def generate_index_page(links_list):
                 <p>यो खोज प्रयोग गर्न JavaScript आवश्यक छ। कृपया ब्राउज़र सेटिङमा सक्षम गर्नुहोस्।</p>
             </noscript>
         </section>
-    </div>
     <script>
         const input = document.getElementById("search-input");
         const resultsContainer = document.getElementById("search-results");
