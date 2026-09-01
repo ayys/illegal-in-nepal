@@ -1,3 +1,4 @@
 /site/shabdakosh/
 /site/blog/
 .DS_Store
+/shabdakosh/__pycache__/

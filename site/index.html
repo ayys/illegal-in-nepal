@@ -26,6 +26,30 @@
              cursor: pointer;
          }
 
+         .wotd-embed iframe {
+             width: 300px;
+             height: 128px;
+             max-width: 100%;
+             border: 0;
+             overflow: hidden;
+         }
+
+         .wotd-embed textarea {
+             display: block;
+             width: 100%;
+             max-width: 100%;
+             box-sizing: border-box;
+             min-height: 5.5rem;
+             margin-top: 0.6rem;
+             font-family: ui-monospace, monospace;
+             font-size: 0.85rem;
+             padding: 0.5rem;
+             background: var(--chip);
+             color: var(--ink);
+             border: 2px dashed var(--rule);
+             border-radius: 0.6rem;
+         }
+
          @media (max-width: 720px) {
              #weather,
              #navlinkad {
@@ -77,6 +101,13 @@
             </p>
 
             <p>Feel free to get in touch via my <a href="https://ayys.atabook.org">Guest Book</a> (नेपाली, English).</p>
+
+            <section class="wotd-embed">
+                <h2><a href="/shabdakosh/आजको-शब्द.html">आजको शब्द</a></h2>
+                <iframe src="/shabdakosh/banner.html" width="300" height="128" title="आजको शब्द" loading="lazy"></iframe>
+                <p>रहर लागे यो ब्यानर आफ्नो साइटमा पनि राख्नुहोस्। शब्द हरेक दिन आफैं बदलिन्छ।</p>
+                <textarea readonly onclick="this.select()"><iframe src="https://illegal-in-nepal.org/shabdakosh/banner.html" width="300" height="128" style="border:0;overflow:hidden" title="आजको शब्द" loading="lazy"></iframe></textarea>
+            </section>
 
             <hr>
             <h2>सम्पर्क</h2>

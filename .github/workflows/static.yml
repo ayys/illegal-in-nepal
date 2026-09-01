@@ -28,6 +28,8 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    env:
+      SHABDAKOSH_TAR: ${{ runner.temp }}/shabdakosh.tar.zst
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -37,8 +39,32 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y emacs-nox
       - name: Install uv
         uses: astral-sh/setup-uv@v6
+      - name: Restore शब्दकोश cache
+        id: shabdakosh-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ env.SHABDAKOSH_TAR }}
+          # Any commit that does not touch shabdakosh/ (homepage, blog, CSS, …) shares this key.
+          key: shabdakosh-v2-${{ hashFiles('shabdakosh/**') }}
+      - name: Unpack cached शब्दकोश
+        if: steps.shabdakosh-cache.outputs.cache-hit == 'true'
+        run: |
+          mkdir -p site
+          zstd -dc "$SHABDAKOSH_TAR" | tar -C site -xf -
+          make -C shabdakosh shabdakosh.json
+          # Checkout mtimes are "now"; make would rebuild unless stamps are newer.
+          touch shabdakosh/build site/shabdakosh/.built
       - name: Build site
         run: make build
+      - name: Pack शब्दकोश cache
+        if: success() && steps.shabdakosh-cache.outputs.cache-hit != 'true'
+        run: tar -C site -cf - shabdakosh | zstd -T0 -o "$SHABDAKOSH_TAR"
+      - name: Save शब्दकोश cache
+        if: success() && steps.shabdakosh-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.SHABDAKOSH_TAR }}
+          key: ${{ steps.shabdakosh-cache.outputs.cache-primary-key }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
