@@ -1,6 +1,9 @@
 /**
  * Libre.fm "Now Playing" Widget
  * Version: 1.1.6-mod
+ * Credit: https://source.tube/database/libre-fm-now
+ * I've modified the original source code to add some missing features
+ * and tweaks to suit my needs.
  */
 
 (function (exports) {
@@ -41,10 +44,10 @@
     return COPY.daysAgo(Math.floor(h / 24));
   }
 
-  function listenHref(track, songlinkUrl) {
-    if (songlinkUrl) return songlinkUrl;
-    return 'https://www.youtube.com/results?search_query=' +
-      encodeURIComponent(track.artist + ' ' + track.name);
+  function listenHref(resolvedUrl) {
+    if (!resolvedUrl) return null;
+    if (/[?&]search_query=/.test(resolvedUrl)) return null;
+    return resolvedUrl;
   }
 
   function songlinkFromItunes(trackId) {
@@ -70,11 +73,80 @@
     return a === b || a.includes(b) || b.includes(a);
   }
 
+  const ARTIST_STOP = new Set(['the', 'and', 'of', 'ft', 'feat', 'featuring', 'official']);
+
+  function significantTokens(value) {
+    return normalizeText(value)
+      .replace(/\s+topic$/, '')
+      .split(' ')
+      .filter((token) => token.length > 1 && !ARTIST_STOP.has(token));
+  }
+
+  function artistAppears(candidateArtist, candidateTitle, expectedArtist) {
+    const needed = significantTokens(expectedArtist);
+    const hay = normalizeText(
+      String(candidateArtist || '').replace(/\s*-\s*topic$/i, '') + ' ' + (candidateTitle || '')
+    );
+    if (needed.length) return needed.every((token) => hay.includes(token));
+    const expected = normalizeText(expectedArtist);
+    return Boolean(expected && hay.includes(expected));
+  }
+
+  function catalogHit(title, artist, expectedTitle, expectedArtist) {
+    return titleMatches(title, expectedTitle) && artistAppears(artist, title, expectedArtist);
+  }
+
   function pickSonglink(results) {
-    const rank = { itunes: 0, ytmusic: 1, youtube: 2 };
+    const rank = { ytmusic: 0, itunes: 1, youtube: 2 };
     return (results || [])
       .filter((item) => item && item.url)
       .sort((a, b) => (rank[a.source] ?? 9) - (rank[b.source] ?? 9))[0]?.url || null;
+  }
+
+  function youtubeWatchUrl(videoId, source) {
+    if (!videoId) return null;
+    if (source === 'ytmusic') return 'https://music.youtube.com/watch?v=' + videoId;
+    return 'https://www.youtube.com/watch?v=' + videoId;
+  }
+
+  function listenLinks(results) {
+    const list = results || [];
+    const ytRank = { ytmusic: 0, youtube: 1 };
+    const yt = list
+      .filter((item) => item && item.videoId && (item.source === 'ytmusic' || item.source === 'youtube'))
+      .sort((a, b) => (ytRank[a.source] ?? 9) - (ytRank[b.source] ?? 9))[0];
+    if (yt) return { href: youtubeWatchUrl(yt.videoId, yt.source) };
+    return { href: pickSonglink(list) };
+  }
+
+  function scaledItunesArtwork(url, size) {
+    if (!url) return null;
+    return url.replace(/\d+x\d+bb/, size + 'x' + size + 'bb');
+  }
+
+  function youtubeThumb(videoId) {
+    if (!videoId) return null;
+    return 'https://i.ytimg.com/vi/' + videoId + '/hqdefault.jpg';
+  }
+
+  function pickArtworkUrls(results, size, caaUrl) {
+    const rank = { ytmusic: 0, youtube: 1, caa: 2, itunes: 3 };
+    const items = [];
+    (results || []).forEach((item) => {
+      if (!item) return;
+      if (item.source === 'itunes') {
+        const url = scaledItunesArtwork(item.artwork, size);
+        if (url) items.push({ source: 'itunes', url });
+        return;
+      }
+      if (item.videoId && (item.source === 'ytmusic' || item.source === 'youtube')) {
+        items.push({ source: item.source, url: youtubeThumb(item.videoId) });
+      }
+    });
+    if (caaUrl) items.push({ source: 'caa', url: caaUrl });
+    return items
+      .sort((a, b) => (rank[a.source] ?? 9) - (rank[b.source] ?? 9))
+      .map((item) => item.url);
   }
 
   function isFreshCache(cached, cacheTime, now) {
@@ -100,7 +172,11 @@
   exports.songlinkFromItunes = songlinkFromItunes;
   exports.songlinkFromYoutube = songlinkFromYoutube;
   exports.titleMatches = titleMatches;
+  exports.catalogHit = catalogHit;
   exports.pickSonglink = pickSonglink;
+  exports.listenLinks = listenLinks;
+  exports.pickArtworkUrls = pickArtworkUrls;
+  exports.youtubeWatchUrl = youtubeWatchUrl;
   exports.isFreshCache = isFreshCache;
   exports.cachedTracks = cachedTracks;
 
@@ -139,7 +215,7 @@
   let mbCacheSaveTimeout = null;
   let mbCacheDirty = false;
 
-  const songlinkCache = new Map();
+  const catalogCache = new Map();
   const PIPED_APIS = [
     'https://api.piped.private.coffee',
     'https://pipedapi.adminforge.de'
@@ -175,16 +251,19 @@
 
   const appendListenLink = (parent, track, opts = {}) => {
     const wrap = create('span', 'lib-listen-wrap');
+    wrap.hidden = true;
     if (opts.bullet !== false) {
       wrap.appendChild(document.createTextNode(' \u2022 '));
     }
-    const listen = createLink(listenHref(track), 'lib-listen-link', COPY.listen);
+    const listen = createLink('#', 'lib-listen-link', COPY.listen);
     wrap.appendChild(listen);
     parent.appendChild(wrap);
 
-    getSonglinkUrl(track.artist, track.name).then((url) => {
-      if (!url || !wrap.isConnected) return;
-      listen.href = listenHref(track, url);
+    getListenLinks(track.artist, track.name).then((links) => {
+      const href = listenHref(links && links.href);
+      if (!wrap.isConnected || !href) return;
+      listen.href = href;
+      wrap.hidden = false;
     });
   };
 
@@ -208,10 +287,6 @@
     return footer;
   };
 
-  const getPlaceholder = (seed, size) => {
-    return `https://picsum.photos/seed/${encodeURIComponent(seed)}/${size}`;
-  };
-
   async function fetchJson(url) {
     const res = await fetch(url);
     if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -225,10 +300,14 @@
     );
     const results = data.results || [];
     const hit = results.find((item) =>
-      titleMatches(item.trackName, name) && titleMatches(item.artistName, artist)
-    ) || results.find((item) => titleMatches(item.trackName, name)) || null;
+      catalogHit(item.trackName, item.artistName, name, artist)
+    ) || null;
     return hit && hit.trackId
-      ? { source: 'itunes', url: songlinkFromItunes(hit.trackId) }
+      ? {
+          source: 'itunes',
+          url: songlinkFromItunes(hit.trackId),
+          artwork: hit.artworkUrl100 || hit.artworkUrl60 || null
+        }
       : null;
   }
 
@@ -238,9 +317,13 @@
       try {
         const data = await fetchJson(base + '/search?q=' + query + '&filter=music_songs');
         const items = data.items || [];
-        const hit = items.find((item) => titleMatches(item.title, name));
+        const hit = items.find((item) =>
+          catalogHit(item.title, item.uploaderName, name, artist)
+        );
         const videoId = youtubeIdFromUrl(hit && hit.url);
-        if (videoId) return { source: 'ytmusic', url: songlinkFromYoutube(videoId) };
+        if (videoId) {
+          return { source: 'ytmusic', videoId, url: songlinkFromYoutube(videoId) };
+        }
       } catch (e) { /* try next instance */ }
     }
     return null;
@@ -252,30 +335,41 @@
       try {
         const items = await fetchJson(base + '/api/v1/search?q=' + query + '&type=video');
         if (!Array.isArray(items)) continue;
-        const hit = items.find((item) => titleMatches(item.title, name));
+        const hit = items.find((item) =>
+          catalogHit(item.title, item.author, name, artist)
+        );
         if (hit && hit.videoId) {
-          return { source: 'youtube', url: songlinkFromYoutube(hit.videoId) };
+          return { source: 'youtube', videoId: hit.videoId, url: songlinkFromYoutube(hit.videoId) };
         }
       } catch (e) { /* try next instance */ }
     }
     return null;
   }
 
-  async function getSonglinkUrl(artist, trackName) {
+  async function getCatalogHits(artist, trackName) {
     const cacheKey = (artist + '-' + trackName).toLowerCase();
-    if (songlinkCache.has(cacheKey)) return songlinkCache.get(cacheKey);
+    if (catalogCache.has(cacheKey)) return catalogCache.get(cacheKey);
 
-    const settled = await Promise.allSettled([
+    const pending = Promise.allSettled([
       lookupItunes(artist, trackName),
       lookupYoutubeMusic(artist, trackName),
       lookupYoutube(artist, trackName)
-    ]);
-    const found = settled
-      .filter((result) => result.status === 'fulfilled' && result.value)
-      .map((result) => result.value);
-    const url = pickSonglink(found);
-    songlinkCache.set(cacheKey, url);
-    return url;
+    ]).then((settled) =>
+      settled
+        .filter((result) => result.status === 'fulfilled' && result.value)
+        .map((result) => result.value)
+    );
+    catalogCache.set(cacheKey, pending);
+    try {
+      return await pending;
+    } catch (error) {
+      catalogCache.delete(cacheKey);
+      throw error;
+    }
+  }
+
+  async function getListenLinks(artist, trackName) {
+    return listenLinks(await getCatalogHits(artist, trackName));
   }
 
   // --- MBID RESOLVER & CACHE ---
@@ -350,30 +444,29 @@
 
   async function applyArtwork(imgElement, track, size = 250) {
     const uniqueId = Math.random().toString(36).slice(2);
-    imgElement.dataset.mbidLoadId = uniqueId;
+    imgElement.dataset.artLoadId = uniqueId;
 
-    let mbid = track.mbid;
-    if (!mbid && track.album && track.artist) {
-      mbid = await getMbid(track.artist, track.album);
+    const hits = await getCatalogHits(track.artist, track.name);
+    if (!imgElement.isConnected || imgElement.dataset.artLoadId !== uniqueId) return;
+
+    let caaUrl = null;
+    if (track.album && track.artist) {
+      const mbid = await getMbid(track.artist, track.album);
+      if (mbid) caaUrl = 'https://coverartarchive.org/release/' + mbid + '/front-' + size;
     }
+    const urls = pickArtworkUrls(hits, size, caaUrl);
+    if (!imgElement.isConnected || imgElement.dataset.artLoadId !== uniqueId) return;
 
-    if (!imgElement.isConnected || imgElement.dataset.mbidLoadId !== uniqueId) return;
-
-    if (mbid) {
-      imgElement.src = `https://coverartarchive.org/release/${mbid}/front-${size}`;
-    } else {
-      imgElement.src = getPlaceholder(track.artist + (track.album || ''), size);
-    }
-
-    imgElement.onerror = () => {
-      if (imgElement.dataset.retried === 'true') {
+    let index = 0;
+    const tryNext = () => {
+      if (index >= urls.length) {
         imgElement.onerror = null;
-        imgElement.src = getPlaceholder(track.artist, size);
         return;
       }
-      imgElement.dataset.retried = 'true';
-      imgElement.src = getPlaceholder(track.artist, size);
+      imgElement.src = urls[index++];
     };
+    imgElement.onerror = tryNext;
+    tryNext();
   }
 
   // --- 3. CSS STYLES (Shadow DOM) ---
@@ -554,7 +647,7 @@
 
     const artLink = createLink(track.url, 'lib-img-link');
     const img = create('img', 'lib-img-standard');
-    img.alt = track.album ? track.album + ' चित्र' : COPY.albumArt;
+    img.alt = '';
     artLink.appendChild(img);
     mainCard.appendChild(artLink);
 
@@ -593,7 +686,7 @@
 
     const artLink = createLink(track.url, 'lib-img-link');
     const img = create('img', 'lib-img-standard');
-    img.alt = track.album ? track.album + ' चित्र' : COPY.albumArt;
+    img.alt = '';
     artLink.appendChild(img);
     mainCard.appendChild(artLink);
 
