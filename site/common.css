@@ -27,7 +27,7 @@ body {
     line-height: 1.7;
     color: var(--ink);
     background: var(--paper);
-    max-width: 40rem;
+    max-width: 45rem;
     margin: 2rem auto;
     padding: 2rem 2.1rem 3.4rem;
     border-radius: 1.4rem 0.4rem 1.6rem 0.8rem;
@@ -101,12 +101,98 @@ img {
     height: auto;
 }
 
+pre, code {
+    font-family: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, monospace;
+}
+
 pre {
     background: var(--chip);
     padding: 0.8rem 1rem;
     overflow-x: auto;
     border-radius: 0.8rem;
     border: 2px dashed var(--rule);
+    font-size: 0.88em;
+    line-height: 1.45;
+}
+
+pre.src {
+    counter-reset: src-line;
+    padding-left: 3.1rem;
+}
+
+pre.src .linenr {
+    counter-increment: src-line;
+    display: inline-block;
+    width: 2.1rem;
+    margin-left: -2.5rem;
+    margin-right: 0.4rem;
+    padding-right: 0.4rem;
+    border-right: 1px solid var(--rule);
+    color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+    pointer-events: none;
+    vertical-align: top;
+}
+
+pre.src .linenr::before {
+    content: counter(src-line);
+    display: block;
+    text-align: right;
+    color: var(--mute);
+    opacity: 0.65;
+    font-variant-numeric: tabular-nums;
+}
+
+code {
+    font-size: 0.88em;
+}
+
+.org-keyword,
+.org-builtin { color: var(--link); }
+.org-function-name { color: var(--ginger); }
+.org-type,
+.org-constant,
+.org-gleam-ts-module,
+.org-gleam-ts-constructor { color: var(--visited); }
+.org-string { color: #9a4a1a; }
+.org-comment,
+.org-comment-delimiter { color: var(--mute); font-style: italic; }
+.org-property-name,
+.org-bracket,
+.org-delimiter { color: var(--mute); }
+.org-variable-name { color: var(--ink); }
+
+.src-with-result {
+    margin: 1.2rem 0;
+    border: 2px dashed var(--rule);
+    border-radius: 0.8rem;
+    overflow: hidden;
+    background: var(--chip);
+}
+
+.src-with-result .org-src-container,
+.src-with-result .org-src-container pre,
+.src-with-result .src-result,
+.src-with-result .src-result pre {
+    margin: 0;
+    border: none;
+    border-radius: 0;
+}
+
+.src-result-label {
+    font-family: "Kalam", serif;
+    font-size: 0.85rem;
+    color: var(--mute);
+    margin: 0;
+    padding: 0.25rem 1rem;
+    background: var(--wash);
+    border-top: 1px solid var(--rule);
+}
+
+.src-result pre.example {
+    background: var(--wash);
+    padding-top: 0.45rem;
 }
 
 .heading {

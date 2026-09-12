@@ -9,7 +9,7 @@ SHABDAKOSH_SRC = \
 	shabdakosh/wotd.js \
 	shabdakosh/wotd_lib.py
 
-BLOG_SRC = org/publish.el $(wildcard org/*.org)
+BLOG_SRC = org/publish.el $(wildcard org/*.org) $(wildcard org/lisp/*.el)
 
 build: site/shabdakosh/.built site/blog/.built
 
