@@ -40,37 +40,83 @@ requests and process them one at a time.
 
 Let's start the implementation.
 
+* Phase 1: The Core State
+
+Let's forget about the web for now, and focus on building the core
+system first. In this phase, I'll will write a /very/ simple state
+machine that holds messages and connected users.
+
+- **The Goal:** :: Write an in-memory "Room" or manager.
+- **What you learn:** :: In Gleam, you don't use shared memory or
+  mutexes. You spawn an ~actor~. You'll learn how to define a strictly
+  typed ~Message~ (e.g., ~Join~, ~Leave~, ~Broadcast~), hold state
+  inside the actor's loop, and send messages to it.
+- **The "Aha" Moment:** :: Realizing that an actor processes one message
+  at a time, making internal state mutations entirely thread-safe
+  without locks.
+
+
 ** Step 1: Setup the project.
 
 A gleam project can be started by running ~gleam new <path>~.
 
-
-#+begin_src bash
-  ~/git/roomie $ gleam new .
-  Your Gleam project roomie has been successfully created.
-  The project can be compiled and tested by running these commands:
-
-  	gleam test
-
-  ~/git/roomie $ tree
-  .
-  ├── README.md
-  ├── gleam.toml
-  ├── src
-  │   └── roomie.gleam
-  └── test
-      └── roomie_test.gleam
-
-  3 directories, 4 files
+#+begin_src shell :results output :prologue "exec 2>&1"
+  gleam new actor_demo
 #+end_src
+
+#+RESULTS:
+: Your Gleam project actor_demo has been successfully created.
+: The project can be compiled and tested by running these commands:
+: 
+: 	cd actor_demo
+: 	gleam test
+: 
+
+#+begin_src shell :results output :prologue "exec 2>&1"
+  tree actor_demo
+#+end_src
+
+#+RESULTS:
+: actor_demo
+: ├── gleam.toml
+: ├── README.md
+: ├── src
+: │   └── actor_demo.gleam
+: └── test
+:     └── actor_demo_test.gleam
+: 
+: 3 directories, 4 files
 
 This created a bunch of files in the directory. It also setup a fresh
 git repo for us.
 
-Let's look at =roomie.gleam=
+Now let's add two libraries as dependencies to the project:
+~gleam_erlang~ and ~gleam_otp~. These are necessary if you want to use
+BEAM's OTP features.
+
+#+begin_src shell :results output :prologue "exec 2>&1"
+    cd actor_demo && gleam add gleam_erlang gleam_otp
+#+end_src
+
+#+RESULTS:
+:   Resolving versions
+: Downloading packages
+:  Downloaded 4 packages in 0.05s
+:       Added gleam_erlang v1.3.0
+:       Added gleam_otp v1.3.0
+:       Added gleam_stdlib v1.0.5
+:       Added gleeunit v1.11.0
 
 
-#+begin_src gleam
+Great! with that, we are ready to start the next section.
+
+
+** Step 2: Writing a simple actor
+
+Let's look at ~src/roomie.gleam~
+
+
+#+begin_src gleam :exports both
   import gleam/io
 
   pub fn main() -> Nil {
@@ -78,8 +124,145 @@ Let's look at =roomie.gleam=
   }
 #+end_src
 
+#+RESULTS:
+: Hello from roomie!
 
-Let's get coding~
+
+Okay, that's quite bland! Let's start by trying to figure out what an
+actor is and how to use it. Tod o that, let's write a simple actor
+that behaves as a key-value store for strings. It has three
+operations: ~Get~, ~Put~, and ~Delete~. The actions themselves are
+self-explanatory but I shall, for posterity, explain them
+none-the-less.
+
+| Operation name | Description                                |
+|----------------+--------------------------------------------|
+| Put            | Put a key-value pair into the store        |
+| Get            | Get the value of a specific key            |
+| Delete         | Delete a key from the store (if it exists) |
+
+Ok, that's pretty straight forward. Let's see what the data-type would
+look like:
+
+#+begin_src gleam :tangle actor_demo/src/actor_demo.gleam
+  type Message {
+    Put(key: String, value: String)
+    Get(key: String)
+    Delete(key: String)
+  }
+
+  pub fn main() {
+    // put something in the store
+    let put = Put("hello", "world")
+
+    // fetch it from the store
+    let get = Get("hello")
+
+    // delete it from the store
+    let del = Delete("hello")
+  }
+#+end_src
+
+ok so that's the message but what is an actor and how do I set one up?
+An actor is a special BEAM/Erlang [[https://www.erlang.org/doc/system/ref_man_processes.html][process]] that stores a state. It is a
+way to create state machines in Gleam. An actor will have a specific
+state at any point in time.
+
+For our use-case, the actor's state will be the entire key-value
+store. Which means, adding/deleting a new item will update the state
+of the actor. This is pretty neat because we are essentially writing
+async code without having to worry about [[https://journal.stuffwithstuff.com/2015/02/01/what-color-is-your-function/][blue/red code]].
+
+** Anatomy of an Actor
+
+An actor has only two components: the state, and the state-modifier.
+The state is data, and the state-modifier is a function that gets
+called to update the state of the actor.
 
 
-What can a "room" do?
+** Our first actor!
+
+Here is a simple program you can paste into ~src/actor_demo.gleam~.
+Don't feel intimidated by it. I will break it down for you.
+
+#+begin_src gleam
+  import gleam/dict.{type Dict}
+  import gleam/erlang/process.{type Subject}
+  import gleam/io
+  import gleam/otp/actor
+
+  type Message {
+    Put(key: String, value: String)
+    Get(reply: Subject(String), key: String)
+    Delete(key: String)
+  }
+
+  pub fn main() {
+    let state = dict.new()
+    let assert Ok(aktr) =
+      actor.new(state)
+      |> actor.on_message(handle_message)
+      |> actor.start
+
+    actor.send(aktr.data, Put("hello", "world"))
+    actor.send(aktr.data, Put("foo", "bar"))
+
+    // Send a message and get a reply
+    let value = actor.call(aktr.data, waiting: 10, sending: Get(_, "hello"))
+    io.println(value)
+  }
+
+  fn handle_message(
+    state: Dict(String, String),
+    message: Message,
+  ) -> actor.Next(Dict(String, String), Message) {
+    case message {
+      Put(key, value) -> {
+        let state = dict.insert(state, key, value)
+        actor.continue(state)
+      }
+      Get(reply, key) -> {
+        case dict.get(state, key) {
+          Ok(value) -> {
+            actor.send(reply, value)
+          }
+          Error(_) -> {
+            actor.send(reply, "")
+          }
+        }
+        actor.continue(state)
+      }
+      Delete(key) -> {
+        let state = dict.delete(state, key)
+        actor.continue(state)
+      }
+    }
+  }
+#+end_src
+
+#+RESULTS:
+:   Compiling actor_demo
+:    Compiled in 0.22s
+:     Running actor_demo.main
+: world
+
+
+Now let's break it down. The code contains one type, and two
+functions. We have already seen the type before, so let's focus on the
+functions.
+
+All gleam code starts from the ~main~ function. Our main function is
+quite simple - it creates an actor (key-value store), puts items into
+it, then gets an item out of it.
+
+The next function is ~handle_message~. Notice the function signature:
+it takes a state and a message, and returns the "next" state of the
+actor. This function is the ~updater~ that we talked about. It takes
+the current state of the actor, and produces the next state. This is
+the core of the state machine.
+
+So now, we have a simple actor that takes messages and processes them.
+Ofcourse, we don't need to write any async logic or use mutxes or such
+because an actor only processes one message at a time - therefore,
+there is no fear of race-conditions. But then you may ask; how are we
+to scale this? Hmm... I wonder how?
