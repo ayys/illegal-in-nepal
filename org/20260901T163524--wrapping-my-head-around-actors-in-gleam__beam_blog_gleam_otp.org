@@ -1,0 +1,85 @@
+#+title:      [WIP] Wrapping my head around actors in Gleam
+#+date:       [2026-09-01 Tue 16:35]
+#+filetags:   :beam:blog:gleam:otp:
+#+identifier: 20260901T163524
+#+author:     आयुष झा
+#+language:   en
+#+options:    toc:nil num:nil ^:nil
+#+EXPORT_FILE_NAME: actors-in-gleam
+
+I have recently picked up Gleam. It's been fun. But I still haven't
+wrapped my head around OTP. So I am writing this blog-post to
+understand OTP and hopefully, along the way - help others understand
+it as well.
+
+
+In this post, I am going to write an in-memory "chatroom" manager. A
+chatroom, or just "room", is, in BEAM lingo, a channel that filters and
+broadcasts messages only to "specific" users. Here "specific" means
+users subscribed to that "room".
+
+Think of a discord server: the server may have 10k users at a time.
+But if you send a message to ~#something~, only users subscribed to
+that "room" get notified.
+
+in pub/sub jargon, users are subscribers and a single user is the
+publisher of a particular message. The message is sent to one channel,
+or "Room".
+
+Usually, implementing this in a "normie" language would be difficult
+because keeping track of who is joining/leaving/sending messages
+requires complex memory management. But in BEAM languages, everything
+is immutable by default. So a "room" in gleam would just be a simple
+stateful "process" that holds a list of users, or their connection IDs.
+
+Because the "room" actor would process each request one at a time - it
+is impossible for a race-condition to occur. Thus, there is no need to
+implement mutexes or other memory management methodologies. If 5,000
+people request to join a channel - the "room" actor would line up the
+requests and process them one at a time.
+
+Let's start the implementation.
+
+** Step 1: Setup the project.
+
+A gleam project can be started by running ~gleam new <path>~.
+
+
+#+begin_src bash
+  ~/git/roomie $ gleam new .
+  Your Gleam project roomie has been successfully created.
+  The project can be compiled and tested by running these commands:
+
+  	gleam test
+
+  ~/git/roomie $ tree
+  .
+  ├── README.md
+  ├── gleam.toml
+  ├── src
+  │   └── roomie.gleam
+  └── test
+      └── roomie_test.gleam
+
+  3 directories, 4 files
+#+end_src
+
+This created a bunch of files in the directory. It also setup a fresh
+git repo for us.
+
+Let's look at =roomie.gleam=
+
+
+#+begin_src gleam
+  import gleam/io
+
+  pub fn main() -> Nil {
+    io.println("Hello from roomie!")
+  }
+#+end_src
+
+
+Let's get coding~
+
+
+What can a "room" do?
