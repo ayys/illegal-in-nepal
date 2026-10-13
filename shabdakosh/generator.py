@@ -748,14 +748,15 @@ async def generate_index_page(links_list):
                         return;
                     }}
                     workerReady = true;
-                    renderResults(results);
-                    
-                    // Process pending query if any
+
                     if (pendingQuery !== null) {{
                         const query = pendingQuery;
                         pendingQuery = null;
                         performSearch(query);
+                        return;
                     }}
+
+                    renderResults(results);
                 }});
                 
                 // Trigger worker initialization by sending empty message
@@ -792,28 +793,48 @@ async def generate_index_page(links_list):
             worker.postMessage({{ id: currentRequest, query }});
         }};
 
-        // Lazy load worker only when user starts typing
+        const syncQueryToUrl = (query) => {{
+            const url = new URL(window.location.href);
+            if (query) {{
+                url.searchParams.set("q", query);
+            }} else {{
+                url.searchParams.delete("q");
+            }}
+            const next = url.pathname + url.search + url.hash;
+            const current = window.location.pathname + window.location.search + window.location.hash;
+            if (next !== current) {{
+                history.replaceState(null, "", next);
+            }}
+        }};
+
         let inputTimeout;
         input.addEventListener("input", (event) => {{
             const query = event.target.value.trim();
-            
-            // Clear previous timeout
+
             clearTimeout(inputTimeout);
-            
+
             if (query) {{
-                // Small delay to avoid loading on every keystroke
-                inputTimeout = setTimeout(() => performSearch(query), 100);
+                inputTimeout = setTimeout(() => {{
+                    syncQueryToUrl(query);
+                    performSearch(query);
+                }}, 100);
             }} else {{
+                syncQueryToUrl("");
                 resultsContainer.innerHTML = "";
             }}
         }});
 
-        // Also initialize on focus (user might want to search)
         input.addEventListener("focus", () => {{
             if (!worker && !workerReady) {{
                 initWorker();
             }}
         }});
+
+        const initialQuery = new URLSearchParams(window.location.search).get("q");
+        if (initialQuery && initialQuery.trim()) {{
+            input.value = initialQuery.trim();
+            performSearch(input.value);
+        }}
 
         if (window.matchMedia("(pointer: fine)").matches) {{
             input.focus();
