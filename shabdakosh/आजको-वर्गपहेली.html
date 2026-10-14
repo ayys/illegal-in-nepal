@@ -143,7 +143,6 @@
     <noscript>
         <p>वर्गपहेली खेल्न JavaScript चाहिन्छ।</p>
     </noscript>
-    <script src="./wotd.js"></script>
     <script src="./crossword.js"></script>
     <script>
         (async () => {
@@ -151,19 +150,20 @@
             const AKSHAR = /(?:[\u0905-\u0914]|[\u0915-\u0939][\u093e-\u094c]?)[\u0901-\u0903]?/g;
             const $ = (id) => document.getElementById(id);
             const status = $("status");
-            const day = Wotd.nepalDay();
             const nepali = (n) => String(n).replace(/\d/g, (d) => "०१२३४५६७८९"[d]);
 
             let puzzle;
             try {
-                puzzle = await Crossword.forDay(await Wotd.loadJson("./crossword.json.gz"), day);
+                const res = await fetch("https://dic.illegal-in-nepal.org/crossword");
+                if (!res.ok) throw new Error("crossword " + res.status);
+                puzzle = await res.json();
             } catch (err) {
                 console.error(err);
                 status.textContent = "आजको वर्गपहेली लोड गर्न सकिएन।";
                 return;
             }
 
-            const { size, grid, words } = puzzle;
+            const { day, size, grid, words } = puzzle;
             const storeKey = "vargapaheli:" + day;
             const inputs = grid.map((row) => row.map(() => null));
             const cellEls = grid.map((row) => row.map(() => null));
@@ -259,7 +259,7 @@
                     }
                     mark.classList.add("right");
                     const a = document.createElement("a");
-                    a.href = "./" + encodeURIComponent(Wotd.slugify(w.word)) + ".html";
+                    a.href = "./" + encodeURIComponent(w.word) + ".html";
                     a.textContent = w.word;
                     mark.append("✓ ", a);
                 });

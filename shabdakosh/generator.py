@@ -12,6 +12,7 @@ import re
 import json
 import asyncio
 import gzip
+import shutil
 import unicodedata
 import aiofiles
 from pathlib import Path
@@ -23,10 +24,7 @@ INDEX_FILENAME = "index.html"
 TEMPLATE_FILENAME = "template.html"
 DATA_FILENAME = "shabdakosh.json"
 WOTD_PAGE_FILENAME = "आजको-शब्द.html"
-WOTD_BANNER_FILENAME = "banner.html"
-WOTD_JS_FILENAME = "wotd.js"
-WOTD_META_FILENAME = "wotd.json"
-WOTD_SHARD_DIRNAME = "wotd"
+WOTD_DATA_FILENAME = "wotd.json.gz"
 CROSSWORD_PAGE_FILENAME = "आजको-वर्गपहेली.html"
 CROSSWORD_JS_FILENAME = "crossword.js"
 SEARCH_DATA_FILENAME = "search-data.json.gz"
@@ -403,7 +401,7 @@ async def generate_word_pages(words_data, template):
 
 
 async def write_search_data(metadata):
-    """Writes gzipped search metadata; the search API (search/) loads it from the site."""
+    """Writes gzipped search metadata; the API (dic/) loads it from the site."""
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     search_path = os.path.join(OUTPUT_DIR, SEARCH_DATA_FILENAME)
     content = json.dumps(metadata, ensure_ascii=False)
@@ -413,45 +411,28 @@ async def write_search_data(metadata):
 
 
 async def write_wotd(words_data):
-    """Write sharded word-of-the-day pairs and copy the HTML/JS pages."""
-    from wotd_lib import SHARD_SIZE, flatten_entries
+    """Write the word-of-the-day list for the API (dic/) and copy the page."""
+    from wotd_lib import flatten_entries
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    entries = flatten_entries(words_data)
-    pairs = [[e["word"], e["sense"]] for e in entries]
-    n = len(pairs)
-
     out = Path(OUTPUT_DIR)
-    for stale in (out / "wotd-data.json", out / "wotd-data.json.gz"):
-        stale.unlink(missing_ok=True)
+    # [word, sense, slug] in pick_for_day order, so the X bot and the site agree.
+    rows = [[e["word"], e["sense"], e["slug"]] for e in flatten_entries(words_data)]
+    payload = json.dumps(rows, ensure_ascii=False, separators=(",", ":")).encode()
+    (out / WOTD_DATA_FILENAME).write_bytes(gzip.compress(payload, compresslevel=9))
 
-    shard_dir = out / WOTD_SHARD_DIRNAME
-    if shard_dir.exists():
-        for old in shard_dir.glob("*.json.gz"):
-            old.unlink()
-    else:
-        shard_dir.mkdir()
-
-    shard_count = (n + SHARD_SIZE - 1) // SHARD_SIZE if n else 0
-    for i in range(shard_count):
-        chunk = pairs[i * SHARD_SIZE : (i + 1) * SHARD_SIZE]
-        payload = json.dumps(chunk, ensure_ascii=False, separators=(",", ":")).encode()
-        (shard_dir / f"{i}.json.gz").write_bytes(gzip.compress(payload, compresslevel=9))
-
-    meta = {"n": n, "shard": SHARD_SIZE}
-    (out / WOTD_META_FILENAME).write_text(
-        json.dumps(meta, separators=(",", ":")), encoding="utf-8"
-    )
+    shutil.rmtree(out / "wotd", ignore_errors=True)
+    for stale in ("wotd.json", "wotd.js", "banner.html", "wotd-data.json", "wotd-data.json.gz"):
+        (out / stale).unlink(missing_ok=True)
 
     src_dir = Path(__file__).resolve().parent
-    for name in (WOTD_PAGE_FILENAME, WOTD_BANNER_FILENAME, WOTD_JS_FILENAME):
-        (out / name).write_bytes((src_dir / name).read_bytes())
-    print(f"Wrote word-of-the-day shards ({n} entries, {shard_count} files)")
-    return out / WOTD_META_FILENAME
+    (out / WOTD_PAGE_FILENAME).write_bytes((src_dir / WOTD_PAGE_FILENAME).read_bytes())
+    print(f"Wrote word-of-the-day list ({len(rows)} entries)")
+    return out / WOTD_DATA_FILENAME
 
 
 def write_crossword(words_data):
-    """Write the crossword lexicon and copy the puzzle page/JS."""
+    """Write the crossword lexicon for the API (dic/) and copy the puzzle page/JS."""
     from crossword_lib import write_lexicon
 
     out = Path(OUTPUT_DIR)

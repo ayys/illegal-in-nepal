@@ -1,4 +1,4 @@
-// k6 run search/loadtest.js   (-e UNCACHED=1 to type random strings,
+// k6 run dic/loadtest.js   (-e UNCACHED=1 to type random strings,
 //                              -e BASE=http://127.0.0.1:8091 to skip Cloudflare)
 //
 // Each iteration is one person typing a word into the search box: the page

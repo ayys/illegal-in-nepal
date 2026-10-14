@@ -13,14 +13,14 @@ from wotd_lib import load_dictionary, slugify
 
 LEXICON_FILENAME = "crossword.json.gz"
 MIN_AKSHARS = 3
-# Keep in sync with SIZE in crossword.js.
+# Keep in sync with SIZE in dic/src/crossword.rs.
 MAX_AKSHARS = 7
 MIN_CLUE_LEN = 3
 MAX_CLUE_LEN = 90
 CLUE_GRAMMAR = {"ना.", "वि."}
 
 # One cell: an independent vowel, or a consonant with an optional vowel sign,
-# then an optional chandrabindu / anusvara / visarga. Keep in sync with crossword.js.
+# then an optional chandrabindu / anusvara / visarga. Keep in sync with dic/src/crossword.rs.
 AKSHAR = re.compile(
     r"(?:[\u0905-\u0914]|[\u0915-\u0939][\u093e-\u094c]?)[\u0901-\u0903]?"
 )

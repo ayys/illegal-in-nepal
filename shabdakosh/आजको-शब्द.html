@@ -23,11 +23,10 @@
             padding-top: 1rem;
             border-top: 1px dashed var(--rule);
         }
-        .embed iframe {
-            width: 300px;
-            height: 300px;
-            border: 0;
-            overflow: hidden;
+        .embed img {
+            display: block;
+            max-width: 100%;
+            height: auto;
         }
         .embed textarea {
             display: block;
@@ -57,23 +56,20 @@
     <section class="embed">
         <h2>ब्यानर</h2>
         <p>यो ब्यानर आफ्नो साइटमा राख्न सकिन्छ। शब्द प्रत्येक दिन आफैं फेरिन्छ।</p>
-        <iframe src="./banner.html" title="आजको शब्द" loading="lazy"></iframe>
-        <textarea readonly id="embed-code" onclick="this.select()"></textarea>
+        <img src="https://dic.illegal-in-nepal.org/shabdakosh/%E0%A4%86%E0%A4%9C%E0%A4%95%E0%A5%8B-%E0%A4%B6%E0%A4%AC%E0%A5%8D%E0%A4%A6.png" width="600" height="315" alt="आजको शब्द">
+        <textarea readonly onclick="this.select()"><a href="https://illegal-in-nepal.org/shabdakosh/%E0%A4%86%E0%A4%9C%E0%A4%95%E0%A5%8B-%E0%A4%B6%E0%A4%AC%E0%A5%8D%E0%A4%A6.html"><img src="https://dic.illegal-in-nepal.org/shabdakosh/%E0%A4%86%E0%A4%9C%E0%A4%95%E0%A5%8B-%E0%A4%B6%E0%A4%AC%E0%A5%8D%E0%A4%A6.png" width="600" height="315" alt="आजको शब्द"></a></textarea>
     </section>
     <noscript>
         <p>आजको शब्द देखाउन JavaScript चाहिन्छ।</p>
     </noscript>
-    <script src="./wotd.js"></script>
     <script>
-        const embed = `<iframe src="https://illegal-in-nepal.org/shabdakosh/banner.html" width="300" height="300" style="border:0;overflow:hidden" title="आजको शब्द" loading="lazy"></iframe>`;
-        document.getElementById("embed-code").value = embed;
-
         (async () => {
             const status = document.getElementById("status");
-            const day = Wotd.nepalDay();
-            document.getElementById("date").textContent = day;
             try {
-                const picked = await Wotd.today("./");
+                const res = await fetch("https://dic.illegal-in-nepal.org/wotd");
+                if (!res.ok) throw new Error("wotd " + res.status);
+                const picked = await res.json();
+                document.getElementById("date").textContent = picked.day;
                 document.getElementById("word").textContent = picked.word;
                 document.getElementById("sense").textContent = picked.sense;
                 document.getElementById("entry-link").href =

@@ -1,12 +1,13 @@
 [Unit]
-Description=Open Graph images for illegal-in-nepal.org
+Description=Dictionary API and preview images for illegal-in-nepal.org
 After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart=/usr/bin/python3 /opt/og/server.py
+ExecStart=/opt/dic/dic
+Environment=DIC_FONTS=/opt/dic/fonts
 DynamicUser=yes
-CacheDirectory=og
+CacheDirectory=dic
 Restart=on-failure
 ProtectSystem=strict
 ProtectHome=yes

@@ -5,8 +5,6 @@ SHABDAKOSH_SRC = \
 	shabdakosh/generator.py \
 	shabdakosh/template.html \
 	shabdakosh/आजको-शब्द.html \
-	shabdakosh/banner.html \
-	shabdakosh/wotd.js \
 	shabdakosh/wotd_lib.py \
 	shabdakosh/आजको-वर्गपहेली.html \
 	shabdakosh/crossword.js \
