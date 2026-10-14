@@ -621,6 +621,7 @@ async def generate_index_page(links_list):
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="only light">
     <title>शब्दकोष अनुक्रमणिका (Dictionary Index)</title>
+    <meta name="description" content="नेपाली बृहत शब्दकोशका एक लाखभन्दा बढी शब्द र तिनका अर्थ खोज्नुहोस्।">
     <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="/common.css">
     <style>

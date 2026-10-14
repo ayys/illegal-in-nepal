@@ -17,8 +17,9 @@ test: output/crossword.json.gz
 shabdakosh.json: shabdakosh.json.gz
 	gunzip -k shabdakosh.json.gz
 
-build: shabdakosh.json generator.py template.html आजको-शब्द.html banner.html wotd.js wotd_lib.py आजको-वर्गपहेली.html crossword.js crossword_lib.py
+build: shabdakosh.json generator.py template.html आजको-शब्द.html banner.html wotd.js wotd_lib.py आजको-वर्गपहेली.html crossword.js crossword_lib.py ../og/tags.py
 	uv run generator.py
+	python3 ../og/tags.py output /shabdakosh
 	touch build
 
 serve:

@@ -1,0 +1,17 @@
+[Unit]
+Description=Open Graph images for illegal-in-nepal.org
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/bin/python3 /opt/og/server.py
+DynamicUser=yes
+CacheDirectory=og
+Restart=on-failure
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target

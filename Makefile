@@ -10,11 +10,13 @@ SHABDAKOSH_SRC = \
 	shabdakosh/wotd_lib.py \
 	shabdakosh/आजको-वर्गपहेली.html \
 	shabdakosh/crossword.js \
-	shabdakosh/crossword_lib.py
+	shabdakosh/crossword_lib.py \
+	og/tags.py
 
 BLOG_SRC = org/publish.el $(wildcard org/*.org) $(wildcard org/lisp/*.el)
 
 build: site/shabdakosh/.built site/blog/.built
+	python3 og/tags.py site / site/*.html site/blog/*.html
 
 blog:
 	emacs -Q --batch -l org/publish.el

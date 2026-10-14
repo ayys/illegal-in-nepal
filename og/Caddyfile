@@ -1,0 +1,4 @@
+# Cloudflare terminates TLS and reaches this origin over plain HTTP.
+http://dic.illegal-in-nepal.org {
+	reverse_proxy 127.0.0.1:8090
+}

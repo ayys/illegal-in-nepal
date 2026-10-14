@@ -155,6 +155,7 @@ Public notes have the `blog' keyword and do not have `draft'."
        "<meta charset=\"UTF-8\">\n"
        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
        "<title>ब्लग | आयुष झा</title>\n"
+       "<meta name=\"description\" content=\"आयुष झाका लेखहरू: सफ्टवेयर, भाषा र अरू कुरा।\">\n"
        blog-html-head
        "</head>\n"
        "<body>\n"

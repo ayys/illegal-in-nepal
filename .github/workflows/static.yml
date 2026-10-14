@@ -47,7 +47,7 @@ jobs:
         with:
           path: ${{ env.SHABDAKOSH_TAR }}
           # Any commit that does not touch shabdakosh/ (homepage, blog, CSS, …) shares this key.
-          key: shabdakosh-v2-${{ hashFiles('shabdakosh/**') }}
+          key: shabdakosh-v2-${{ hashFiles('shabdakosh/**', 'og/tags.py') }}
       - name: Unpack cached शब्दकोश
         if: steps.shabdakosh-cache.outputs.cache-hit == 'true'
         run: |
