@@ -1,0 +1,533 @@
+{"word": "पहाडी", "clue": "डाँडाकाँडामा बस्ने", "hint": "तराईबासीको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "बसोबास", "clue": "बस्ने थलो", "hint": "मानिसहरूको स्थायी बस्ती यसैले बन्छ।", "model": "claude-opus-5.5"}
+{"word": "आवाज", "clue": "बोली वा स्वर", "hint": "कानले सुनिन्छ।", "model": "claude-opus-5.5"}
+{"word": "विशेष", "clue": "खास", "hint": "सामान्यको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "तयार", "clue": "ठिक्क पारिएको", "hint": "खाना पाकेपछि भनिन्छ: खाना ___ भयो।", "model": "claude-opus-5.5"}
+{"word": "समय", "clue": "काल, बेला", "hint": "घडीले नाप्छ।", "model": "claude-opus-5.5"}
+{"word": "एउटा", "clue": "एक ओटा", "hint": "दुईभन्दा एक कम।", "model": "claude-opus-5.5"}
+{"word": "असल", "clue": "राम्रो", "hint": "खराबको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "खराब", "clue": "नराम्रो", "hint": "असलको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "साधन", "clue": "उपकरण, माध्यम", "hint": "काम गर्न चाहिने चिज।", "model": "claude-opus-5.5"}
+{"word": "विचार", "clue": "सोचाइ", "hint": "मनमा आउने कुरा।", "model": "claude-opus-5.5"}
+{"word": "सामान", "clue": "चिजबिज", "hint": "यात्रामा झोलामा बोकिन्छ।", "model": "claude-opus-5.5"}
+{"word": "पटक", "clue": "पल्ट, चोटि", "hint": "एक ___, दुई ___।", "model": "claude-opus-5.5"}
+{"word": "एउटै", "clue": "एकै, उही", "hint": "अलग अलग होइन।", "model": "claude-opus-5.5"}
+{"word": "समूह", "clue": "जमात, झुन्ड", "hint": "धेरै जना एकै ठाउँमा।", "model": "claude-opus-5.5"}
+{"word": "तराई", "clue": "मधेसको समथर भूभाग", "hint": "नेपालको दक्षिणी फाँट।", "model": "claude-opus-5.5"}
+{"word": "तरल", "clue": "बग्ने पदार्थ", "hint": "पानी र दुध यस्ता हुन्छन्।", "model": "claude-opus-5.5"}
+{"word": "पातलो", "clue": "दुब्लो", "hint": "मोटोको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "शरीर", "clue": "जिउ, देह", "hint": "हात, खुट्टा र टाउको मिलेर बन्छ।", "model": "claude-opus-5.5"}
+{"word": "पहिलो", "clue": "प्रथम", "hint": "दोस्रोभन्दा अगाडि।", "model": "claude-opus-5.5"}
+{"word": "बाहिर", "clue": "भित्रको उल्टो", "hint": "घरबाट निस्केपछि पुगिने ठाउँ।", "model": "claude-opus-5.5"}
+{"word": "लायक", "clue": "योग्य", "hint": "काम गर्न सक्ने र गुणी।", "model": "claude-opus-5.5"}
+{"word": "अभाव", "clue": "कमी", "hint": "चाहिएको कुरा नहुनु।", "model": "claude-opus-5.5"}
+{"word": "जमिन", "clue": "भूमि, जग्गा", "hint": "खेतबारी यसैमा हुन्छ।", "model": "claude-opus-5.5"}
+{"word": "पहेँलो", "clue": "बेसारको रङ", "hint": "सूर्यमुखी फूल यही रङको हुन्छ।", "model": "claude-opus-5.5"}
+{"word": "अधिकार", "clue": "हक", "hint": "कानुनले दिएको हैसियत।", "model": "claude-opus-5.5"}
+{"word": "पुरानो", "clue": "नयाँको उल्टो", "hint": "धेरै समय भइसकेको।", "model": "claude-opus-5.5"}
+{"word": "मानसिक", "clue": "मनसम्बन्धी", "hint": "शारीरिकको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "सरकारी", "clue": "राज्यको स्वामित्वको", "hint": "निजीको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "तरकारी", "clue": "पकाइएको सागपात", "hint": "भात, दाल र ___।", "model": "claude-opus-5.5"}
+{"word": "विवाह", "clue": "बिहे", "hint": "दुलहा र दुलहीको मिलन।", "model": "claude-opus-5.5"}
+{"word": "उचित", "clue": "ठिक, मनासिब", "hint": "गर्नुपर्ने र मिल्दो।", "model": "claude-opus-5.5"}
+{"word": "मसिनो", "clue": "सानो र पातलो", "hint": "बाक्लोको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "देवता", "clue": "देउता, ईश्वर", "hint": "मन्दिरमा पुजिन्छ।", "model": "claude-opus-5.5"}
+{"word": "हतियार", "clue": "अस्त्रशस्त्र", "hint": "खुकुरी पनि एक हो।", "model": "claude-opus-5.5"}
+{"word": "घटना", "clue": "वारदात", "hint": "समाचारमा यसको खबर आउँछ।", "model": "claude-opus-5.5"}
+{"word": "कपाल", "clue": "केश", "hint": "टाउकोमा उम्रन्छ।", "model": "claude-opus-5.5"}
+{"word": "झगडा", "clue": "लडाइँ, भनाभन", "hint": "मेलमिलापको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "शारीरिक", "clue": "शरीरसम्बन्धी", "hint": "मानसिकको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "बलियो", "clue": "कमजोरको उल्टो", "hint": "धेरै बल भएको।", "model": "claude-opus-5.5"}
+{"word": "पुरुष", "clue": "लोग्नेमान्छे", "hint": "महिलाको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "नरम", "clue": "मुलायम", "hint": "कडाको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "अनेक", "clue": "धेरै थरी", "hint": "एकको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "जीवन", "clue": "जिन्दगी", "hint": "जन्मदेखि मृत्युसम्म।", "model": "claude-opus-5.5"}
+{"word": "रकम", "clue": "धनराशि", "hint": "बैंकमा जम्मा गरिन्छ।", "model": "claude-opus-5.5"}
+{"word": "अनुभव", "clue": "भोगाइबाट पाएको ज्ञान", "hint": "जागिरका लागि माग्ने कुरा।", "model": "claude-opus-5.5"}
+{"word": "नियम", "clue": "कायदा", "hint": "खेलका पनि हुन्छन्।", "model": "claude-opus-5.5"}
+{"word": "साधारण", "clue": "सामान्य", "hint": "विशेष नभएको, आम।", "model": "claude-opus-5.5"}
+{"word": "बाहिरी", "clue": "भित्रीको उल्टो", "hint": "आँगनभन्दा परको।", "model": "claude-opus-5.5"}
+{"word": "गाइने", "clue": "सारङ्गी बजाएर गाउने", "hint": "गाउँगाउँ घुमेर गीत सुनाउँछ।", "model": "claude-opus-5.5"}
+{"word": "औषधी", "clue": "ओखती, दबाइ", "hint": "बिरामी हुँदा खाइन्छ।", "model": "claude-opus-5.5"}
+{"word": "नगरी", "clue": "पुरी, सहर", "hint": "जनकपुर पनि यस्तै एक हो।", "model": "claude-opus-5.5"}
+{"word": "गलत", "clue": "सहीको उल्टो", "hint": "भुल भएको।", "model": "claude-opus-5.5"}
+{"word": "आकार", "clue": "रूप, ढाँचा", "hint": "गोलो वा चारपाटे।", "model": "claude-opus-5.5"}
+{"word": "गहिरो", "clue": "धेरै तलसम्म पुगेको", "hint": "समुद्र यस्तो हुन्छ।", "model": "claude-opus-5.5"}
+{"word": "हरियो", "clue": "सागपातको रङ", "hint": "असारमा धानखेत यस्तै देखिन्छ।", "model": "claude-opus-5.5"}
+{"word": "सामाजिक", "clue": "समाजसम्बन्धी", "hint": "मानिस ___ प्राणी हो।", "model": "claude-opus-5.5"}
+{"word": "सूचना", "clue": "जानकारी, खबर", "hint": "भित्तामा टाँसिन्छ।", "model": "claude-opus-5.5"}
+{"word": "अमिलो", "clue": "चुकजस्तो स्वाद", "hint": "कागती र अमला।", "model": "claude-opus-5.5"}
+{"word": "किसिम", "clue": "प्रकार, थरी", "hint": "यो ___ को कपडा।", "model": "claude-opus-5.5"}
+{"word": "सैनिक", "clue": "सिपाही, फौजी", "hint": "देशको सिमाना रुङ्छ।", "model": "claude-opus-5.5"}
+{"word": "जीविका", "clue": "रोजीरोटी", "hint": "पेट पाल्ने उपाय।", "model": "claude-opus-5.5"}
+{"word": "चामल", "clue": "धानको दाना", "hint": "पकाएपछि भात बन्छ।", "model": "claude-opus-5.5"}
+{"word": "आधार", "clue": "जग", "hint": "घर यसैमा अडिन्छ।", "model": "claude-opus-5.5"}
+{"word": "गहना", "clue": "आभूषण", "hint": "सुनचाँदीका बनेका।", "model": "claude-opus-5.5"}
+{"word": "टाउको", "clue": "शिर", "hint": "घाँटीमाथिको अङ्ग।", "model": "claude-opus-5.5"}
+{"word": "रचना", "clue": "सिर्जना, कृति", "hint": "कविता र कथा।", "model": "claude-opus-5.5"}
+{"word": "कागज", "clue": "लेख्ने पाना", "hint": "किताबका पाना यसैबाट बन्छन्।", "model": "claude-opus-5.5"}
+{"word": "कारण", "clue": "किन भन्ने उत्तर", "hint": "हरेक कामको हुन्छ।", "model": "claude-opus-5.5"}
+{"word": "आचरण", "clue": "बानीबेहोरा", "hint": "असल ___ ले सम्मान दिलाउँछ।", "model": "claude-opus-5.5"}
+{"word": "सामूहिक", "clue": "समूहको", "hint": "व्यक्तिगतको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "यताउति", "clue": "जताततै", "hint": "___ नहेर्नू!", "model": "claude-opus-5.5"}
+{"word": "उमेर", "clue": "वय, आयु", "hint": "जन्मदिनमा एक वर्ष थपिन्छ।", "model": "claude-opus-5.5"}
+{"word": "फलामे", "clue": "लोहाको बनेको", "hint": "___ पुल।", "model": "claude-opus-5.5"}
+{"word": "कठिन", "clue": "गाह्रो", "hint": "सजिलोको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "भोजन", "clue": "खाना", "hint": "दिनमा दुई छाक।", "model": "claude-opus-5.5"}
+{"word": "गुलियो", "clue": "मिठो, चिनीजस्तो", "hint": "मह र मिठाई।", "model": "claude-opus-5.5"}
+{"word": "अनुचित", "clue": "बेठिक", "hint": "गर्न नहुने काम।", "model": "claude-opus-5.5"}
+{"word": "भावना", "clue": "अनुभूति", "hint": "मायाममता र रिसराग।", "model": "claude-opus-5.5"}
+{"word": "महिना", "clue": "मास", "hint": "वर्षमा बाह्र ओटा।", "model": "claude-opus-5.5"}
+{"word": "हरेक", "clue": "प्रत्येक", "hint": "___ दिन बिहान।", "model": "claude-opus-5.5"}
+{"word": "विवरण", "clue": "ब्यौरा", "hint": "घटनाको पूरा वर्णन।", "model": "claude-opus-5.5"}
+{"word": "वचन", "clue": "प्रतिज्ञा, बोली", "hint": "दिएपछि पुरा गर्नुपर्छ।", "model": "claude-opus-5.5"}
+{"word": "चाहना", "clue": "इच्छा", "hint": "मनमा भएको रहर।", "model": "claude-opus-5.5"}
+{"word": "सहज", "clue": "सजिलो", "hint": "अप्ठेरो नभएको।", "model": "claude-opus-5.5"}
+{"word": "महिला", "clue": "नारी", "hint": "पुरुषको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "कमजोर", "clue": "बल नभएको", "hint": "बलियोको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "पराल", "clue": "धानको सुकेको डाँठ", "hint": "गाईवस्तुलाई खुवाइन्छ।", "model": "claude-opus-5.5"}
+{"word": "विकास", "clue": "उन्नति, प्रगति", "hint": "सडक र पुल बन्नु।", "model": "claude-opus-5.5"}
+{"word": "जानकारी", "clue": "सूचना", "hint": "थाहा भएको कुरा।", "model": "claude-opus-5.5"}
+{"word": "हिसाब", "clue": "लेखाजोखा", "hint": "गणितको अर्को नाम।", "model": "claude-opus-5.5"}
+{"word": "लहरो", "clue": "लता", "hint": "रुखमा बेरिएर चढ्छ।", "model": "claude-opus-5.5"}
+{"word": "विपरीत", "clue": "उल्टो", "hint": "अनुकूल नभएको।", "model": "claude-opus-5.5"}
+{"word": "रेखदेख", "clue": "हेरचाह", "hint": "बच्चाको ___ गर्नु।", "model": "claude-opus-5.5"}
+{"word": "बराबर", "clue": "समान", "hint": "यसको चिह्न = हो।", "model": "claude-opus-5.5"}
+{"word": "मसला", "clue": "बेसार, जिरा आदि", "hint": "तरकारीमा स्वाद थप्छ।", "model": "claude-opus-5.5"}
+{"word": "अनुकूल", "clue": "मिल्दो", "hint": "प्रतिकूलको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "सहायक", "clue": "सहयोगी", "hint": "मुख्य व्यक्तिलाई साथ दिने।", "model": "claude-opus-5.5"}
+{"word": "सहयोग", "clue": "मद्दत", "hint": "एकले अर्कालाई गर्ने।", "model": "claude-opus-5.5"}
+{"word": "उपचार", "clue": "इलाज", "hint": "अस्पतालमा गरिन्छ।", "model": "claude-opus-5.5"}
+{"word": "सिपालु", "clue": "दक्ष", "hint": "सिप भएको।", "model": "claude-opus-5.5"}
+{"word": "फलफूल", "clue": "स्याउ, केरा", "hint": "बोटमा फल्ने खानेकुरा।", "model": "claude-opus-5.5"}
+{"word": "फोहोर", "clue": "मैला", "hint": "सफाको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "विशेषता", "clue": "खुबी", "hint": "अरूभन्दा फरक गुण।", "model": "claude-opus-5.5"}
+{"word": "एकोहोरो", "clue": "एकतर्फी", "hint": "___ माया।", "model": "claude-opus-5.5"}
+{"word": "उपाय", "clue": "जुक्ति", "hint": "समस्याको समाधान।", "model": "claude-opus-5.5"}
+{"word": "लिखित", "clue": "लेखिएको", "hint": "मौखिकको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "बाटुलो", "clue": "गोलो", "hint": "बल र सुन्तला।", "model": "claude-opus-5.5"}
+{"word": "आदेश", "clue": "हुकुम", "hint": "हाकिमले दिन्छ।", "model": "claude-opus-5.5"}
+{"word": "अपराध", "clue": "कसुर", "hint": "चोरी गर्नु पनि एक हो।", "model": "claude-opus-5.5"}
+{"word": "पालन", "clue": "अनुसरण", "hint": "नियमको ___ गर्नु।", "model": "claude-opus-5.5"}
+{"word": "अनुहार", "clue": "मुख, चेहरा", "hint": "ऐनामा देखिन्छ।", "model": "claude-opus-5.5"}
+{"word": "मालिक", "clue": "स्वामी, धनी", "hint": "नोकरको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "भौतिक", "clue": "पदार्थसम्बन्धी", "hint": "___ शास्त्र।", "model": "claude-opus-5.5"}
+{"word": "विरोध", "clue": "प्रतिकार", "hint": "समर्थनको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "निषेध", "clue": "मनाही", "hint": "प्रवेश ___!", "model": "claude-opus-5.5"}
+{"word": "केटाकेटी", "clue": "बालबालिका", "hint": "स्कुल जान्छन्।", "model": "claude-opus-5.5"}
+{"word": "कठोर", "clue": "कडा, निर्दयी", "hint": "कोमलको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "आकाश", "clue": "गगन", "hint": "चन्द्र र तारा यहीँ देखिन्छन्।", "model": "claude-opus-5.5"}
+{"word": "बालक", "clue": "सानो केटो", "hint": "वृद्धको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "कायम", "clue": "जारी, स्थिर", "hint": "शान्ति ___ राख्नु।", "model": "claude-opus-5.5"}
+{"word": "ऐतिहासिक", "clue": "इतिहाससम्बन्धी", "hint": "पुराना दरबार यस्ता हुन्छन्।", "model": "claude-opus-5.5"}
+{"word": "कुकुर", "clue": "भुक्ने घरपालुवा जनावर", "hint": "तिहारमा पुजिन्छ।", "model": "claude-opus-5.5"}
+{"word": "बिरामी", "clue": "रोगी", "hint": "अस्पतालमा भर्ना हुन्छ।", "model": "claude-opus-5.5"}
+{"word": "अवधि", "clue": "समयसीमा", "hint": "म्याद।", "model": "claude-opus-5.5"}
+{"word": "सिलसिला", "clue": "क्रम", "hint": "एकपछि अर्को।", "model": "claude-opus-5.5"}
+{"word": "धनमाल", "clue": "सम्पत्ति", "hint": "चोरले लुट्छ।", "model": "claude-opus-5.5"}
+{"word": "मोटर", "clue": "गाडी", "hint": "सडकमा गुड्छ।", "model": "claude-opus-5.5"}
+{"word": "कमलो", "clue": "नरम", "hint": "___ माटो।", "model": "claude-opus-5.5"}
+{"word": "खरानी", "clue": "जलेपछि बाँकी धुलो", "hint": "चुलोमा भेटिन्छ।", "model": "claude-opus-5.5"}
+{"word": "एकदम", "clue": "बिल्कुलै", "hint": "___ ठिक!", "model": "claude-opus-5.5"}
+{"word": "आदर", "clue": "सम्मान", "hint": "ठुलालाई गरिन्छ।", "model": "claude-opus-5.5"}
+{"word": "फाइदा", "clue": "लाभ", "hint": "नोक्सानको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "दाउरा", "clue": "बाल्ने काठ", "hint": "चुलोमा बालिन्छ।", "model": "claude-opus-5.5"}
+{"word": "तरिका", "clue": "ढङ्ग, उपाय", "hint": "काम गर्ने शैली।", "model": "claude-opus-5.5"}
+{"word": "अधिकारी", "clue": "हाकिम", "hint": "कार्यालयको जिम्मेवार व्यक्ति।", "model": "claude-opus-5.5"}
+{"word": "उपयोगी", "clue": "काम लाग्ने", "hint": "बेकामको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "रमाइलो", "clue": "आनन्ददायक", "hint": "चाडमा हुन्छ।", "model": "claude-opus-5.5"}
+{"word": "योजना", "clue": "कार्यक्रम", "hint": "काम सुरु गर्नुअघि बनाइन्छ।", "model": "claude-opus-5.5"}
+{"word": "आधुनिक", "clue": "नयाँ जमानाको", "hint": "पुरानोको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "बोटबिरुवा", "clue": "रुखपात", "hint": "बगैँचामा हुन्छन्।", "model": "claude-opus-5.5"}
+{"word": "गणना", "clue": "गन्ती", "hint": "जनसङ्ख्याको ___ हुन्छ।", "model": "claude-opus-5.5"}
+{"word": "रुपियाँ", "clue": "नेपाली मुद्रा", "hint": "पैसा।", "model": "claude-opus-5.5"}
+{"word": "सजिलो", "clue": "सहज", "hint": "गाह्रोको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "कविता", "clue": "पद्य रचना", "hint": "भानुभक्तले लेखेका।", "model": "claude-opus-5.5"}
+{"word": "फराकिलो", "clue": "चौडा", "hint": "साँघुरोको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "हजार", "clue": "दश सय", "hint": "सयको दश गुणा।", "model": "claude-opus-5.5"}
+{"word": "खानेकुरो", "clue": "खाद्य वस्तु", "hint": "भोक लाग्दा खोजिन्छ।", "model": "claude-opus-5.5"}
+{"word": "कुराकानी", "clue": "गफगाफ", "hint": "दुई जनाबिच हुन्छ।", "model": "claude-opus-5.5"}
+{"word": "दैनिक", "clue": "हरेक दिनको", "hint": "___ पत्रिका।", "model": "claude-opus-5.5"}
+{"word": "गोलाकार", "clue": "बाटुलो", "hint": "चक्का यस्तो हुन्छ।", "model": "claude-opus-5.5"}
+{"word": "अवयव", "clue": "अङ्ग", "hint": "शरीरको भाग।", "model": "claude-opus-5.5"}
+{"word": "आघात", "clue": "चोट, धक्का", "hint": "मनमा पनि पर्छ।", "model": "claude-opus-5.5"}
+{"word": "कानुनी", "clue": "विधिअनुसारको", "hint": "अदालतमा मानिने।", "model": "claude-opus-5.5"}
+{"word": "नियमित", "clue": "रोज रोज", "hint": "समयमै हुने।", "model": "claude-opus-5.5"}
+{"word": "अनुयायी", "clue": "चेला, समर्थक", "hint": "गुरुको पछि लाग्ने।", "model": "claude-opus-5.5"}
+{"word": "कामकाज", "clue": "कामधन्दा", "hint": "कार्यालयको दैनिक काम।", "model": "claude-opus-5.5"}
+{"word": "उपभोग", "clue": "प्रयोग", "hint": "चिज किनेर चलाउनु।", "model": "claude-opus-5.5"}
+{"word": "फरक", "clue": "अन्तर", "hint": "दुई कुराबिचको भिन्नता।", "model": "claude-opus-5.5"}
+{"word": "भवन", "clue": "घर, इमारत", "hint": "सिंहदरबार एक ठुलो ___ हो।", "model": "claude-opus-5.5"}
+{"word": "पहाड", "clue": "डाँडो, पर्वत", "hint": "नेपालको बिचको भाग।", "model": "claude-opus-5.5"}
+{"word": "पुराण", "clue": "प्राचीन धार्मिक ग्रन्थ", "hint": "व्यासले रचेका भनिन्छ।", "model": "claude-opus-5.5"}
+{"word": "देवनागरी", "clue": "नेपाली लिपि", "hint": "यही पहेली यसैमा लेखिएको छ।", "model": "claude-opus-5.5"}
+{"word": "मानव", "clue": "मनुष्य", "hint": "दुई खुट्टाले हिँड्ने चतुर प्राणी।", "model": "claude-opus-5.5"}
+{"word": "समाचार", "clue": "खबर", "hint": "रेडियोमा सुनिन्छ।", "model": "claude-opus-5.5"}
+{"word": "तालिम", "clue": "प्रशिक्षण", "hint": "सिप सिक्न लिइन्छ।", "model": "claude-opus-5.5"}
+{"word": "अभिनय", "clue": "नाटक गर्नु", "hint": "कलाकारको काम।", "model": "claude-opus-5.5"}
+{"word": "चमक", "clue": "उज्यालो झल्को", "hint": "हिराको ___।", "model": "claude-opus-5.5"}
+{"word": "मधुर", "clue": "मिठो", "hint": "___ संगीत।", "model": "claude-opus-5.5"}
+{"word": "घरेलु", "clue": "घरको", "hint": "___ उद्योग।", "model": "claude-opus-5.5"}
+{"word": "चलन", "clue": "रीति, परम्परा", "hint": "पुर्खादेखि गरिँदै आएको।", "model": "claude-opus-5.5"}
+{"word": "लहर", "clue": "छाल", "hint": "समुद्रमा उठ्छ।", "model": "claude-opus-5.5"}
+{"word": "अवरोध", "clue": "रोकावट", "hint": "बाटोमा परेको बाधा।", "model": "claude-opus-5.5"}
+{"word": "अपमान", "clue": "बेइज्जत", "hint": "सम्मानको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "बादल", "clue": "मेघ", "hint": "पानी पर्नुअघि आकाशमा देखिन्छ।", "model": "claude-opus-5.5"}
+{"word": "सजाय", "clue": "दण्ड", "hint": "अपराधीले पाउँछ।", "model": "claude-opus-5.5"}
+{"word": "अनौठो", "clue": "अचम्मको", "hint": "पहिले नदेखेको।", "model": "claude-opus-5.5"}
+{"word": "बिजुली", "clue": "विद्युत्", "hint": "बत्ती बाल्छ।", "model": "claude-opus-5.5"}
+{"word": "लेनदेन", "clue": "कारोबार", "hint": "पैसाको लिने दिने।", "model": "claude-opus-5.5"}
+{"word": "उपकरण", "clue": "औजार", "hint": "काम गर्ने साधन।", "model": "claude-opus-5.5"}
+{"word": "तलब", "clue": "मासिक पारिश्रमिक", "hint": "महिना मरेपछि पाइन्छ।", "model": "claude-opus-5.5"}
+{"word": "कोमल", "clue": "नरम", "hint": "फूलको पत्रजस्तो।", "model": "claude-opus-5.5"}
+{"word": "खबर", "clue": "समाचार", "hint": "पत्रिकामा छापिन्छ।", "model": "claude-opus-5.5"}
+{"word": "विभाग", "clue": "महाशाखा", "hint": "मन्त्रालयमुनिको निकाय।", "model": "claude-opus-5.5"}
+{"word": "बिरुवा", "clue": "सानो बोट", "hint": "नर्सरीमा हुर्काइन्छ।", "model": "claude-opus-5.5"}
+{"word": "अवसर", "clue": "मौका", "hint": "पल्ट्याउनुपर्छ।", "model": "claude-opus-5.5"}
+{"word": "विजय", "clue": "जित", "hint": "हारको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "दुइटा", "clue": "दुई ओटा", "hint": "एक र एक।", "model": "claude-opus-5.5"}
+{"word": "अठार", "clue": "दश र आठ", "hint": "सत्रपछिको सङ्ख्या।", "model": "claude-opus-5.5"}
+{"word": "कानुन", "clue": "ऐन", "hint": "संसदले बनाउँछ।", "model": "claude-opus-5.5"}
+{"word": "आरोप", "clue": "दोष लगाउनु", "hint": "अदालतमा प्रमाणित गर्नुपर्छ।", "model": "claude-opus-5.5"}
+{"word": "अनुसरण", "clue": "अनुकरण", "hint": "पछि लाग्नु।", "model": "claude-opus-5.5"}
+{"word": "रासायनिक", "clue": "रसायनसम्बन्धी", "hint": "___ मल।", "model": "claude-opus-5.5"}
+{"word": "सहर", "clue": "नगर", "hint": "काठमाडौँ एक ठुलो ___ हो।", "model": "claude-opus-5.5"}
+{"word": "हृदय", "clue": "मुटु", "hint": "मायाको प्रतीक।", "model": "claude-opus-5.5"}
+{"word": "सफल", "clue": "कामयाब", "hint": "जाँचमा पास भएको।", "model": "claude-opus-5.5"}
+{"word": "थकाइ", "clue": "थाकेको अवस्था", "hint": "काम गरेपछि लाग्छ।", "model": "claude-opus-5.5"}
+{"word": "बिहान", "clue": "प्रातःकाल", "hint": "घाम उदाउने बेला।", "model": "claude-opus-5.5"}
+{"word": "सवारी", "clue": "वाहन", "hint": "बस वा मोटर।", "model": "claude-opus-5.5"}
+{"word": "एकाइ", "clue": "इकाइ", "hint": "दशक र सयकको आधार।", "model": "claude-opus-5.5"}
+{"word": "सुहाउँदो", "clue": "मिल्दो", "hint": "राम्रो देखिने।", "model": "claude-opus-5.5"}
+{"word": "नगर", "clue": "सहर", "hint": "पालिकाको एक प्रकार।", "model": "claude-opus-5.5"}
+{"word": "विवाद", "clue": "झगडा", "hint": "मतभेद।", "model": "claude-opus-5.5"}
+{"word": "कामना", "clue": "शुभेच्छा", "hint": "नयाँ वर्षको शुभ ___।", "model": "claude-opus-5.5"}
+{"word": "नगद", "clue": "पैसा", "hint": "चेकको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "गतिविधि", "clue": "क्रियाकलाप", "hint": "दिनभरका काम।", "model": "claude-opus-5.5"}
+{"word": "छुटकारा", "clue": "मुक्ति", "hint": "जेलबाट पाइन्छ।", "model": "claude-opus-5.5"}
+{"word": "विरोधी", "clue": "विपक्षी", "hint": "समर्थकको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "दोलखा", "clue": "बागमतीको एक जिल्ला", "hint": "भीमेश्वर मन्दिर यहाँ छ।", "model": "claude-opus-5.5"}
+{"word": "साँघुरो", "clue": "चौडा नभएको", "hint": "फराकिलोको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "चेतना", "clue": "होस", "hint": "बेहोसको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "अनुमान", "clue": "अड्कल", "hint": "पक्का नभएको।", "model": "claude-opus-5.5"}
+{"word": "परिवार", "clue": "जहान", "hint": "बुवा, आमा, दाजुभाइ।", "model": "claude-opus-5.5"}
+{"word": "कलिलो", "clue": "कोमल, नयाँ", "hint": "___ पात।", "model": "claude-opus-5.5"}
+{"word": "सीमित", "clue": "थोरै", "hint": "हद तोकिएको।", "model": "claude-opus-5.5"}
+{"word": "समुदाय", "clue": "समाज", "hint": "एउटै ठाउँका मानिस।", "model": "claude-opus-5.5"}
+{"word": "भाँडाकुँडा", "clue": "थाल, कचौरा", "hint": "भान्सामा माझिन्छन्।", "model": "claude-opus-5.5"}
+{"word": "विशाल", "clue": "धेरै ठुलो", "hint": "सगरमाथा।", "model": "claude-opus-5.5"}
+{"word": "अवैध", "clue": "गैरकानुनी", "hint": "वैध नभएको।", "model": "claude-opus-5.5"}
+{"word": "बयान", "clue": "वक्तव्य", "hint": "अदालतमा दिइन्छ।", "model": "claude-opus-5.5"}
+{"word": "समाधान", "clue": "हल", "hint": "समस्याको अन्त्य।", "model": "claude-opus-5.5"}
+{"word": "सरकार", "clue": "शासन", "hint": "मन्त्रिपरिषद्।", "model": "claude-opus-5.5"}
+{"word": "दायाँबायाँ", "clue": "दुवैतर्फ", "hint": "सडक पार गर्दा हेर्नु।", "model": "claude-opus-5.5"}
+{"word": "भिरालो", "clue": "ठाडो ढलान", "hint": "पहिरो जाने ठाउँ।", "model": "claude-opus-5.5"}
+{"word": "पतन", "clue": "अधोगति", "hint": "उत्थानको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "औपचारिक", "clue": "विधिवत्", "hint": "नियमअनुसारको।", "model": "claude-opus-5.5"}
+{"word": "सचेत", "clue": "होसियार", "hint": "जागरूक।", "model": "claude-opus-5.5"}
+{"word": "असजिलो", "clue": "अप्ठेरो", "hint": "सजिलो नभएको।", "model": "claude-opus-5.5"}
+{"word": "सडक", "clue": "बाटो", "hint": "गाडी गुड्छ।", "model": "claude-opus-5.5"}
+{"word": "घुमफिर", "clue": "भ्रमण", "hint": "पर्यटकले गर्छन्।", "model": "claude-opus-5.5"}
+{"word": "सुविधा", "clue": "सहुलियत", "hint": "होटलमा पाइन्छ।", "model": "claude-opus-5.5"}
+{"word": "तलमाथि", "clue": "उँधोउँभो", "hint": "गडबड।", "model": "claude-opus-5.5"}
+{"word": "विषालु", "clue": "विष भएको", "hint": "___ सर्प।", "model": "claude-opus-5.5"}
+{"word": "गरिब", "clue": "निर्धन", "hint": "धनीको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "किसान", "clue": "कृषक", "hint": "खेत जोत्छ।", "model": "claude-opus-5.5"}
+{"word": "जाँगर", "clue": "उत्साह", "hint": "अल्छीमा हुँदैन।", "model": "claude-opus-5.5"}
+{"word": "समिति", "clue": "संस्था, परिषद्", "hint": "सभापति र सदस्य।", "model": "claude-opus-5.5"}
+{"word": "समाज", "clue": "मानिसहरूको समूह", "hint": "हामी सबै यसैमा बस्छौँ।", "model": "claude-opus-5.5"}
+{"word": "बैठक", "clue": "सभा, भेला", "hint": "छलफलका लागि बस्नु।", "model": "claude-opus-5.5"}
+{"word": "विनाश", "clue": "बरबादी", "hint": "भुइँचालोले गर्छ।", "model": "claude-opus-5.5"}
+{"word": "कबुल", "clue": "स्वीकार", "hint": "गल्ती ___ गर्नु।", "model": "claude-opus-5.5"}
+{"word": "लडाइँ", "clue": "युद्ध", "hint": "शान्तिको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "नायक", "clue": "मुख्य पात्र", "hint": "फिल्मको हिरो।", "model": "claude-opus-5.5"}
+{"word": "सागपात", "clue": "हरियो तरकारी", "hint": "रायो र पालुङ्गो।", "model": "claude-opus-5.5"}
+{"word": "मझौला", "clue": "बिचको", "hint": "न ठुलो न सानो।", "model": "claude-opus-5.5"}
+{"word": "बालुवा", "clue": "नदीको मसिनो कण", "hint": "समुद्र किनारमा धेरै हुन्छ।", "model": "claude-opus-5.5"}
+{"word": "गोबर", "clue": "गाईको मल", "hint": "आँगन लिप्न प्रयोग गरिन्छ।", "model": "claude-opus-5.5"}
+{"word": "चौडाइ", "clue": "फराक", "hint": "लमाइको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "असर", "clue": "प्रभाव", "hint": "औषधीको ___।", "model": "claude-opus-5.5"}
+{"word": "हासिल", "clue": "प्राप्त", "hint": "मेहनतले ___ हुन्छ।", "model": "claude-opus-5.5"}
+{"word": "किनबेच", "clue": "खरिदबिक्री", "hint": "बजारमा हुन्छ।", "model": "claude-opus-5.5"}
+{"word": "पोखरी", "clue": "तलाउ", "hint": "फेवा।", "model": "claude-opus-5.5"}
+{"word": "छोराछोरी", "clue": "सन्तान", "hint": "आमाबुवाका।", "model": "claude-opus-5.5"}
+{"word": "धारणा", "clue": "विचार, मत", "hint": "मनमा बसेको कुरा।", "model": "claude-opus-5.5"}
+{"word": "झमेला", "clue": "झन्झट", "hint": "अनावश्यक ठेलमठेल।", "model": "claude-opus-5.5"}
+{"word": "मोटोघाटो", "clue": "हृष्टपुष्ट", "hint": "खाइलाग्दो जिउ।", "model": "claude-opus-5.5"}
+{"word": "उपाधि", "clue": "पदवी, डिग्री", "hint": "विश्वविद्यालयले दिन्छ।", "model": "claude-opus-5.5"}
+{"word": "निवेदन", "clue": "अनुरोधपत्र", "hint": "कार्यालयमा बुझाइन्छ।", "model": "claude-opus-5.5"}
+{"word": "उपदेश", "clue": "शिक्षा, अर्ती", "hint": "गुरुले दिन्छन्।", "model": "claude-opus-5.5"}
+{"word": "पैदल", "clue": "हिँडेर", "hint": "गाडी नचढी।", "model": "claude-opus-5.5"}
+{"word": "रसिलो", "clue": "रसले भरिएको", "hint": "___ आँप।", "model": "claude-opus-5.5"}
+{"word": "लेकाली", "clue": "लेकको", "hint": "___ भेडा।", "model": "claude-opus-5.5"}
+{"word": "हलचल", "clue": "खलबल", "hint": "समाचारले मच्चाउँछ।", "model": "claude-opus-5.5"}
+{"word": "आपसी", "clue": "एकअर्काबिचको", "hint": "___ सम्बन्ध।", "model": "claude-opus-5.5"}
+{"word": "समथर", "clue": "सम्म", "hint": "तराईको जमिन।", "model": "claude-opus-5.5"}
+{"word": "छलफल", "clue": "विमर्श", "hint": "बैठकमा हुन्छ।", "model": "claude-opus-5.5"}
+{"word": "तागत", "clue": "शक्ति, बल", "hint": "खाना खाएपछि आउँछ।", "model": "claude-opus-5.5"}
+{"word": "आशय", "clue": "मतलब", "hint": "भन्न खोजेको कुरा।", "model": "claude-opus-5.5"}
+{"word": "परिचय", "clue": "चिनारी", "hint": "पहिलो भेटमा दिइन्छ।", "model": "claude-opus-5.5"}
+{"word": "घुमाउरो", "clue": "बाङ्गोटिङ्गो", "hint": "पहाडी बाटो।", "model": "claude-opus-5.5"}
+{"word": "भाषण", "clue": "प्रवचन", "hint": "नेताले मञ्चमा गर्छन्।", "model": "claude-opus-5.5"}
+{"word": "जबाफ", "clue": "उत्तर", "hint": "प्रश्नको।", "model": "claude-opus-5.5"}
+{"word": "किरण", "clue": "रश्मि", "hint": "घामको।", "model": "claude-opus-5.5"}
+{"word": "खनजोत", "clue": "जोताइ", "hint": "खेती सुरु गर्दा।", "model": "claude-opus-5.5"}
+{"word": "औजार", "clue": "उपकरण", "hint": "सिकर्मीको।", "model": "claude-opus-5.5"}
+{"word": "भयानक", "clue": "डरलाग्दो", "hint": "भूतको कथा।", "model": "claude-opus-5.5"}
+{"word": "हुलाक", "clue": "डाकघर", "hint": "चिठी पठाइन्छ।", "model": "claude-opus-5.5"}
+{"word": "उपकार", "clue": "भलाइ", "hint": "गुन।", "model": "claude-opus-5.5"}
+{"word": "छरितो", "clue": "फुर्तिलो", "hint": "चुस्त र छिटो।", "model": "claude-opus-5.5"}
+{"word": "कारोबार", "clue": "व्यापार", "hint": "पसलेको।", "model": "claude-opus-5.5"}
+{"word": "धारिलो", "clue": "तीखो", "hint": "खुकुरी।", "model": "claude-opus-5.5"}
+{"word": "कपटी", "clue": "छली", "hint": "धोका दिने।", "model": "claude-opus-5.5"}
+{"word": "छानबिन", "clue": "अनुसन्धान", "hint": "प्रहरीले गर्छ।", "model": "claude-opus-5.5"}
+{"word": "सहयोगी", "clue": "साथी", "hint": "मद्दत गर्ने।", "model": "claude-opus-5.5"}
+{"word": "विवेक", "clue": "बुद्धि", "hint": "असल खराब छुट्याउने।", "model": "claude-opus-5.5"}
+{"word": "उदार", "clue": "दयालु", "hint": "कन्जुसको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "कमाइ", "clue": "आम्दानी", "hint": "मजदुरी।", "model": "claude-opus-5.5"}
+{"word": "मतलब", "clue": "अर्थ", "hint": "के ___?", "model": "claude-opus-5.5"}
+{"word": "पचास", "clue": "चालिस र दश", "hint": "आधा सय।", "model": "claude-opus-5.5"}
+{"word": "विभाजन", "clue": "बाँडफाँड", "hint": "भाग लगाउनु।", "model": "claude-opus-5.5"}
+{"word": "हेरचाह", "clue": "रेखदेख", "hint": "बिरामीको।", "model": "claude-opus-5.5"}
+{"word": "पोसाक", "clue": "लुगा", "hint": "दौरासुरुवाल।", "model": "claude-opus-5.5"}
+{"word": "उपमा", "clue": "तुलना", "hint": "अलङ्कार।", "model": "claude-opus-5.5"}
+{"word": "साहस", "clue": "आँट", "hint": "डरको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "दोहोरो", "clue": "दुईतर्फी", "hint": "___ बाटो।", "model": "claude-opus-5.5"}
+{"word": "झारपात", "clue": "बगैँचाको फोहोर", "hint": "खेतमा उम्रिने अनावश्यक बोट।", "model": "claude-opus-5.5"}
+{"word": "कोसेली", "clue": "उपहार", "hint": "घर जाँदा लगिन्छ।", "model": "claude-opus-5.5"}
+{"word": "मरण", "clue": "मृत्यु", "hint": "जीवनको अन्त्य।", "model": "claude-opus-5.5"}
+{"word": "वैशाख", "clue": "पहिलो महिना", "hint": "नयाँ वर्ष सुरु हुन्छ।", "model": "claude-opus-5.5"}
+{"word": "राजधानी", "clue": "मुख्य सहर", "hint": "काठमाडौँ।", "model": "claude-opus-5.5"}
+{"word": "एघार", "clue": "दश र एक", "hint": "क्रिकेट टिमको सङ्ख्या।", "model": "claude-opus-5.5"}
+{"word": "अभिमान", "clue": "घमन्ड", "hint": "नम्रताको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "मिठाई", "clue": "मिठो खानेकुरा", "hint": "लड्डु, जेरी।", "model": "claude-opus-5.5"}
+{"word": "पसल", "clue": "दोकान", "hint": "सामान बेचिन्छ।", "model": "claude-opus-5.5"}
+{"word": "किनारा", "clue": "छेउ", "hint": "नदीको।", "model": "claude-opus-5.5"}
+{"word": "हतार", "clue": "चाँडो", "hint": "ढिलो नहोस् भनेर आत्तिनु।", "model": "claude-opus-5.5"}
+{"word": "संसार", "clue": "दुनियाँ", "hint": "पृथ्वी।", "model": "claude-opus-5.5"}
+{"word": "साइत", "clue": "शुभ घडी", "hint": "ज्योतिषले हेर्छ।", "model": "claude-opus-5.5"}
+{"word": "निपुण", "clue": "दक्ष", "hint": "सिपालु।", "model": "claude-opus-5.5"}
+{"word": "साधना", "clue": "तपस्या", "hint": "ध्यान।", "model": "claude-opus-5.5"}
+{"word": "पसिना", "clue": "स्वेद", "hint": "गर्मीमा।", "model": "claude-opus-5.5"}
+{"word": "असफल", "clue": "फेल", "hint": "सफलको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "सुनसान", "clue": "शान्त", "hint": "रातको गल्ली।", "model": "claude-opus-5.5"}
+{"word": "अनुकरण", "clue": "नक्कल", "hint": "देखासिकी।", "model": "claude-opus-5.5"}
+{"word": "पौराणिक", "clue": "पुराणको", "hint": "___ कथा।", "model": "claude-opus-5.5"}
+{"word": "खतम", "clue": "समाप्त", "hint": "सकियो।", "model": "claude-opus-5.5"}
+{"word": "जीवित", "clue": "जिउँदो", "hint": "मृतको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "शिथिल", "clue": "खुकुलो, सुस्त", "hint": "थकाइले शरीर।", "model": "claude-opus-5.5"}
+{"word": "संयोग", "clue": "अचानक मेल", "hint": "भाग्य।", "model": "claude-opus-5.5"}
+{"word": "तरबार", "clue": "खड्ग", "hint": "धारिलो हतियार।", "model": "claude-opus-5.5"}
+{"word": "लचिलो", "clue": "लच्किने", "hint": "रबर।", "model": "claude-opus-5.5"}
+{"word": "नसुहाउँदो", "clue": "बेठिक", "hint": "नमिल्ने।", "model": "claude-opus-5.5"}
+{"word": "दूषित", "clue": "फोहोर, खराब", "hint": "___ पानी।", "model": "claude-opus-5.5"}
+{"word": "बजार", "clue": "हाट", "hint": "किनमेल।", "model": "claude-opus-5.5"}
+{"word": "सिमाना", "clue": "सीमा", "hint": "देशको।", "model": "claude-opus-5.5"}
+{"word": "अभिलाषा", "clue": "इच्छा", "hint": "मनको चाहना।", "model": "claude-opus-5.5"}
+{"word": "हाजिर", "clue": "उपस्थित", "hint": "कक्षामा।", "model": "claude-opus-5.5"}
+{"word": "हेरफेर", "clue": "परिवर्तन", "hint": "साटासाट।", "model": "claude-opus-5.5"}
+{"word": "गणेश", "clue": "विघ्नहर्ता देवता", "hint": "मुसा वाहन।", "model": "claude-opus-5.5"}
+{"word": "अँगालो", "clue": "आलिङ्गन", "hint": "मायाले।", "model": "claude-opus-5.5"}
+{"word": "पालुवा", "clue": "नयाँ पात", "hint": "वसन्तमा।", "model": "claude-opus-5.5"}
+{"word": "नैतिक", "clue": "नीतिको", "hint": "___ शिक्षा।", "model": "claude-opus-5.5"}
+{"word": "एकसाथ", "clue": "सँगै", "hint": "एकै पटक।", "model": "claude-opus-5.5"}
+{"word": "हलुको", "clue": "भारी नभएको", "hint": "रुवा।", "model": "claude-opus-5.5"}
+{"word": "अभिभारा", "clue": "जिम्मेवारी", "hint": "काँधमा पर्ने।", "model": "claude-opus-5.5"}
+{"word": "भारतीय", "clue": "भारतको", "hint": "दक्षिणी छिमेकी।", "model": "claude-opus-5.5"}
+{"word": "हातगोडा", "clue": "हातखुट्टा", "hint": "अङ्ग।", "model": "claude-opus-5.5"}
+{"word": "बालीनाली", "clue": "अन्नबाली", "hint": "खेतमा।", "model": "claude-opus-5.5"}
+{"word": "पीडित", "clue": "दुःखी", "hint": "अन्याय भोग्ने।", "model": "claude-opus-5.5"}
+{"word": "बहस", "clue": "वादविवाद", "hint": "अदालतमा वकिल।", "model": "claude-opus-5.5"}
+{"word": "अभिलेख", "clue": "रेकर्ड", "hint": "संग्रहालय।", "model": "claude-opus-5.5"}
+{"word": "रोकावट", "clue": "बाधा", "hint": "अवरोध।", "model": "claude-opus-5.5"}
+{"word": "वारपार", "clue": "आरपार", "hint": "छेडिएको।", "model": "claude-opus-5.5"}
+{"word": "बेहोस", "clue": "मूर्छित", "hint": "होस नभएको।", "model": "claude-opus-5.5"}
+{"word": "भेटघाट", "clue": "मुलाकात", "hint": "साथीसँग।", "model": "claude-opus-5.5"}
+{"word": "थालनी", "clue": "सुरुवात", "hint": "अन्त्यको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "कलम", "clue": "लेख्ने साधन", "hint": "मसी।", "model": "claude-opus-5.5"}
+{"word": "भटमास", "clue": "सोयाबिन", "hint": "भुटेर खाइन्छ।", "model": "claude-opus-5.5"}
+{"word": "तिहुन", "clue": "दालतरकारी", "hint": "भातसँग।", "model": "claude-opus-5.5"}
+{"word": "दाजुभाइ", "clue": "भ्रातृ", "hint": "भाइटीका।", "model": "claude-opus-5.5"}
+{"word": "कपट", "clue": "छल", "hint": "धोका।", "model": "claude-opus-5.5"}
+{"word": "विशेषण", "clue": "गुण बुझाउने शब्द", "hint": "व्याकरण।", "model": "claude-opus-5.5"}
+{"word": "नाचगान", "clue": "नृत्य र गीत", "hint": "चाडपर्व।", "model": "claude-opus-5.5"}
+{"word": "रोपाइँ", "clue": "धान रोप्ने काम", "hint": "असार।", "model": "claude-opus-5.5"}
+{"word": "कमसल", "clue": "खराब", "hint": "निम्नस्तरको।", "model": "claude-opus-5.5"}
+{"word": "ओखती", "clue": "औषधी", "hint": "जडीबुटी।", "model": "claude-opus-5.5"}
+{"word": "उपहार", "clue": "कोसेली", "hint": "जन्मदिनमा।", "model": "claude-opus-5.5"}
+{"word": "काइदा", "clue": "तरिका", "hint": "नियम।", "model": "claude-opus-5.5"}
+{"word": "निकट", "clue": "नजिक", "hint": "टाढाको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "कारखाना", "clue": "उद्योग", "hint": "उत्पादन हुने ठाउँ।", "model": "claude-opus-5.5"}
+{"word": "भाषिक", "clue": "भाषासम्बन्धी", "hint": "___ विविधता।", "model": "claude-opus-5.5"}
+{"word": "अवकाश", "clue": "बिदा", "hint": "छुट्टी।", "model": "claude-opus-5.5"}
+{"word": "हिँडडुल", "clue": "घुमघाम", "hint": "बिहान।", "model": "claude-opus-5.5"}
+{"word": "नोकर", "clue": "चाकर", "hint": "मालिकको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "चहकिलो", "clue": "चम्किलो", "hint": "रङ।", "model": "claude-opus-5.5"}
+{"word": "खेतबारी", "clue": "जमिन", "hint": "किसानको।", "model": "claude-opus-5.5"}
+{"word": "बदला", "clue": "प्रतिशोध", "hint": "रिसले।", "model": "claude-opus-5.5"}
+{"word": "उदय", "clue": "सूर्य निस्कनु", "hint": "अस्तको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "खनिज", "clue": "खानीबाट निस्कने", "hint": "फलाम, तामा।", "model": "claude-opus-5.5"}
+{"word": "जनावर", "clue": "पशु", "hint": "चारखुट्टे।", "model": "claude-opus-5.5"}
+{"word": "बगैँचा", "clue": "बारी", "hint": "फूल।", "model": "claude-opus-5.5"}
+{"word": "नवजात", "clue": "भर्खर जन्मेको", "hint": "शिशु।", "model": "claude-opus-5.5"}
+{"word": "बाकस", "clue": "बक्सा", "hint": "सामान राख्ने।", "model": "claude-opus-5.5"}
+{"word": "किताब", "clue": "पुस्तक", "hint": "पुस्तकालय।", "model": "claude-opus-5.5"}
+{"word": "भजन", "clue": "कीर्तन", "hint": "मन्दिर।", "model": "claude-opus-5.5"}
+{"word": "मदिरा", "clue": "रक्सी", "hint": "नसा।", "model": "claude-opus-5.5"}
+{"word": "चौरासी", "clue": "असी र चार", "hint": "सङ्ख्या।", "model": "claude-opus-5.5"}
+{"word": "लोकगीत", "clue": "परम्परागत गीत", "hint": "दोहोरी।", "model": "claude-opus-5.5"}
+{"word": "मनका", "clue": "मालाको दाना", "hint": "धागोमा उनिन्छ।", "model": "claude-opus-5.5"}
+{"word": "तृतीय", "clue": "तेस्रो", "hint": "दोस्रोपछि।", "model": "claude-opus-5.5"}
+{"word": "आराम", "clue": "विश्राम", "hint": "थकाइ मार्न।", "model": "claude-opus-5.5"}
+{"word": "दुलही", "clue": "बेहुली", "hint": "विवाह।", "model": "claude-opus-5.5"}
+{"word": "खरिद", "clue": "किनमेल", "hint": "बिक्रीको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "यौवन", "clue": "जवानी", "hint": "बुढेसकालअघि।", "model": "claude-opus-5.5"}
+{"word": "जमात", "clue": "भीड", "hint": "समूह।", "model": "claude-opus-5.5"}
+{"word": "दबाब", "clue": "थिचोमिचो", "hint": "प्रेसर।", "model": "claude-opus-5.5"}
+{"word": "अहित", "clue": "हानि", "hint": "हितको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "कारबाही", "clue": "कदम", "hint": "प्रहरी।", "model": "claude-opus-5.5"}
+{"word": "बनावटी", "clue": "कृत्रिम", "hint": "नक्कली।", "model": "claude-opus-5.5"}
+{"word": "समावेश", "clue": "भित्र पार्ने", "hint": "सूचीमा।", "model": "claude-opus-5.5"}
+{"word": "गेडागुडी", "clue": "दाल, चना", "hint": "प्रोटिन।", "model": "claude-opus-5.5"}
+{"word": "सुधार", "clue": "उन्नति", "hint": "गल्ती ठिक पार्नु।", "model": "claude-opus-5.5"}
+{"word": "अभियोग", "clue": "मुद्दा", "hint": "आरोप।", "model": "claude-opus-5.5"}
+{"word": "मिहिनेत", "clue": "परिश्रम", "hint": "सफलताको चाबी।", "model": "claude-opus-5.5"}
+{"word": "निराश", "clue": "हताश", "hint": "आशा नभएको।", "model": "claude-opus-5.5"}
+{"word": "सरुवा", "clue": "ट्रान्सफर", "hint": "कर्मचारीको।", "model": "claude-opus-5.5"}
+{"word": "नुनिलो", "clue": "नुन भएको", "hint": "समुद्रको पानी।", "model": "claude-opus-5.5"}
+{"word": "लमाइ", "clue": "लम्बाइ", "hint": "चौडाइको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "सफलता", "clue": "कामयाबी", "hint": "मिहिनेतको फल।", "model": "claude-opus-5.5"}
+{"word": "साटफेर", "clue": "आदानप्रदान", "hint": "बदलेर लिनु।", "model": "claude-opus-5.5"}
+{"word": "छलकपट", "clue": "धोका", "hint": "छली।", "model": "claude-opus-5.5"}
+{"word": "गरम", "clue": "तातो", "hint": "चिसोको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "आखिरी", "clue": "अन्तिम", "hint": "पहिलोको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "जाँचबुझ", "clue": "छानबिन", "hint": "परीक्षण।", "model": "claude-opus-5.5"}
+{"word": "सरोकार", "clue": "मतलब", "hint": "सम्बन्ध।", "model": "claude-opus-5.5"}
+{"word": "भरोसा", "clue": "विश्वास", "hint": "आड।", "model": "claude-opus-5.5"}
+{"word": "महादेव", "clue": "शिव", "hint": "पशुपतिनाथ।", "model": "claude-opus-5.5"}
+{"word": "अदालत", "clue": "न्यायालय", "hint": "मुद्दा।", "model": "claude-opus-5.5"}
+{"word": "अभिवादन", "clue": "नमस्कार", "hint": "भेट्दा।", "model": "claude-opus-5.5"}
+{"word": "जनता", "clue": "प्रजा", "hint": "देशका नागरिक।", "model": "claude-opus-5.5"}
+{"word": "बिरालो", "clue": "म्याउ गर्ने जनावर", "hint": "मुसा मार्छ।", "model": "claude-opus-5.5"}
+{"word": "खाडल", "clue": "गड्ढा", "hint": "सडकमा।", "model": "claude-opus-5.5"}
+{"word": "सहमति", "clue": "मन्जुरी", "hint": "दुवैको मत मिल्नु।", "model": "claude-opus-5.5"}
+{"word": "आराधना", "clue": "पूजा", "hint": "भक्ति।", "model": "claude-opus-5.5"}
+{"word": "इसारा", "clue": "सङ्केत", "hint": "आँखाले।", "model": "claude-opus-5.5"}
+{"word": "मनोहर", "clue": "मनमोहक", "hint": "सुन्दर।", "model": "claude-opus-5.5"}
+{"word": "रेडियो", "clue": "प्रसारण यन्त्र", "hint": "एफएम।", "model": "claude-opus-5.5"}
+{"word": "परेवा", "clue": "ढुकुर", "hint": "शान्तिको प्रतीक।", "model": "claude-opus-5.5"}
+{"word": "मौखिक", "clue": "मुखले भनेको", "hint": "लिखितको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "चरण", "clue": "पाउ, खुट्टा", "hint": "गुरुको पाउ ढोग्नु।", "model": "claude-opus-5.5"}
+{"word": "उपहास", "clue": "खिसी", "hint": "ठट्टा।", "model": "claude-opus-5.5"}
+{"word": "नमिठो", "clue": "स्वाद नभएको", "hint": "मिठोको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "बचाउ", "clue": "रक्षा", "hint": "गुहार।", "model": "claude-opus-5.5"}
+{"word": "वाहन", "clue": "सवारी", "hint": "गाडी।", "model": "claude-opus-5.5"}
+{"word": "समतल", "clue": "सम्म", "hint": "चौर।", "model": "claude-opus-5.5"}
+{"word": "सतह", "clue": "माथिल्लो तह", "hint": "पानीको।", "model": "claude-opus-5.5"}
+{"word": "परिकार", "clue": "खानेकुरा", "hint": "भोजमा थरीथरी।", "model": "claude-opus-5.5"}
+{"word": "अछाम", "clue": "सुदूरपश्चिमको जिल्ला", "hint": "मङ्गलसेन सदरमुकाम।", "model": "claude-opus-5.5"}
+{"word": "गोलमाल", "clue": "गडबड", "hint": "हिसाबमा।", "model": "claude-opus-5.5"}
+{"word": "शीतल", "clue": "चिसो", "hint": "छाया।", "model": "claude-opus-5.5"}
+{"word": "तलाउ", "clue": "पोखरी", "hint": "पानी जम्ने।", "model": "claude-opus-5.5"}
+{"word": "आभूषण", "clue": "गहना", "hint": "शृङ्गार।", "model": "claude-opus-5.5"}
+{"word": "हवाईजहाज", "clue": "विमान", "hint": "आकाशमा उड्छ।", "model": "claude-opus-5.5"}
+{"word": "मालपोत", "clue": "जमिनको कर", "hint": "कार्यालय।", "model": "claude-opus-5.5"}
+{"word": "वातावरण", "clue": "पर्यावरण", "hint": "हावा पानी।", "model": "claude-opus-5.5"}
+{"word": "कोदालो", "clue": "खन्ने औजार", "hint": "किसानको।", "model": "claude-opus-5.5"}
+{"word": "कोइला", "clue": "अँगार", "hint": "कालो इन्धन।", "model": "claude-opus-5.5"}
+{"word": "जालझेल", "clue": "षड्यन्त्र", "hint": "धोका।", "model": "claude-opus-5.5"}
+{"word": "गुलाफी", "clue": "हल्का रातो रङ", "hint": "फूलको रङ।", "model": "claude-opus-5.5"}
+{"word": "अलौकिक", "clue": "दिव्य", "hint": "अनौठो।", "model": "claude-opus-5.5"}
+{"word": "लगानी", "clue": "पुँजी", "hint": "व्यापारमा।", "model": "claude-opus-5.5"}
+{"word": "संरचना", "clue": "बनोट", "hint": "ढाँचा।", "model": "claude-opus-5.5"}
+{"word": "अनुमति", "clue": "इजाजत", "hint": "स्वीकृति।", "model": "claude-opus-5.5"}
+{"word": "अनुरोध", "clue": "बिन्ती", "hint": "आग्रह।", "model": "claude-opus-5.5"}
+{"word": "अनुशासन", "clue": "नियमपालन", "hint": "विद्यार्थीमा चाहिने।", "model": "claude-opus-5.5"}
+{"word": "समानता", "clue": "बराबरी", "hint": "भेदभावको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "भेदभाव", "clue": "विभेद", "hint": "समानताको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "खटिरो", "clue": "फोका", "hint": "छालामा।", "model": "claude-opus-5.5"}
+{"word": "पछुतो", "clue": "पश्चात्ताप", "hint": "गल्तीपछि।", "model": "claude-opus-5.5"}
+{"word": "बारुद", "clue": "विस्फोटक", "hint": "बन्दुक।", "model": "claude-opus-5.5"}
+{"word": "चिउरा", "clue": "कुटेको धान", "hint": "दहीसँग खाइन्छ।", "model": "claude-opus-5.5"}
+{"word": "बहिनी", "clue": "आफूभन्दा सानी", "hint": "भाइटीकामा दाजुलाई टीका लगाउँछिन्।", "model": "claude-opus-5.5"}
+{"word": "आयोजना", "clue": "परियोजना", "hint": "विकास।", "model": "claude-opus-5.5"}
+{"word": "मधुरो", "clue": "हल्का", "hint": "___ बत्ती।", "model": "claude-opus-5.5"}
+{"word": "बखत", "clue": "बेला", "hint": "समय।", "model": "claude-opus-5.5"}
+{"word": "भूमिका", "clue": "पात्र, रोल", "hint": "किताबको सुरुमा।", "model": "claude-opus-5.5"}
+{"word": "उचाइ", "clue": "अग्लाइ", "hint": "सगरमाथाको।", "model": "claude-opus-5.5"}
+{"word": "शरण", "clue": "आश्रय", "hint": "आपत्मा लिइने आड।", "model": "claude-opus-5.5"}
+{"word": "करोड", "clue": "सय लाख", "hint": "ठुलो सङ्ख्या।", "model": "claude-opus-5.5"}
+{"word": "ओरालो", "clue": "उकालोको उल्टो", "hint": "तल झर्ने बाटो।", "model": "claude-opus-5.5"}
+{"word": "विदेशी", "clue": "परदेशी", "hint": "पर्यटक।", "model": "claude-opus-5.5"}
+{"word": "नोकरी", "clue": "जागिर", "hint": "तलब।", "model": "claude-opus-5.5"}
+{"word": "घरबार", "clue": "गृहस्थी", "hint": "बिहे गरेपछि।", "model": "claude-opus-5.5"}
+{"word": "आफूखुसी", "clue": "मनपरी", "hint": "जथाभाबी।", "model": "claude-opus-5.5"}
+{"word": "इलाका", "clue": "क्षेत्र", "hint": "प्रहरी।", "model": "claude-opus-5.5"}
+{"word": "थकित", "clue": "थाकेको", "hint": "लामो यात्रापछि।", "model": "claude-opus-5.5"}
+{"word": "बाँदर", "clue": "वानर", "hint": "रुख चढ्ने।", "model": "claude-opus-5.5"}
+{"word": "चतुर", "clue": "चलाख", "hint": "बुद्धिमान।", "model": "claude-opus-5.5"}
+{"word": "माहुरी", "clue": "मह बनाउने कीरा", "hint": "चाकामा बस्छ।", "model": "claude-opus-5.5"}
+{"word": "यातना", "clue": "पीडा", "hint": "कष्ट।", "model": "claude-opus-5.5"}
+{"word": "कागजात", "clue": "दस्तावेज", "hint": "फाइल।", "model": "claude-opus-5.5"}
+{"word": "सेवक", "clue": "चाकरी गर्ने", "hint": "भक्त।", "model": "claude-opus-5.5"}
+{"word": "कुशल", "clue": "दक्ष, निपुण", "hint": "राम्रो, ठिकठाक।", "model": "claude-opus-5.5"}
+{"word": "अपराधी", "clue": "दोषी", "hint": "जेलमा।", "model": "claude-opus-5.5"}
+{"word": "भलाइ", "clue": "हित", "hint": "परोपकार।", "model": "claude-opus-5.5"}
+{"word": "अपहरण", "clue": "उठाएर लैजानु", "hint": "फिरौती।", "model": "claude-opus-5.5"}
+{"word": "पराजित", "clue": "हारेको", "hint": "विजयीको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "आइमाई", "clue": "महिला", "hint": "स्वास्नीमान्छे।", "model": "claude-opus-5.5"}
+{"word": "योगदान", "clue": "सहयोग", "hint": "देशका लागि गरेको काम।", "model": "claude-opus-5.5"}
+{"word": "हौसला", "clue": "उत्साह", "hint": "हिम्मत।", "model": "claude-opus-5.5"}
+{"word": "सिपाही", "clue": "सैनिक", "hint": "बन्दुक बोक्ने।", "model": "claude-opus-5.5"}
+{"word": "निगालो", "clue": "मसिनो बाँस", "hint": "डोको बुनिन्छ।", "model": "claude-opus-5.5"}
+{"word": "पाखुरा", "clue": "बाहु", "hint": "हात।", "model": "claude-opus-5.5"}
+{"word": "मौलिक", "clue": "आफ्नै", "hint": "नक्कली नभएको।", "model": "claude-opus-5.5"}
+{"word": "मूलधन", "clue": "पुँजी", "hint": "ब्याजको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "असार", "clue": "तेस्रो महिना", "hint": "रोपाइँको याम।", "model": "claude-opus-5.5"}
+{"word": "गडबड", "clue": "अस्तव्यस्त", "hint": "गोलमाल।", "model": "claude-opus-5.5"}
+{"word": "विधवा", "clue": "पति गुमाएकी", "hint": "विदुरको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "लेखक", "clue": "रचनाकार", "hint": "कलम चलाउने।", "model": "claude-opus-5.5"}
+{"word": "बदमास", "clue": "दुष्ट", "hint": "छुच्चो।", "model": "claude-opus-5.5"}
+{"word": "फैसला", "clue": "निर्णय", "hint": "अदालतको।", "model": "claude-opus-5.5"}
+{"word": "सजावट", "clue": "सिँगार", "hint": "तिहारमा घर।", "model": "claude-opus-5.5"}
+{"word": "हँसिया", "clue": "घाँस काट्ने औजार", "hint": "घुमेको फलामे।", "model": "claude-opus-5.5"}
+{"word": "युरोप", "clue": "महादेश", "hint": "फ्रान्स र जर्मनी।", "model": "claude-opus-5.5"}
+{"word": "निधार", "clue": "ललाट", "hint": "टीका लगाइने ठाउँ।", "model": "claude-opus-5.5"}
+{"word": "पैताला", "clue": "तलुवा", "hint": "खुट्टाको तल।", "model": "claude-opus-5.5"}
+{"word": "टिकट", "clue": "प्रवेशपत्र", "hint": "बस चढ्दा।", "model": "claude-opus-5.5"}
+{"word": "समारोह", "clue": "उत्सव", "hint": "कार्यक्रम।", "model": "claude-opus-5.5"}
+{"word": "हाकिम", "clue": "अधिकारी", "hint": "कार्यालय प्रमुख।", "model": "claude-opus-5.5"}
+{"word": "पराई", "clue": "अर्काको", "hint": "आफन्तको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "ओसिलो", "clue": "चिसो", "hint": "बर्खामा भित्ता।", "model": "claude-opus-5.5"}
+{"word": "तनहुँ", "clue": "गण्डकीको जिल्ला", "hint": "दमौली सदरमुकाम।", "model": "claude-opus-5.5"}
+{"word": "बाइस", "clue": "बिस र दुई", "hint": "सङ्ख्या।", "model": "claude-opus-5.5"}
+{"word": "जहान", "clue": "परिवार", "hint": "स्वास्नी।", "model": "claude-opus-5.5"}
+{"word": "मकवानपुर", "clue": "हेटौँडा भएको जिल्ला", "hint": "बागमती प्रदेश।", "model": "claude-opus-5.5"}
+{"word": "परदेश", "clue": "विदेश", "hint": "आफ्नो देश छाडेर।", "model": "claude-opus-5.5"}
+{"word": "मोरङ", "clue": "विराटनगर भएको जिल्ला", "hint": "कोसी प्रदेश।", "model": "claude-opus-5.5"}
+{"word": "सुनौलो", "clue": "सुनजस्तो", "hint": "___ बिहानी।", "model": "claude-opus-5.5"}
+{"word": "नरिवल", "clue": "नारियल", "hint": "जटा भएको फल।", "model": "claude-opus-5.5"}
+{"word": "पाहुना", "clue": "अतिथि", "hint": "अतिथि देवो भव।", "model": "claude-opus-5.5"}
+{"word": "उपवास", "clue": "व्रत", "hint": "नखाई बस्नु।", "model": "claude-opus-5.5"}
+{"word": "छनोट", "clue": "चयन", "hint": "रोजाइ।", "model": "claude-opus-5.5"}
+{"word": "मजदुर", "clue": "श्रमिक", "hint": "ज्याला।", "model": "claude-opus-5.5"}
+{"word": "नमुना", "clue": "उदाहरण", "hint": "थोरै देखाउने।", "model": "claude-opus-5.5"}
+{"word": "पहिरो", "clue": "भूस्खलन", "hint": "बर्खामा।", "model": "claude-opus-5.5"}
+{"word": "रौतहट", "clue": "गौर भएको जिल्ला", "hint": "मधेस प्रदेश।", "model": "claude-opus-5.5"}
+{"word": "धनुषा", "clue": "जनकपुर भएको जिल्ला", "hint": "मधेस प्रदेश।", "model": "claude-opus-5.5"}
+{"word": "ढुकुटी", "clue": "भण्डार", "hint": "राज्यकोष।", "model": "claude-opus-5.5"}
+{"word": "पगरी", "clue": "फेटा", "hint": "टाउकोमा।", "model": "claude-opus-5.5"}
+{"word": "युवती", "clue": "तरुनी", "hint": "जवान केटी।", "model": "claude-opus-5.5"}
+{"word": "बचत", "clue": "जगेडा", "hint": "बैंकमा।", "model": "claude-opus-5.5"}
+{"word": "हमला", "clue": "आक्रमण", "hint": "युद्ध।", "model": "claude-opus-5.5"}
+{"word": "दरबार", "clue": "राजमहल", "hint": "राजा बस्ने।", "model": "claude-opus-5.5"}
+{"word": "घाइते", "clue": "चोट लागेको", "hint": "अस्पताल।", "model": "claude-opus-5.5"}
+{"word": "उदाहरण", "clue": "नमुना", "hint": "जस्तै।", "model": "claude-opus-5.5"}
+{"word": "बेसार", "clue": "पहेँलो मसला", "hint": "हल्दी।", "model": "claude-opus-5.5"}
+{"word": "पिठिउँ", "clue": "पछाडिको भाग", "hint": "ढाड।", "model": "claude-opus-5.5"}
+{"word": "टेलिफोन", "clue": "फोन", "hint": "कुराकानी।", "model": "claude-opus-5.5"}
+{"word": "ललितपुर", "clue": "पाटन", "hint": "उपत्यकाको जिल्ला।", "model": "claude-opus-5.5"}
+{"word": "धादिङ", "clue": "बागमतीको जिल्ला", "hint": "पृथ्वी राजमार्ग।", "model": "claude-opus-5.5"}
+{"word": "अतिथि", "clue": "पाहुना", "hint": "स्वागत।", "model": "claude-opus-5.5"}
+{"word": "उदास", "clue": "दुःखी", "hint": "हर्षको उल्टो।", "model": "claude-opus-5.5"}
+{"word": "सुनसरी", "clue": "इनरुवा भएको जिल्ला", "hint": "कोसी प्रदेश।", "model": "claude-opus-5.5"}

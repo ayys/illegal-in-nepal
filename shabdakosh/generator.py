@@ -27,6 +27,8 @@ WOTD_BANNER_FILENAME = "banner.html"
 WOTD_JS_FILENAME = "wotd.js"
 WOTD_META_FILENAME = "wotd.json"
 WOTD_SHARD_DIRNAME = "wotd"
+CROSSWORD_PAGE_FILENAME = "आजको-वर्गपहेली.html"
+CROSSWORD_JS_FILENAME = "crossword.js"
 SEARCH_DATA_FILENAME = "search-data.json"
 SEARCH_WORKER_FILENAME = "search-worker.js"
 FUSE_CDN = "https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"
@@ -459,6 +461,17 @@ async def write_wotd(words_data):
     return out / WOTD_META_FILENAME
 
 
+def write_crossword(words_data):
+    """Write the crossword lexicon and copy the puzzle page/JS."""
+    from crossword_lib import write_lexicon
+
+    out = Path(OUTPUT_DIR)
+    write_lexicon(words_data, out)
+    src_dir = Path(__file__).resolve().parent
+    for name in (CROSSWORD_PAGE_FILENAME, CROSSWORD_JS_FILENAME):
+        (out / name).write_bytes((src_dir / name).read_bytes())
+
+
 async def write_search_worker():
     """Writes a mobile-safe worker that performs searches off the main thread."""
     os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -697,7 +710,7 @@ async def generate_index_page(links_list):
     </style>
 </head>
 <body>
-    <p><a href="/">गृह</a> · <a href="./आजको-शब्द.html">आजको शब्द</a></p>
+    <p><a href="/">गृह</a> · <a href="./आजको-शब्द.html">आजको शब्द</a> · <a href="./आजको-वर्गपहेली.html">आजको वर्गपहेली</a></p>
     <h1>नेपाली बृहत शब्दकोश</h1>
         <div class="search-box">
             <input id="search-input" type="search" placeholder="शब्द छान्नुहोस्…" aria-label="शब्द खोज्नुहोस्">
@@ -879,6 +892,7 @@ async def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
     await write_wotd(words_data)
+    write_crossword(words_data)
 
     links, metadata = await generate_word_pages(words_data, template)
     print(f"Successfully generated {len(links)} word pages.")

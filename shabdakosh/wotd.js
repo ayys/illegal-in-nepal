@@ -57,5 +57,5 @@
         return { day, word: row[0], sense: row[1], slug: slugify(row[0]) };
     };
 
-    window.Wotd = { nepalDay, slugify, today };
+    window.Wotd = { nepalDay, slugify, loadJson, today };
 })();
