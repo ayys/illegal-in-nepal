@@ -387,16 +387,7 @@
                 kept.set(input, input.value);
                 changed();
                 if (parts.length) {
-                    let next = emptyAfter(path, last);
-                    if (!next) {
-                        const wi = nextWord(1);
-                        if (firstEmpty(wi)) {
-                            active = wi;
-                            next = firstEmpty(wi);
-                        } else {
-                            next = path[last];
-                        }
-                    }
+                    const next = emptyAfter(path, last) || path[last];
                     typed = { from: path[last], to: next };
                     focusCell(next[0], next[1]);
                     highlight(next[0], next[1]);
