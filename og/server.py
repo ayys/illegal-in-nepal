@@ -156,8 +156,7 @@ def render(path, title, paragraphs):
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        # Query strings are ignored; they only bust Cloudflare's cache.
-        path = self.path.split("?", 1)[0]
+        path = self.path
         if not PATH.match(path) or ".." in path:
             return self.send_error(404)
         # Images are kept until the cache directory is cleared.
