@@ -218,12 +218,16 @@
                     mark.replaceChildren();
                     mark.className = "cw-mark";
                     if (entryOf(wi).some((v) => !v)) return;
-                    const right = isRight(wi);
-                    mark.classList.add(right ? "right" : "wrong");
+                    if (!isRight(wi)) {
+                        mark.classList.add("wrong");
+                        mark.textContent = "✗";
+                        return;
+                    }
+                    mark.classList.add("right");
                     const a = document.createElement("a");
                     a.href = "./" + encodeURIComponent(Wotd.slugify(w.word)) + ".html";
                     a.textContent = w.word;
-                    mark.append(right ? "✓ " : "✗ ", a);
+                    mark.append("✓ ", a);
                 });
                 const points = Crossword.score(words, words.map((_, wi) => entryOf(wi)), filled);
                 $("score").textContent = "अङ्क: " + points.toLocaleString("ne");
