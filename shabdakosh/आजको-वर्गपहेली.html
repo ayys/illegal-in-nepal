@@ -198,6 +198,7 @@
                         active = wi;
                         const [r, c] = cellsOf(w).find(([r, c]) => !inputs[r][c].value) || cellsOf(w)[0];
                         inputs[r][c].focus();
+                        highlight(r, c);
                     });
                     clueEls[wi] = li;
                     $("clues-" + dir).appendChild(li);
@@ -210,6 +211,7 @@
                         cells: inputs.map((row) => row.map((i) => (i ? i.value : ""))),
                         filled: [...filled],
                         misses: [...misses],
+                        active,
                     }));
                 } catch (_) {}
             };
@@ -255,11 +257,13 @@
             };
 
             try {
-                const saved = JSON.parse(localStorage.getItem(storeKey) || "null");
+                let saved = JSON.parse(localStorage.getItem(storeKey) || "null");
+                if (Array.isArray(saved)) saved = { cells: saved };
                 if (saved && saved.cells) {
-                    saved.cells.forEach((row, r) => row.forEach((v, c) => { if (inputs[r][c]) inputs[r][c].value = v; }));
+                    saved.cells.forEach((row, r) => row.forEach((v, c) => { if (inputs[r] && inputs[r][c]) inputs[r][c].value = v; }));
                     filled = new Set(saved.filled || []);
                     misses = new Set(saved.misses || []);
+                    if (words[saved.active]) active = saved.active;
                 }
             } catch (_) {}
 
@@ -269,6 +273,7 @@
                 cellsOf(words[active]).forEach(([r, c]) => cellEls[r][c].classList.add("in-word"));
                 if (r0 !== undefined) cellEls[r0][c0].classList.add("current");
                 clueEls[active].classList.add("active");
+                save();
             };
 
             const focusCell = (r, c) => {
