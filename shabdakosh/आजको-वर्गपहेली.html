@@ -294,12 +294,25 @@
                 const ahead = Array.from({ length: n - 1 }, (_, k) => clueOrder[(at + step * (k + 1) + n * n) % n]);
                 return ahead.find(firstEmpty) ?? ahead[0] ?? active;
             };
-            const clearCell = (r, c) => {
-                inputs[r][c].value = "";
-                kept.set(inputs[r][c], "");
+            // The cell being typed in: Backspace there removes one character
+            // rather than the whole cell. Moving to a cell resets it.
+            let editing = null;
+            const setCell = (r, c, value) => {
+                inputs[r][c].value = value;
+                kept.set(inputs[r][c], value);
                 cellEls[r][c].classList.remove("wrong", "right");
-                typed = null;
                 changed();
+            };
+            const clearCell = (r, c) => {
+                typed = null;
+                setCell(r, c, "");
+            };
+            const dropLast = ([r, c]) => {
+                setCell(r, c, [...inputs[r][c].value].slice(0, -1).join(""));
+                focusCell(r, c);
+                highlight(r, c);
+                editing = inputs[r][c];
+                typed = null;
             };
 
             const positionIn = (wi, r, c) => cellsOf(words[wi]).findIndex(([rr, cc]) => rr === r && cc === c);
@@ -325,6 +338,8 @@
                     active = owners[r][c][keep] ?? owners[r][c][keep === "across" ? "down" : "across"];
                 }
                 lastFocus = input;
+                editing = null;
+                if (typed && (typed.to[0] !== r || typed.to[1] !== c)) typed = null;
                 kept.set(input, input.value);
                 highlight(r, c);
                 requestAnimationFrame(() => input.select());
@@ -385,6 +400,7 @@
                     typed = { from: path[last], to: next };
                     focusCell(next[0], next[1]);
                     highlight(next[0], next[1]);
+                    if (next === path[last]) editing = inputs[next[0]][next[1]];
                 }
             });
 
@@ -423,7 +439,14 @@
                 } else if (e.key === "Backspace") {
                     e.preventDefault();
                     if (input.value) {
-                        clearCell(r, c);
+                        if (editing === input) dropLast([r, c]);
+                        else clearCell(r, c);
+                        return;
+                    }
+                    // Right after typing, the cursor has already moved on: fix
+                    // the cell just typed in, one character at a time.
+                    if (typed && typed.to !== typed.from && typed.to[0] === r && typed.to[1] === c) {
+                        dropLast(typed.from);
                         return;
                     }
                     const idx = positionIn(active, r, c);
