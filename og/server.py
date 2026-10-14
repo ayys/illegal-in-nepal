@@ -121,6 +121,7 @@ class Handler(BaseHTTPRequestHandler):
             return self.send_error(404)
         # Images are kept until the cache directory is cleared.
         cached = CACHE / (hashlib.sha256(self.path.encode()).hexdigest() + ".png")
+        keep = True
         if cached.exists():
             png = cached.read_bytes()
         else:
@@ -132,7 +133,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send_error(502)
             png = render(self.path, title, description)
             # Untagged pages are drawn from <title> alone; don't keep those.
-            if tagged:
+            keep = tagged
+            if keep:
                 CACHE.mkdir(parents=True, exist_ok=True)
                 partial = cached.with_suffix(f".{os.getpid()}.{threading.get_ident()}")
                 partial.write_bytes(png)
@@ -141,7 +143,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-Type", "image/png")
         self.send_header("Content-Length", str(len(png)))
-        self.send_header("Cache-Control", "public, max-age=604800")
+        self.send_header("Cache-Control", "public, max-age=604800" if keep else "no-store")
         self.end_headers()
         if self.command != "HEAD":
             self.wfile.write(png)
