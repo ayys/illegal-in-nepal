@@ -39,8 +39,10 @@ def shorten(s):
 
 
 def describe(head, body):
-    if found := DESCRIPTION.search(head) or DEFINITION.search(body):
+    if found := DESCRIPTION.search(head):
         return text(found.group(1))
+    if senses := DEFINITION.findall(body):
+        return " ".join(map(text, senses))
     for p in PARAGRAPH.finditer(body):
         if len(t := text(p.group(1))) >= 40:
             return t

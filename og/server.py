@@ -39,33 +39,55 @@ HAND = "Kalam-Bold.ttf"
 
 
 class Meta(HTMLParser):
+    """Collects og: tags, <title>, and dictionary entries as [grammar, [senses]] blocks."""
+
     def __init__(self):
         super().__init__()
-        self.meta, self.title, self._in_title = {}, "", False
+        self.meta, self.title, self.blocks = {}, "", []
+        self._in = None
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
         if tag == "meta" and attrs.get("property", "").startswith("og:"):
             self.meta[attrs["property"]] = attrs.get("content", "")
-        self._in_title = tag == "title"
+        elif tag == "title":
+            self._in = "title"
+        elif tag == "span" and attrs.get("class") == "gram-tag":
+            self.blocks.append(["", []])
+            self._in = "grammar"
+        elif tag == "p" and attrs.get("class") == "main-definition":
+            if not self.blocks:
+                self.blocks.append(["", []])
+            self.blocks[-1][1].append("")
+            self._in = "sense"
 
     def handle_data(self, data):
-        if self._in_title:
+        if self._in == "title":
             self.title += data
+        elif self._in == "grammar":
+            self.blocks[-1][0] += data
+        elif self._in == "sense":
+            self.blocks[-1][1][-1] += data
 
     def handle_endtag(self, tag):
-        self._in_title = False
+        if (self._in, tag) in {("title", "title"), ("grammar", "span"), ("sense", "p")}:
+            self._in = None
 
 
 def page_meta(path):
+    """Return (title, [(grammar, text), ...], tagged) for the page behind path."""
     url = SITE + path[: -len(".png")] + ".html"
     with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "og-image"}), timeout=10) as r:
         parser = Meta()
         parser.feed(r.read().decode("utf-8", "replace"))
-    title = parser.meta.get("og:title") or parser.title.strip()
     # The card fonts have no emoji.
     clean = lambda s: re.sub(r" ([,.;:!?।])", r"\1", " ".join(EMOJI.sub("", s).split()))
-    return clean(title), clean(parser.meta.get("og:description", "")), "og:title" in parser.meta
+    title = clean(parser.meta.get("og:title") or parser.title)
+    if parser.blocks:
+        paragraphs = [(clean(g), clean(" ".join(senses))) for g, senses in parser.blocks if senses]
+    else:
+        paragraphs = [("", clean(parser.meta.get("og:description", "")))]
+    return title, paragraphs, "og:title" in parser.meta
 
 
 def wrap(draw, text, face, width, max_lines):
@@ -83,7 +105,7 @@ def wrap(draw, text, face, width, max_lines):
     return lines
 
 
-def render(path, title, description):
+def render(path, title, paragraphs):
     img = Image.new("RGB", (WIDTH, HEIGHT), BG)
     draw = ImageDraw.Draw(img)
     width = WIDTH - 2 * MARGIN
@@ -99,11 +121,28 @@ def render(path, title, description):
         draw.text((MARGIN, y), line, font=title_face, fill=INK)
         y += int(size * 1.3)
 
-    body = font(SERIF, 44)
     y += 20
-    for line in wrap(draw, description, body, width, max((HEIGHT - 140 - y) // 62, 0)):
-        draw.text((MARGIN, y), line, font=body, fill=INK)
-        y += 62
+    bottom = HEIGHT - 140
+    texts = [f"{tag} {text}".strip() for tag, text in paragraphs]
+    # Shrink the body until every paragraph fits, or settle for the smallest size.
+    for size in range(44, 25, -2):
+        face, step = font(SERIF, size), int(size * 1.4)
+        lines = sum(len(wrap(draw, t, face, width, 999)) for t in texts)
+        if lines * step + (len(texts) - 1) * (step // 3) <= bottom - y:
+            break
+    for (tag, _), text in zip(paragraphs, texts):
+        room = (bottom - y) // step
+        if room <= 0:
+            break
+        for i, line in enumerate(wrap(draw, text, face, width, room)):
+            x = MARGIN
+            if i == 0 and tag:
+                draw.text((x, y), tag, font=face, fill=ACCENT)
+                x += draw.textlength(tag + " ", font=face)
+                line = line[len(tag):].lstrip()
+            draw.text((x, y), line, font=face, fill=INK)
+            y += step
+        y += step // 3
 
     section = SECTIONS.get(path.strip("/").split("/")[0], "")
     footer = "illegal-in-nepal.org" + (f"  ·  {section}" if section else "")
@@ -117,21 +156,23 @@ def render(path, title, description):
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        if not PATH.match(self.path) or ".." in self.path:
+        # Query strings are ignored; they only bust Cloudflare's cache.
+        path = self.path.split("?", 1)[0]
+        if not PATH.match(path) or ".." in path:
             return self.send_error(404)
         # Images are kept until the cache directory is cleared.
-        cached = CACHE / (hashlib.sha256(self.path.encode()).hexdigest() + ".png")
+        cached = CACHE / (hashlib.sha256(path.encode()).hexdigest() + ".png")
         keep = True
         if cached.exists():
             png = cached.read_bytes()
         else:
             try:
-                title, description, tagged = page_meta(self.path)
+                title, paragraphs, tagged = page_meta(path)
             except urllib.error.HTTPError as e:
                 return self.send_error(404 if e.code == 404 else 502)
             except (urllib.error.URLError, TimeoutError):
                 return self.send_error(502)
-            png = render(self.path, title, description)
+            png = render(path, title, paragraphs)
             # Untagged pages are drawn from <title> alone; don't keep those.
             keep = tagged
             if keep:
@@ -143,7 +184,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-Type", "image/png")
         self.send_header("Content-Length", str(len(png)))
-        self.send_header("Cache-Control", "public, max-age=604800" if keep else "no-store")
+        self.send_header("Cache-Control", "public, max-age=86400" if keep else "no-store")
         self.end_headers()
         if self.command != "HEAD":
             self.wfile.write(png)
