@@ -304,6 +304,7 @@
                     active = owners[r][c][keep] ?? owners[r][c][keep === "across" ? "down" : "across"];
                 }
                 lastFocus = input;
+                kept.set(input, input.value);
                 highlight(r, c);
                 requestAnimationFrame(() => input.select());
             });
@@ -311,6 +312,8 @@
             // The cell last typed into and where the cursor went from there: a
             // vowel sign typed there joins the former, even past filled cells.
             let typed = null;
+            // A cell's letter before the latest keystroke replaced its selection.
+            const kept = new WeakMap();
             const emptyAfter = (path, i) => {
                 const order = [...path.slice(i + 1), ...path.slice(0, i + 1)];
                 return order.find(([r, c]) => !inputs[r][c].value);
@@ -333,7 +336,7 @@
                     const prev = inputs[pr][pc];
                     const merged = (prev.value + value).normalize("NFC").match(AKSHAR);
                     if (merged) prev.value = merged[0];
-                    input.value = "";
+                    input.value = kept.get(input) || "";
                     changed();
                     return;
                 }
@@ -346,9 +349,10 @@
                     inputs[nr][nc].value = parts[k];
                     last = idx + k;
                 }
+                kept.set(input, input.value);
                 changed();
                 if (parts.length) {
-                    const next = emptyAfter(path, last) || path[Math.min(last + 1, path.length - 1)];
+                    const next = emptyAfter(path, last) || path[last];
                     typed = { from: path[last], to: next };
                     focusCell(next[0], next[1]);
                 }
