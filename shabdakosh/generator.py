@@ -29,10 +29,8 @@ WOTD_META_FILENAME = "wotd.json"
 WOTD_SHARD_DIRNAME = "wotd"
 CROSSWORD_PAGE_FILENAME = "आजको-वर्गपहेली.html"
 CROSSWORD_JS_FILENAME = "crossword.js"
-SEARCH_DATA_FILENAME = "search-data.json"
-SEARCH_WORKER_FILENAME = "search-worker.js"
-FUSE_CDN = "https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"
-PAKO_CDN = "https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"
+SEARCH_DATA_FILENAME = "search-data.json.gz"
+SEARCH_API = "https://dic.illegal-in-nepal.org/search"
 MAX_CONCURRENT_FILES = 1000  # Limit concurrent file operations
 
 
@@ -405,21 +403,12 @@ async def generate_word_pages(words_data, template):
 
 
 async def write_search_data(metadata):
-    """Writes search metadata as JSON and creates a gzipped version."""
+    """Writes gzipped search metadata; the search API (search/) loads it from the site."""
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     search_path = os.path.join(OUTPUT_DIR, SEARCH_DATA_FILENAME)
     content = json.dumps(metadata, ensure_ascii=False)
-
-    # Write uncompressed version
-    async with aiofiles.open(search_path, "w", encoding="utf-8") as f:
-        await f.write(content)
-
-    # Write gzipped version
-    gz_path = f"{search_path}.gz"
-    async with aiofiles.open(gz_path, "wb") as f:
-        compressed = gzip.compress(content.encode("utf-8"))
-        await f.write(compressed)
-
+    async with aiofiles.open(search_path, "wb") as f:
+        await f.write(gzip.compress(content.encode("utf-8")))
     return search_path
 
 
@@ -470,144 +459,6 @@ def write_crossword(words_data):
     src_dir = Path(__file__).resolve().parent
     for name in (CROSSWORD_PAGE_FILENAME, CROSSWORD_JS_FILENAME):
         (out / name).write_bytes((src_dir / name).read_bytes())
-
-
-async def write_search_worker():
-    """Writes a mobile-safe worker that performs searches off the main thread."""
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-    worker_path = os.path.join(OUTPUT_DIR, SEARCH_WORKER_FILENAME)
-    worker_content = (
-        f"""
-let fuse = null;
-let wordsLoaded = false;
-let libsLoaded = false;
-
-const ensureLibraries = () => {{
-    if (libsLoaded) return;
-    importScripts("{FUSE_CDN}", "{PAKO_CDN}");
-    libsLoaded = true;
-}};
-
-const parseWordsPayload = (rawText) => {{
-    const trimmed = (rawText || "").trim();
-    if (!trimmed) {{
-        throw new Error("Search payload is empty.");
-    }}
-
-    try {{
-        return JSON.parse(trimmed);
-    }} catch (jsonError) {{
-        // Backward compatibility: accept legacy JS module payloads.
-        const exportPrefix = "export const WORDS =";
-        if (trimmed.startsWith(exportPrefix)) {{
-            let body = trimmed.slice(exportPrefix.length).trim();
-            if (body.endsWith(";")) {{
-                body = body.slice(0, -1).trim();
-            }}
-            return JSON.parse(body);
-        }}
-        throw jsonError;
-    }}
-}};
-
-const loadWords = async () => {{
-    if (wordsLoaded) return;
-    let words = null;
-
-    // Try gzipped JSON first (smaller payload).
-    try {{
-        const gzResponse = await fetch("./{SEARCH_DATA_FILENAME}.gz");
-        if (gzResponse.ok) {{
-            const arrayBuffer = await gzResponse.arrayBuffer();
-            const uint8Array = new Uint8Array(arrayBuffer);
-            const isGzip = uint8Array.length >= 2 && uint8Array[0] === 0x1f && uint8Array[1] === 0x8b;
-
-            // Some hosts may auto-decompress .gz responses.
-            if (!isGzip) {{
-                const plainText = new TextDecoder("utf-8").decode(uint8Array);
-                words = parseWordsPayload(plainText);
-            }}
-
-            // Prefer native DecompressionStream when available.
-            if (!words && typeof DecompressionStream !== 'undefined') {{
-                try {{
-                    const blob = new Blob([uint8Array]);
-                    const stream = blob.stream().pipeThrough(new DecompressionStream("gzip"));
-                    const decompressed = await new Response(stream).text();
-                    words = parseWordsPayload(decompressed);
-                }} catch (streamError) {{
-                    console.warn("DecompressionStream failed:", streamError);
-                }}
-            }}
-
-            // Fallback for browsers without reliable native decompression.
-            if (!words) {{
-                ensureLibraries();
-                const decompressedBytes = pako.ungzip(uint8Array);
-                const decompressedText = new TextDecoder("utf-8").decode(decompressedBytes);
-                words = parseWordsPayload(decompressedText);
-            }}
-        }} else {{
-            throw new Error("Gzip version not available");
-        }}
-    }} catch (e) {{
-        console.warn("Gzip loading failed, falling back to uncompressed:", e);
-    }}
-
-    // Final fallback to plain JSON.
-    if (!words) {{
-        const response = await fetch("./{SEARCH_DATA_FILENAME}");
-        if (!response.ok) {{
-            throw new Error("Search data could not be loaded.");
-        }}
-        const plainText = await response.text();
-        words = parseWordsPayload(plainText);
-    }}
-
-    ensureLibraries();
-    fuse = new Fuse(words, {{
-        keys: [
-            {{ name: "word", weight: 0.7 }},
-            {{ name: "preview", weight: 0.25 }},
-            {{ name: "grammar", weight: 0.05 }}
-        ],
-        minMatchCharLength: 1,
-        threshold: 0.3,
-        ignoreLocation: true,
-        includeScore: true
-    }});
-    
-    wordsLoaded = true;
-}};
-
-self.onmessage = async (event) => {{
-    const data = event.data || {{}};
-    const id = data.id ?? 0;
-    const query = (data.query || "").trim();
-
-    if (!query) {{
-        self.postMessage({{ id, results: [] }});
-        return;
-    }}
-
-    // Lazy load words data only when first search is performed
-    try {{
-        await loadWords();
-        const matches = fuse.search(query, {{ limit: 20 }}).map((match) => match.item);
-        self.postMessage({{ id, results: matches }});
-    }} catch (error) {{
-        console.error("Search failed:", error);
-        self.postMessage({{ id, results: [], error: "search-failed" }});
-    }}
-}};
-""".strip()
-        + "\n"
-    )
-
-    async with aiofiles.open(worker_path, "w", encoding="utf-8") as f:
-        await f.write(worker_content)
-
-    return worker_path
 
 
 async def generate_index_page(links_list):
@@ -725,10 +576,7 @@ async def generate_index_page(links_list):
     <script>
         const input = document.getElementById("search-input");
         const resultsContainer = document.getElementById("search-results");
-        let worker = null;
-        let workerReady = false;
-        let requestId = 0;
-        let pendingQuery = null;
+        let controller = null;
 
         const renderResults = (items) => {{
             if (!items.length) {{
@@ -749,62 +597,25 @@ async def generate_index_page(links_list):
             resultsContainer.innerHTML = markup;
         }};
 
-        const initWorker = async () => {{
-            if (workerReady) return;
-            
-            try {{
-                resultsContainer.innerHTML = "<p>खोज प्रणाली लोड हुँदैछ...</p>";
-                worker = new Worker("./{SEARCH_WORKER_FILENAME}");
-                
-                worker.addEventListener("message", (event) => {{
-                    const {{ id, results }} = event.data || {{}};
-                    if (id !== requestId) {{
-                        return;
-                    }}
-                    workerReady = true;
-
-                    if (pendingQuery !== null) {{
-                        const query = pendingQuery;
-                        pendingQuery = null;
-                        performSearch(query);
-                        return;
-                    }}
-
-                    renderResults(results);
-                }});
-                
-                // Trigger worker initialization by sending empty message
-                worker.postMessage({{ id: 0, query: "" }});
-            }} catch (error) {{
-                resultsContainer.innerHTML = "<p>खोज प्रणाली लोड गर्न असफल। कृपया पृष्ठ पुनः लोड गर्नुहोस्।</p>";
-                console.error("Worker initialization failed:", error);
-            }}
-        }};
-
         const performSearch = async (value) => {{
             const query = value.trim();
-            
+            if (controller) controller.abort();
             if (!query) {{
                 resultsContainer.innerHTML = "";
                 return;
             }}
-            
-            // Initialize worker if not ready
-            if (!workerReady) {{
-                if (!worker) {{
-                    await initWorker();
-                }}
-                // Store query to process after worker is ready
-                if (!workerReady) {{
-                    pendingQuery = query;
-                    resultsContainer.innerHTML = "<p>खोज प्रणाली लोड हुँदैछ...</p>";
-                    return;
-                }}
-            }}
-            
+
+            controller = new AbortController();
             resultsContainer.innerHTML = "<p>खोज्दै...</p>";
-            const currentRequest = ++requestId;
-            worker.postMessage({{ id: currentRequest, query }});
+            try {{
+                const response = await fetch(`{SEARCH_API}?q=${{encodeURIComponent(query)}}`, {{ signal: controller.signal }});
+                if (!response.ok) throw new Error(`search returned ${{response.status}}`);
+                renderResults(await response.json());
+            }} catch (error) {{
+                if (error.name === "AbortError") return;
+                console.error("Search failed:", error);
+                resultsContainer.innerHTML = "<p>खोज गर्न सकिएन। केही बेरपछि फेरि प्रयास गर्नुहोस्।</p>";
+            }}
         }};
 
         const syncQueryToUrl = (query) => {{
@@ -834,13 +645,7 @@ async def generate_index_page(links_list):
                 }}, 100);
             }} else {{
                 syncQueryToUrl("");
-                resultsContainer.innerHTML = "";
-            }}
-        }});
-
-        input.addEventListener("focus", () => {{
-            if (!worker && !workerReady) {{
-                initWorker();
+                performSearch("");
             }}
         }});
 
@@ -899,7 +704,6 @@ async def main():
     print(f"Successfully generated {len(links)} word pages.")
 
     await write_search_data(metadata)
-    await write_search_worker()
 
     index_path = await generate_index_page(links)
     print(f"Generated Index: {index_path}")
