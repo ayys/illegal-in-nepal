@@ -308,6 +308,14 @@
                 requestAnimationFrame(() => input.select());
             });
 
+            // The cell last typed into and where the cursor went from there: a
+            // vowel sign typed there joins the former, even past filled cells.
+            let typed = null;
+            const emptyAfter = (path, i) => {
+                const order = [...path.slice(i + 1), ...path.slice(0, i + 1)];
+                return order.find(([r, c]) => !inputs[r][c].value);
+            };
+
             board.addEventListener("input", (e) => {
                 const input = e.target;
                 if (e.isComposing) return;
@@ -317,8 +325,11 @@
                 const value = input.value.normalize("NFC").replace(/\s+/g, "");
                 cellEls[r][c].classList.remove("wrong", "right");
 
-                if (MARK.test(value) && idx > 0) {
-                    const [pr, pc] = path[idx - 1];
+                const resumed = typed && typed.to !== typed.from && typed.to[0] === r && typed.to[1] === c
+                    && positionIn(active, ...typed.from) >= 0;
+                const before = resumed ? typed.from : idx > 0 && path[idx - 1];
+                if (MARK.test(value) && before) {
+                    const [pr, pc] = before;
                     const prev = inputs[pr][pc];
                     const merged = (prev.value + value).normalize("NFC").match(AKSHAR);
                     if (merged) prev.value = merged[0];
@@ -337,7 +348,8 @@
                 }
                 changed();
                 if (parts.length) {
-                    const next = path[Math.min(last + 1, path.length - 1)];
+                    const next = emptyAfter(path, last) || path[Math.min(last + 1, path.length - 1)];
+                    typed = { from: path[last], to: next };
                     focusCell(next[0], next[1]);
                 }
             });
