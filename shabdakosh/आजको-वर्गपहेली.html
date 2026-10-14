@@ -195,11 +195,7 @@
                     marks[wi] = document.createElement("span");
                     li.append(b, `${w.clue} (${w.cells.length})`, marks[wi]);
                     li.addEventListener("click", (e) => {
-                        if (e.target.closest("a")) return;
-                        active = wi;
-                        const [r, c] = cellsOf(w).find(([r, c]) => !inputs[r][c].value) || cellsOf(w)[0];
-                        inputs[r][c].focus();
-                        highlight(r, c);
+                        if (!e.target.closest("a")) goToWord(wi);
                     });
                     clueEls[wi] = li;
                     $("clues-" + dir).appendChild(li);
@@ -281,6 +277,31 @@
                 if (inputs[r] && inputs[r][c]) inputs[r][c].focus();
             };
 
+            const firstEmpty = (wi) => cellsOf(words[wi]).find(([r, c]) => !inputs[r][c].value);
+            const goToWord = (wi) => {
+                active = wi;
+                const [r, c] = firstEmpty(wi) || cellsOf(words[wi])[0];
+                focusCell(r, c);
+                highlight(r, c);
+            };
+            // Clues in the order they're listed: across, then down.
+            const clueOrder = ["across", "down"].flatMap((dir) =>
+                words.map((w, wi) => [w, wi]).filter(([w]) => w.dir === dir).map(([, wi]) => wi));
+            // The next clue in `step` direction that still has an empty cell,
+            // or simply the next clue once the grid is full.
+            const nextWord = (step) => {
+                const at = clueOrder.indexOf(active), n = clueOrder.length;
+                const ahead = Array.from({ length: n - 1 }, (_, k) => clueOrder[(at + step * (k + 1) + n * n) % n]);
+                return ahead.find(firstEmpty) ?? ahead[0] ?? active;
+            };
+            const clearCell = (r, c) => {
+                inputs[r][c].value = "";
+                kept.set(inputs[r][c], "");
+                cellEls[r][c].classList.remove("wrong", "right");
+                typed = null;
+                changed();
+            };
+
             const positionIn = (wi, r, c) => cellsOf(words[wi]).findIndex(([rr, cc]) => rr === r && cc === c);
 
             let lastFocus = null;
@@ -328,8 +349,7 @@
                 const value = input.value.normalize("NFC").replace(/\s+/g, "");
                 cellEls[r][c].classList.remove("wrong", "right");
 
-                const resumed = typed && typed.to !== typed.from && typed.to[0] === r && typed.to[1] === c
-                    && positionIn(active, ...typed.from) >= 0;
+                const resumed = typed && typed.to !== typed.from && typed.to[0] === r && typed.to[1] === c;
                 const before = resumed ? typed.from : idx > 0 && path[idx - 1];
                 if (MARK.test(value) && before) {
                     const [pr, pc] = before;
@@ -352,9 +372,19 @@
                 kept.set(input, input.value);
                 changed();
                 if (parts.length) {
-                    const next = emptyAfter(path, last) || path[last];
+                    let next = emptyAfter(path, last);
+                    if (!next) {
+                        const wi = nextWord(1);
+                        if (firstEmpty(wi)) {
+                            active = wi;
+                            next = firstEmpty(wi);
+                        } else {
+                            next = path[last];
+                        }
+                    }
                     typed = { from: path[last], to: next };
                     focusCell(next[0], next[1]);
+                    highlight(next[0], next[1]);
                 }
             });
 
@@ -364,27 +394,44 @@
 
             board.addEventListener("keydown", (e) => {
                 const input = e.target.closest("input");
-                if (!input) return;
+                if (!input || e.isComposing) return;
                 const r = +input.dataset.r, c = +input.dataset.c;
                 const moves = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1] };
                 if (moves[e.key]) {
                     e.preventDefault();
                     const [dr, dc] = moves[e.key];
                     const dir = dr ? "down" : "across";
+                    // An arrow across the current direction first turns, as elsewhere.
+                    if (words[active].dir !== dir && owners[r][c][dir] !== undefined) {
+                        active = owners[r][c][dir];
+                        highlight(r, c);
+                        return;
+                    }
                     let nr = r + dr, nc = c + dc;
                     while (nr >= 0 && nc >= 0 && nr < size && nc < size && !inputs[nr][nc]) { nr += dr; nc += dc; }
                     if (nr >= 0 && nc >= 0 && nr < size && nc < size) {
                         if (owners[nr][nc][dir] !== undefined) active = owners[nr][nc][dir];
                         focusCell(nr, nc);
+                        highlight(nr, nc);
                     }
-                } else if (e.key === "Backspace" && !input.value) {
+                } else if (e.key === "Tab") {
                     e.preventDefault();
+                    goToWord(nextWord(e.shiftKey ? -1 : 1));
+                } else if (e.key === "Delete") {
+                    e.preventDefault();
+                    clearCell(r, c);
+                } else if (e.key === "Backspace") {
+                    e.preventDefault();
+                    if (input.value) {
+                        clearCell(r, c);
+                        return;
+                    }
                     const idx = positionIn(active, r, c);
                     if (idx > 0) {
                         const [pr, pc] = cellsOf(words[active])[idx - 1];
-                        inputs[pr][pc].value = "";
-                        changed();
+                        clearCell(pr, pc);
                         focusCell(pr, pc);
+                        highlight(pr, pc);
                     }
                 }
             });
