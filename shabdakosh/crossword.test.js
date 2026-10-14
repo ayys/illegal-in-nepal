@@ -4,7 +4,12 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
-const { akshars, forDay, SIZE } = require('./crossword.js');
+const { akshars, forDay, score, SIZE } = require('./crossword.js');
+
+const pair = [{ word: 'किताब' }, { word: 'आँगन' }];
+assert.strictEqual(score(pair, [['कि', 'ता', 'ब'], ['आँ', 'ग', 'न']], new Set()), 20, 'typed words earn 10 each');
+assert.strictEqual(score(pair, [['कि', 'ता', 'ब'], ['आँ', 'ग', 'न']], new Set([1])), 5, 'a filled word costs 5');
+assert.strictEqual(score(pair, [['कि', 'ता', ''], ['आँ', 'ग', 'ल']], new Set()), 0, 'unfinished or wrong words earn nothing');
 
 assert.deepStrictEqual(akshars('आँगन'), ['आँ', 'ग', 'न']);
 assert.deepStrictEqual(akshars('किताब'), ['कि', 'ता', 'ब']);
@@ -14,7 +19,6 @@ assert.strictEqual(akshars('क्षमा'), null);
 const lexiconPath = path.join(__dirname, 'output', 'crossword.json.gz');
 const rows = JSON.parse(zlib.gunzipSync(fs.readFileSync(lexiconPath)).toString('utf8'));
 const known = new Map(rows.map(([word, clue]) => [word, clue]));
-const hints = new Map(rows.map(([word, , hint]) => [word, hint || '']));
 
 const runs = (grid) => {
   const found = [];
@@ -45,9 +49,7 @@ const checkPuzzle = (puzzle, day) => {
 
   const words = new Set();
   for (const w of puzzle.words) {
-    assert.strictEqual(known.get(w.word), w.clue, `${day}: ${w.word} must come from the lexicon`);
-    assert.strictEqual(hints.get(w.word), w.hint, `${day}: ${w.word} must carry its hint`);
-    assert.ok(!words.has(w.word), `${day}: ${w.word} repeated`);
+    assert.strictEqual(known.get(w.word), w.clue, `${day}: ${w.word} must come from the lexicon`);    assert.ok(!words.has(w.word), `${day}: ${w.word} repeated`);
     words.add(w.word);
   }
 

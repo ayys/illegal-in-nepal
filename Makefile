@@ -10,8 +10,7 @@ SHABDAKOSH_SRC = \
 	shabdakosh/wotd_lib.py \
 	shabdakosh/आजको-वर्गपहेली.html \
 	shabdakosh/crossword.js \
-	shabdakosh/crossword_lib.py \
-	$(wildcard shabdakosh/crossword_hints.jsonl)
+	shabdakosh/crossword_lib.py
 
 BLOG_SRC = org/publish.el $(wildcard org/*.org) $(wildcard org/lisp/*.el)
 

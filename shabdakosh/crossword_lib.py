@@ -12,10 +12,6 @@ from pathlib import Path
 from wotd_lib import load_dictionary, slugify
 
 LEXICON_FILENAME = "crossword.json.gz"
-HINTS_PATH = Path(__file__).resolve().parent / "crossword_hints.jsonl"
-MAX_SHORT_CLUE_LEN = 40
-MAX_HINT_LEN = 120
-
 MIN_AKSHARS = 3
 # Keep in sync with SIZE in crossword.js.
 MAX_AKSHARS = 7
@@ -31,7 +27,6 @@ AKSHAR = re.compile(
 INVISIBLE = re.compile(r"[\u200b-\u200d\ufeff]")
 NUMBERING = re.compile(r"^[०-९0-9]+[.\)]\s*")
 SURNAME = re.compile(r"(?:^|\s)थर$")
-LATIN = re.compile(r"[A-Za-z]")
 
 
 def akshars(word: str) -> list[str] | None:
@@ -65,55 +60,21 @@ def clue_for(entry: dict) -> str | None:
     return None
 
 
-def usable_text(word: str, text: str, max_len: int) -> str | None:
-    """Model-written clue/hint text, cleaned, or None if it is empty, not Nepali, or gives the answer away."""
-    text = INVISIBLE.sub("", unicodedata.normalize("NFC", str(text or "")))
-    text = re.sub(r"\s+", " ", text).strip().rstrip("।.").strip()
-    if not text or len(text) > max_len or LATIN.search(text):
-        return None
-    cells = akshars(word) or []
-    giveaways = [word] + (["".join(cells[:-1])] if len(cells) >= 3 else [])
-    if any(g in text for g in giveaways):
-        return None
-    return text
-
-
-def load_hints(path: Path) -> dict[str, dict]:
-    """word -> {"clue", "hint"} from a JSON-lines file; later lines win."""
-    hints: dict[str, dict] = {}
-    if path.exists():
-        for line in path.read_text(encoding="utf-8").splitlines():
-            if line.strip():
-                row = json.loads(line)
-                hints[row["word"]] = row
-    return hints
-
-
-def build_lexicon(data: list, hints: dict[str, dict] | None = None) -> list[list[str]]:
-    """[word, clue, hint] rows, one per word, sorted by word. A crosswordy word is its own slug.
-
-    With hints, only words that have a usable written clue are kept.
-    """
+def build_lexicon(data: list) -> list[list[str]]:
+    """[word, clue] rows, one per word, sorted by word. A crosswordy word is its own slug."""
     seen: dict[str, list[str]] = {}
     for entry in data:
         word = unicodedata.normalize("NFC", (entry.get("word") or "").strip())
         if word in seen or not is_crosswordy_word(word) or slugify(word) != word:
             continue
         clue = clue_for(entry)
-        if not clue:
-            continue
-        if not hints:
-            seen[word] = [word, clue, ""]
-            continue
-        written = hints.get(word) or {}
-        short = usable_text(word, written.get("clue"), MAX_SHORT_CLUE_LEN)
-        if short:
-            seen[word] = [word, short, usable_text(word, written.get("hint"), MAX_HINT_LEN) or ""]
+        if clue:
+            seen[word] = [word, clue]
     return [seen[w] for w in sorted(seen)]
 
 
 def write_lexicon(data: list, out_dir: Path) -> Path:
-    rows = build_lexicon(data, load_hints(HINTS_PATH))
+    rows = build_lexicon(data)
     payload = json.dumps(rows, ensure_ascii=False, separators=(",", ":")).encode()
     out_dir.mkdir(parents=True, exist_ok=True)
     path = out_dir / LEXICON_FILENAME

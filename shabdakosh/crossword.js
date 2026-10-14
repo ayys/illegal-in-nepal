@@ -26,10 +26,10 @@
         if (indexes.has(rows)) return indexes.get(rows);
         const byKey = new Map();
         const starters = [];
-        for (const [word, clue, hint = ''] of rows) {
+        for (const [word, clue] of rows) {
             const cells = akshars(word);
             if (!cells || cells.length < MIN_LEN || cells.length > SIZE) continue;
-            const entry = { word, clue, hint, cells };
+            const entry = { word, clue, cells };
             if (cells.length === 4 || cells.length === 5) starters.push(entry);
             cells.forEach((a, i) => push(byKey, `${cells.length}:${i}:${a}`, entry));
         }
@@ -166,7 +166,6 @@
                 col: w.col,
                 word: w.word,
                 clue: w.clue,
-                hint: w.hint,
                 cells: w.cells,
             }))
             .sort((a, b) => (a.dir === b.dir ? a.number - b.number : a.dir === 'across' ? -1 : 1));
@@ -187,7 +186,18 @@
         throw new Error('no puzzle for ' + day);
     };
 
+    const WORD_POINTS = 10;
+    const FILL_COST = 5;
+
+    // entries[i] is what the player has in each cell of words[i]; filled holds indices of words given away.
+    const score = (words, entries, filled) =>
+        words.reduce((total, w, i) => {
+            if (filled.has(i)) return total - FILL_COST;
+            return entries[i].join('') === w.word ? total + WORD_POINTS : total;
+        }, 0);
+
     exports.SIZE = SIZE;
     exports.akshars = akshars;
     exports.forDay = forDay;
+    exports.score = score;
 })(typeof module !== 'undefined' && module.exports ? module.exports : (window.Crossword = {}));

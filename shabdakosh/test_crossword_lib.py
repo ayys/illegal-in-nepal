@@ -1,6 +1,6 @@
 import unittest
 
-from crossword_lib import akshars, build_lexicon, clue_for, is_crosswordy_word, usable_text
+from crossword_lib import akshars, build_lexicon, clue_for, is_crosswordy_word
 
 
 def entry(word, sense, grammar="ना."):
@@ -60,20 +60,6 @@ class ClueTest(unittest.TestCase):
         self.assertEqual(clue_for(entry("अँखडी", "पूरा; सबै।", "वि.")), "पूरा")
 
 
-class GeneratedTextTest(unittest.TestCase):
-    def test_cleans_whitespace_and_trailing_danda(self):
-        self.assertEqual(usable_text("किताब", "  पढ्ने   चिज। ", 40), "पढ्ने चिज")
-
-    def test_rejects_answer_and_its_root(self):
-        self.assertIsNone(usable_text("किताब", "किताब पढ्नु", 40))
-        self.assertIsNone(usable_text("अतिचारी", "अतिचार गर्ने", 40))
-
-    def test_rejects_latin_empty_and_too_long(self):
-        self.assertIsNone(usable_text("किताब", "a book", 40))
-        self.assertIsNone(usable_text("किताब", "  ", 40))
-        self.assertIsNone(usable_text("किताब", "क" * 41, 40))
-
-
 class LexiconTest(unittest.TestCase):
     def test_keeps_crosswordy_rows_sorted_and_deduplicated(self):
         data = [
@@ -87,28 +73,8 @@ class LexiconTest(unittest.TestCase):
         self.assertEqual(
             rows,
             [
-                ["आँगन", "घरअगाडिको खुला ठाउँ", ""],
-                ["किताब", "पढ्ने पुस्तक", ""],
-            ],
-        )
-
-    def test_with_hints_keeps_only_words_with_a_usable_written_clue(self):
-        data = [
-            entry("किताब", "पढ्ने पुस्तक।"),
-            entry("आँगन", "घरअगाडिको खुला ठाउँ।"),
-            entry("कुकुर", "भुक्ने जनावर।"),
-            entry("बिरालो", "म्याउ गर्ने जनावर।"),
-        ]
-        hints = {
-            "किताब": {"clue": "पढ्ने चिज", "hint": "पुस्तकालयमा भेटिन्छ"},
-            "आँगन": {"clue": "आँगन", "hint": "घरअगाडि"},
-            "बिरालो": {"clue": "मुसा मार्ने", "hint": "a cat"},
-        }
-        self.assertEqual(
-            build_lexicon(data, hints),
-            [
-                ["किताब", "पढ्ने चिज", "पुस्तकालयमा भेटिन्छ"],
-                ["बिरालो", "मुसा मार्ने", ""],
+                ["आँगन", "घरअगाडिको खुला ठाउँ"],
+                ["किताब", "पढ्ने पुस्तक"],
             ],
         )
 

@@ -9,7 +9,8 @@
     <link rel="stylesheet" href="/common.css">
     <style>
         .kosh-nav { margin-bottom: 1rem; }
-        .cw-date, .cw-status { color: var(--mute); }
+        .cw-date, .cw-status, .cw-rules { color: var(--mute); }
+        .cw-score { font-size: 1.2rem; margin: 0; }
         .cw-board {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -56,7 +57,7 @@
         }
         .cw-actions button {
             font: inherit;
-            margin-right: 0.4rem;
+            margin: 0 0.4rem 0.4rem 0;
             padding: 0.25rem 0.9rem;
             background: var(--chip);
             color: var(--ink);
@@ -78,22 +79,9 @@
         }
         .cw-clues li.active { background: var(--chip); }
         .cw-clues li b { margin-right: 0.35rem; }
-        .cw-clues li a { margin-left: 0.35rem; }
-        .cw-hint-btn {
-            font: inherit;
-            font-size: 0.8rem;
-            padding: 0 0.45rem;
-            background: transparent;
-            color: var(--link);
-            border: 1px dashed var(--rule);
-            border-radius: 0.5rem;
-            cursor: pointer;
-        }
-        .cw-hint {
-            display: block;
-            font-size: 0.92rem;
-            color: var(--mute);
-        }
+        .cw-mark { margin-left: 0.35rem; white-space: nowrap; }
+        .cw-mark.right { color: #2f6b2f; }
+        .cw-mark.wrong { color: var(--link); }
         @media (max-width: 600px) {
             .cw-clues { grid-template-columns: 1fr; }
         }
@@ -105,9 +93,11 @@
     <p id="date" class="cw-date"></p>
     <p id="status" class="cw-status">पहेली बनाइँदैछ…</p>
     <div id="game" hidden>
+        <p id="score" class="cw-score"></p>
         <div id="board" class="cw-board" role="grid" aria-label="वर्गपहेली"></div>
         <p class="cw-actions">
             <button type="button" id="check">जाँच</button>
+            <button type="button" id="fill">शब्द भर</button>
             <button type="button" id="reveal">उत्तर</button>
             <button type="button" id="clear">मेटाउ</button>
         </p>
@@ -121,7 +111,7 @@
                 <ol id="clues-down"></ol>
             </div>
         </section>
-        <p>हरेक कोठामा एउटा अक्षर (मात्रासहित) लेख्नुहोस्। पहेली हरेक दिन आफैं बदलिन्छ।</p>
+        <p class="cw-rules">हरेक कोठामा एउटा अक्षर (मात्रासहित) लेख्नुहोस्। सही शब्दको +१० अङ्क; “शब्द भर” वा “उत्तर” ले भरेको हरेक शब्दको −५। पहेली हरेक दिन आफैं बदलिन्छ।</p>
     </div>
     <noscript>
         <p>वर्गपहेली खेल्न JavaScript चाहिन्छ।</p>
@@ -132,9 +122,10 @@
         (async () => {
             const MARK = /^[\u093e-\u094c\u0901-\u0903]/;
             const AKSHAR = /(?:[\u0905-\u0914]|[\u0915-\u0939][\u093e-\u094c]?)[\u0901-\u0903]?/g;
-            const status = document.getElementById("status");
+            const $ = (id) => document.getElementById(id);
+            const status = $("status");
             const day = Wotd.nepalDay();
-            document.getElementById("date").textContent = day;
+            $("date").textContent = day;
 
             let puzzle;
             try {
@@ -151,20 +142,17 @@
             const cellEls = grid.map((row) => row.map(() => null));
             const owners = grid.map((row) => row.map(() => ({})));
             const clueEls = [];
+            const marks = [];
+            let filled = new Set();
             let active = 0;
-            let done = false;
 
             const cellsOf = (w) => w.cells.map((_, i) =>
                 w.dir === "across" ? [w.row, w.col + i] : [w.row + i, w.col]);
+            const entryOf = (wi) => cellsOf(words[wi]).map(([r, c]) => inputs[r][c].value);
+            const isRight = (wi) => entryOf(wi).join("") === words[wi].word;
             words.forEach((w, wi) => cellsOf(w).forEach(([r, c]) => { owners[r][c][w.dir] = wi; }));
 
-            const save = () => {
-                try {
-                    localStorage.setItem(storeKey, JSON.stringify(inputs.map((row) => row.map((i) => (i ? i.value : "")))));
-                } catch (_) {}
-            };
-
-            const board = document.getElementById("board");
+            const board = $("board");
             const startNumber = new Map(words.map((w) => [w.row * size + w.col, w.number]));
             for (let r = 0; r < size; r++) {
                 for (let c = 0; c < size; c++) {
@@ -182,10 +170,10 @@
                             cell.appendChild(num);
                         }
                         const input = document.createElement("input");
-                        input.setAttribute("lang", "ne");
-                        input.setAttribute("autocomplete", "off");
+                        input.lang = "ne";
+                        input.autocomplete = "off";
+                        input.spellcheck = false;
                         input.setAttribute("autocapitalize", "off");
-                        input.setAttribute("spellcheck", "false");
                         input.setAttribute("aria-label", `${r + 1}, ${c + 1}`);
                         input.dataset.r = r;
                         input.dataset.c = c;
@@ -196,52 +184,70 @@
                 }
             }
 
-            try {
-                const saved = JSON.parse(localStorage.getItem(storeKey) || "null");
-                if (saved) saved.forEach((row, r) => row.forEach((v, c) => { if (inputs[r][c]) inputs[r][c].value = v; }));
-            } catch (_) {}
-
-            const showLinks = () => {
-                clueEls.forEach((li, wi) => {
-                    if (li.querySelector("a")) return;
-                    const a = document.createElement("a");
-                    a.href = "./" + encodeURIComponent(Wotd.slugify(words[wi].word)) + ".html";
-                    a.textContent = words[wi].word + " →";
-                    li.appendChild(a);
-                });
-            };
-
             for (const dir of ["across", "down"]) {
-                const list = document.getElementById("clues-" + dir);
                 words.forEach((w, wi) => {
                     if (w.dir !== dir) return;
                     const li = document.createElement("li");
                     const b = document.createElement("b");
                     b.textContent = w.number;
-                    li.append(b, `${w.clue} (${w.cells.length})`);
-                    if (w.hint) {
-                        const btn = document.createElement("button");
-                        btn.type = "button";
-                        btn.className = "cw-hint-btn";
-                        btn.textContent = "संकेत";
-                        btn.addEventListener("click", () => {
-                            const hint = document.createElement("span");
-                            hint.className = "cw-hint";
-                            hint.textContent = w.hint;
-                            btn.replaceWith(hint);
-                        });
-                        li.append(" ", btn);
-                    }
+                    marks[wi] = document.createElement("span");
+                    li.append(b, `${w.clue} (${w.cells.length})`, marks[wi]);
                     li.addEventListener("click", (e) => {
-                        if (e.target.closest("a, button")) return;
+                        if (e.target.closest("a")) return;
                         active = wi;
                         const [r, c] = cellsOf(w).find(([r, c]) => !inputs[r][c].value) || cellsOf(w)[0];
                         inputs[r][c].focus();
                     });
                     clueEls[wi] = li;
-                    list.appendChild(li);
+                    $("clues-" + dir).appendChild(li);
                 });
             }
+
+            const save = () => {
+                try {
+                    localStorage.setItem(storeKey, JSON.stringify({
+                        cells: inputs.map((row) => row.map((i) => (i ? i.value : ""))),
+                        filled: [...filled],
+                    }));
+                } catch (_) {}
+            };
+
+            const render = () => {
+                words.forEach((w, wi) => {
+                    const mark = marks[wi];
+                    mark.replaceChildren();
+                    mark.className = "cw-mark";
+                    if (entryOf(wi).some((v) => !v)) return;
+                    const right = isRight(wi);
+                    mark.classList.add(right ? "right" : "wrong");
+                    const a = document.createElement("a");
+                    a.href = "./" + encodeURIComponent(Wotd.slugify(w.word)) + ".html";
+                    a.textContent = w.word;
+                    mark.append(right ? "✓ " : "✗ ", a);
+                });
+                const points = Crossword.score(words, words.map((_, wi) => entryOf(wi)), filled);
+                $("score").textContent = "अङ्क: " + points.toLocaleString("ne");
+                status.textContent = words.every((_, wi) => isRight(wi)) ? "बधाई छ! पहेली पूरा भयो।" : "";
+            };
+
+            const changed = () => { save(); render(); };
+
+            const fillWord = (wi) => {
+                if (isRight(wi)) return;
+                cellsOf(words[wi]).forEach(([r, c], i) => {
+                    inputs[r][c].value = words[wi].cells[i];
+                    cellEls[r][c].classList.remove("wrong", "right");
+                });
+                filled.add(wi);
+            };
+
+            try {
+                const saved = JSON.parse(localStorage.getItem(storeKey) || "null");
+                if (saved && saved.cells) {
+                    saved.cells.forEach((row, r) => row.forEach((v, c) => { if (inputs[r][c]) inputs[r][c].value = v; }));
+                    filled = new Set(saved.filled || []);
+                }
+            } catch (_) {}
 
             const highlight = (r0, c0) => {
                 for (const row of cellEls) for (const el of row) el.classList.remove("in-word", "current");
@@ -257,26 +263,15 @@
 
             const positionIn = (wi, r, c) => cellsOf(words[wi]).findIndex(([rr, cc]) => rr === r && cc === c);
 
-            const finishIfSolved = () => {
-                const solved = grid.every((row, r) => row.every((a, c) => !a || inputs[r][c].value === a));
-                if (solved && !done) {
-                    done = true;
-                    status.textContent = "बधाई छ! पहेली पूरा भयो।";
-                    showLinks();
-                }
-            };
-
             let lastFocus = null;
             board.addEventListener("mousedown", (e) => {
                 const input = e.target.closest("input");
-                if (!input) return;
+                if (!input || lastFocus !== input) return;
                 const r = +input.dataset.r, c = +input.dataset.c;
-                if (lastFocus === input) {
-                    const other = words[active].dir === "across" ? "down" : "across";
-                    if (owners[r][c][other] !== undefined) {
-                        active = owners[r][c][other];
-                        highlight(r, c);
-                    }
+                const other = words[active].dir === "across" ? "down" : "across";
+                if (owners[r][c][other] !== undefined) {
+                    active = owners[r][c][other];
+                    highlight(r, c);
                 }
             });
 
@@ -308,8 +303,7 @@
                     const merged = (prev.value + value).normalize("NFC").match(AKSHAR);
                     if (merged) prev.value = merged[0];
                     input.value = "";
-                    save();
-                    finishIfSolved();
+                    changed();
                     return;
                 }
 
@@ -321,8 +315,7 @@
                     inputs[nr][nc].value = parts[k];
                     last = idx + k;
                 }
-                save();
-                finishIfSolved();
+                changed();
                 if (parts.length) {
                     const next = path[Math.min(last + 1, path.length - 1)];
                     focusCell(next[0], next[1]);
@@ -354,49 +347,43 @@
                     if (idx > 0) {
                         const [pr, pc] = cellsOf(words[active])[idx - 1];
                         inputs[pr][pc].value = "";
-                        save();
+                        changed();
                         focusCell(pr, pc);
                     }
                 }
             });
 
-            document.getElementById("check").addEventListener("click", () => {
+            $("check").addEventListener("click", () => {
                 grid.forEach((row, r) => row.forEach((a, c) => {
                     if (!a || !inputs[r][c].value) return;
                     cellEls[r][c].classList.toggle("wrong", inputs[r][c].value !== a);
                     cellEls[r][c].classList.toggle("right", inputs[r][c].value === a);
                 }));
-                finishIfSolved();
             });
 
-            document.getElementById("reveal").addEventListener("click", () => {
-                grid.forEach((row, r) => row.forEach((a, c) => {
-                    if (!a) return;
-                    inputs[r][c].value = a;
-                    cellEls[r][c].classList.remove("wrong", "right");
-                }));
-                save();
-                done = true;
-                status.textContent = "उत्तर देखाइयो।";
-                showLinks();
+            $("fill").addEventListener("click", () => {
+                fillWord(active);
+                changed();
             });
 
-            document.getElementById("clear").addEventListener("click", () => {
+            $("reveal").addEventListener("click", () => {
+                words.forEach((_, wi) => fillWord(wi));
+                changed();
+            });
+
+            $("clear").addEventListener("click", () => {
                 grid.forEach((row, r) => row.forEach((a, c) => {
                     if (!a) return;
                     inputs[r][c].value = "";
                     cellEls[r][c].classList.remove("wrong", "right");
                 }));
-                save();
-                done = false;
-                status.textContent = "";
-                clueEls.forEach((li) => { const a = li.querySelector("a"); if (a) a.remove(); });
+                filled = new Set();
+                changed();
             });
 
-            status.textContent = "";
             document.getElementById("game").hidden = false;
             highlight();
-            finishIfSolved();
+            render();
         })();
     </script>
 </body>
