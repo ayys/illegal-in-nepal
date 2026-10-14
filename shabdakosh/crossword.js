@@ -187,16 +187,16 @@
     };
 
     const WORD_POINTS = 10;
-    const FILL_COST = 5;
+    const MISS_COST = 2;
 
-    // entries[i] is what the player has in each cell of words[i]; filled holds indices of words given away.
-    const score = (words, entries, filled) =>
-        words.reduce((total, w, i) => {
-            if (filled.has(i)) return total - FILL_COST;
-            return entries[i].join('') === w.word ? total + WORD_POINTS : total;
-        }, 0);
+    const maxScore = (words) => words.length * WORD_POINTS;
+
+    // A revealed word earns nothing; each wrong guess costs MISS_COST.
+    const score = (words, reveals, misses) =>
+        Math.max(0, maxScore(words) - reveals * WORD_POINTS - misses * MISS_COST);
 
     exports.SIZE = SIZE;
+    exports.maxScore = maxScore;
     exports.akshars = akshars;
     exports.forDay = forDay;
     exports.score = score;

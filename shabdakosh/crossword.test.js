@@ -4,12 +4,14 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
-const { akshars, forDay, score, SIZE } = require('./crossword.js');
+const { akshars, forDay, maxScore, score, SIZE } = require('./crossword.js');
 
 const pair = [{ word: 'किताब' }, { word: 'आँगन' }];
-assert.strictEqual(score(pair, [['कि', 'ता', 'ब'], ['आँ', 'ग', 'न']], new Set()), 20, 'typed words earn 10 each');
-assert.strictEqual(score(pair, [['कि', 'ता', 'ब'], ['आँ', 'ग', 'न']], new Set([1])), 5, 'a filled word costs 5');
-assert.strictEqual(score(pair, [['कि', 'ता', ''], ['आँ', 'ग', 'ल']], new Set()), 0, 'unfinished or wrong words earn nothing');
+assert.strictEqual(maxScore(pair), 20, 'each word is worth 10');
+assert.strictEqual(score(pair, 0, 0), 20, 'a clean solve keeps the maximum');
+assert.strictEqual(score(pair, 1, 0), 10, 'a revealed word earns nothing');
+assert.strictEqual(score(pair, 0, 3), 14, 'each wrong guess costs 2');
+assert.strictEqual(score(pair, 2, 5), 0, 'the score never goes below zero');
 
 assert.deepStrictEqual(akshars('आँगन'), ['आँ', 'ग', 'न']);
 assert.deepStrictEqual(akshars('किताब'), ['कि', 'ता', 'ब']);

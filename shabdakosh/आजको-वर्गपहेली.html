@@ -111,7 +111,7 @@
                 <ol id="clues-down"></ol>
             </div>
         </section>
-        <p class="cw-rules">हरेक कोठामा एउटा अक्षर (मात्रासहित) लेख्नुहोस्। सही शब्दको +१० अङ्क; “शब्द भर” वा “उत्तर” ले भरेको हरेक शब्दको −५। पहेली हरेक दिन आफैं बदलिन्छ।</p>
+        <p class="cw-rules">हरेक कोठामा एउटा अक्षर (मात्रासहित) लेख्नुहोस्। पूरा अङ्क (हरेक शब्दको १०) बाट सुरु हुन्छ; हरेक गलत अनुमानको −२, “शब्द भर” वा “उत्तर” ले भरेको हरेक शब्दको −१०। पहेली हरेक दिन आफैं बदलिन्छ।</p>
     </div>
     <noscript>
         <p>वर्गपहेली खेल्न JavaScript चाहिन्छ।</p>
@@ -144,6 +144,7 @@
             const clueEls = [];
             const marks = [];
             let filled = new Set();
+            let misses = new Set();
             let active = 0;
 
             const cellsOf = (w) => w.cells.map((_, i) =>
@@ -208,6 +209,7 @@
                     localStorage.setItem(storeKey, JSON.stringify({
                         cells: inputs.map((row) => row.map((i) => (i ? i.value : ""))),
                         filled: [...filled],
+                        misses: [...misses],
                     }));
                 } catch (_) {}
             };
@@ -229,12 +231,19 @@
                     a.textContent = w.word;
                     mark.append("✓ ", a);
                 });
-                const points = Crossword.score(words, words.map((_, wi) => entryOf(wi)), filled);
-                $("score").textContent = "अङ्क: " + points.toLocaleString("ne");
+                const points = Crossword.score(words, filled.size, misses.size);
+                $("score").textContent = `अङ्क: ${points.toLocaleString("ne")} / ${Crossword.maxScore(words).toLocaleString("ne")}`;
                 status.textContent = words.every((_, wi) => isRight(wi)) ? "बधाई छ! पहेली पूरा भयो।" : "";
             };
 
-            const changed = () => { save(); render(); };
+            const changed = () => {
+                words.forEach((_, wi) => {
+                    const entry = entryOf(wi);
+                    if (!filled.has(wi) && entry.every(Boolean) && !isRight(wi)) misses.add(`${wi}:${entry.join("")}`);
+                });
+                save();
+                render();
+            };
 
             const fillWord = (wi) => {
                 if (isRight(wi)) return;
@@ -250,6 +259,7 @@
                 if (saved && saved.cells) {
                     saved.cells.forEach((row, r) => row.forEach((v, c) => { if (inputs[r][c]) inputs[r][c].value = v; }));
                     filled = new Set(saved.filled || []);
+                    misses = new Set(saved.misses || []);
                 }
             } catch (_) {}
 
@@ -381,7 +391,6 @@
                     inputs[r][c].value = "";
                     cellEls[r][c].classList.remove("wrong", "right");
                 }));
-                filled = new Set();
                 changed();
             });
 
