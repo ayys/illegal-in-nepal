@@ -70,6 +70,7 @@
             cursor: pointer;
         }
         .cw-actions button:hover { border-color: var(--ginger); }
+        .cw-actions button.armed { color: #fff; background: var(--link); border-color: var(--link); }
         .cw-clues {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -447,6 +448,15 @@
                 } else if (e.key === "Tab") {
                     e.preventDefault();
                     goToWord(nextWord(e.shiftKey ? -1 : 1));
+                } else if (e.key === "Enter") {
+                    e.preventDefault();
+                    const next = cellsOf(words[active])[positionIn(active, r, c) + 1];
+                    if (!next) {
+                        goToWord(nextWord(1));
+                        return;
+                    }
+                    focusCell(...next);
+                    highlight(...next);
                 } else if (e.key === "Delete") {
                     e.preventDefault();
                     clearCell(r, c);
@@ -485,8 +495,25 @@
                 changed();
             });
 
-            $("clear").addEventListener("click", () => {
-                if (!confirm("सबै कोठा मेटाउने? कटेको अङ्क फर्किँदैन।")) return;
+            // The first click asks again on the button itself; a second click
+            // within a few seconds clears.
+            const clearButton = $("clear");
+            let disarm = null;
+            const reset = () => {
+                clearTimeout(disarm);
+                disarm = null;
+                clearButton.textContent = "मेटाउ";
+                clearButton.classList.remove("armed");
+            };
+            clearButton.addEventListener("blur", reset);
+            clearButton.addEventListener("click", () => {
+                if (!disarm) {
+                    clearButton.textContent = "साँच्चै मेटाउने?";
+                    clearButton.classList.add("armed");
+                    disarm = setTimeout(reset, 3000);
+                    return;
+                }
+                reset();
                 grid.forEach((row, r) => row.forEach((a, c) => {
                     if (!a) return;
                     inputs[r][c].value = "";
