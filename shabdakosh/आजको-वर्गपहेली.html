@@ -303,16 +303,10 @@
                 cellEls[r][c].classList.remove("wrong", "right");
                 changed();
             };
-            const clearCell = (r, c) => {
-                typed = null;
-                setCell(r, c, "");
-            };
-            const dropLast = ([r, c]) => {
+            const clearCell = (r, c) => setCell(r, c, "");
+            const dropLast = (r, c) => {
                 setCell(r, c, [...inputs[r][c].value].slice(0, -1).join(""));
-                focusCell(r, c);
-                highlight(r, c);
                 editing = inputs[r][c];
-                typed = null;
             };
 
             const positionIn = (wi, r, c) => cellsOf(words[wi]).findIndex(([rr, cc]) => rr === r && cc === c);
@@ -339,22 +333,20 @@
                 }
                 lastFocus = input;
                 editing = null;
-                if (typed && (typed.to[0] !== r || typed.to[1] !== c)) typed = null;
                 kept.set(input, input.value);
                 highlight(r, c);
-                requestAnimationFrame(() => input.select());
+                if (!carrying) requestAnimationFrame(() => input.select());
             });
 
-            // The cell last typed into and where the cursor went from there: a
-            // vowel sign typed there joins the former, even past filled cells.
-            let typed = null;
             // A cell's letter before the latest keystroke replaced its selection.
             const kept = new WeakMap();
-            const emptyAfter = (path, i) => {
-                const order = [...path.slice(i + 1), ...path.slice(0, i + 1)];
-                return order.find(([r, c]) => !inputs[r][c].value);
-            };
+            // Set while typing carries the cursor on, so the new cell's letter
+            // isn't selected and a vowel sign typed next joins it.
+            let carrying = false;
 
+            // The cursor stays in the cell being typed in, so vowel signs join
+            // its letter; typing the next letter carries it to the next empty
+            // cell, or the next cell once the rest of the word is full.
             board.addEventListener("input", (e) => {
                 const input = e.target;
                 if (e.isComposing) return;
@@ -364,10 +356,8 @@
                 const value = input.value.normalize("NFC").replace(/\s+/g, "");
                 cellEls[r][c].classList.remove("wrong", "right");
 
-                const resumed = typed && typed.to !== typed.from && typed.to[0] === r && typed.to[1] === c;
-                const before = resumed ? typed.from : idx > 0 && path[idx - 1];
-                if (MARK.test(value) && before) {
-                    const [pr, pc] = before;
+                if (MARK.test(value) && idx > 0) {
+                    const [pr, pc] = path[idx - 1];
                     const prev = inputs[pr][pc];
                     const merged = (prev.value + value).normalize("NFC").match(AKSHAR);
                     if (merged) prev.value = merged[0];
@@ -378,21 +368,22 @@
 
                 const parts = value.match(AKSHAR) || [];
                 input.value = parts[0] || "";
-                let last = idx;
-                for (let k = 1; k < parts.length && idx + k < path.length; k++) {
-                    const [nr, nc] = path[idx + k];
-                    inputs[nr][nc].value = parts[k];
-                    last = idx + k;
+                let at = idx;
+                for (const part of parts.slice(1)) {
+                    const rest = path.slice(at + 1);
+                    const next = rest.find(([nr, nc]) => !inputs[nr][nc].value) || rest[0];
+                    if (!next) break;
+                    inputs[next[0]][next[1]].value = part;
+                    at = positionIn(active, ...next);
                 }
                 kept.set(input, input.value);
                 changed();
-                if (parts.length) {
-                    const next = emptyAfter(path, last) || path[last];
-                    typed = { from: path[last], to: next };
-                    focusCell(next[0], next[1]);
-                    highlight(next[0], next[1]);
-                    if (next === path[last]) editing = inputs[next[0]][next[1]];
-                }
+                const [nr, nc] = path[at];
+                carrying = true;
+                focusCell(nr, nc);
+                carrying = false;
+                highlight(nr, nc);
+                editing = inputs[nr][nc];
             });
 
             board.addEventListener("compositionend", (e) => {
@@ -430,14 +421,8 @@
                 } else if (e.key === "Backspace") {
                     e.preventDefault();
                     if (input.value) {
-                        if (editing === input) dropLast([r, c]);
+                        if (editing === input) dropLast(r, c);
                         else clearCell(r, c);
-                        return;
-                    }
-                    // Right after typing, the cursor has already moved on: fix
-                    // the cell just typed in, one character at a time.
-                    if (typed && typed.to !== typed.from && typed.to[0] === r && typed.to[1] === c) {
-                        dropLast(typed.from);
                         return;
                     }
                     const idx = positionIn(active, r, c);
