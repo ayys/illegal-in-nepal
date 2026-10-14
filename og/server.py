@@ -1,13 +1,15 @@
 """Render link-preview (Open Graph) images for illegal-in-nepal.org pages.
 
 GET /<path>.png fetches SITE/<path>.html, reads its og:title and
-og:description, and draws them onto a 1200×630 card.
+og:description, and draws them onto a 1200×630 card. Cards are cached on
+disk by path; clear CACHE_DIRECTORY to redraw them.
 """
 
 import hashlib
 import io
 import os
 import re
+import threading
 import urllib.error
 import urllib.request
 from html.parser import HTMLParser
@@ -63,7 +65,7 @@ def page_meta(path):
     title = parser.meta.get("og:title") or parser.title.strip()
     # The card fonts have no emoji.
     clean = lambda s: re.sub(r" ([,.;:!?।])", r"\1", " ".join(EMOJI.sub("", s).split()))
-    return clean(title), clean(parser.meta.get("og:description", ""))
+    return clean(title), clean(parser.meta.get("og:description", "")), "og:title" in parser.meta
 
 
 def wrap(draw, text, face, width, max_lines):
@@ -117,26 +119,29 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if not PATH.match(self.path) or ".." in self.path:
             return self.send_error(404)
-        try:
-            title, description = page_meta(self.path)
-        except urllib.error.HTTPError as e:
-            return self.send_error(404 if e.code == 404 else 502)
-        except (urllib.error.URLError, TimeoutError):
-            return self.send_error(502)
-
-        key = hashlib.sha256(f"{self.path}\0{title}\0{description}".encode()).hexdigest()
-        cached = CACHE / f"{key}.png"
+        # Images are kept until the cache directory is cleared.
+        cached = CACHE / (hashlib.sha256(self.path.encode()).hexdigest() + ".png")
         if cached.exists():
             png = cached.read_bytes()
         else:
+            try:
+                title, description, tagged = page_meta(self.path)
+            except urllib.error.HTTPError as e:
+                return self.send_error(404 if e.code == 404 else 502)
+            except (urllib.error.URLError, TimeoutError):
+                return self.send_error(502)
             png = render(self.path, title, description)
-            CACHE.mkdir(parents=True, exist_ok=True)
-            cached.write_bytes(png)
+            # Untagged pages are drawn from <title> alone; don't keep those.
+            if tagged:
+                CACHE.mkdir(parents=True, exist_ok=True)
+                partial = cached.with_suffix(f".{os.getpid()}.{threading.get_ident()}")
+                partial.write_bytes(png)
+                partial.replace(cached)
 
         self.send_response(200)
         self.send_header("Content-Type", "image/png")
         self.send_header("Content-Length", str(len(png)))
-        self.send_header("Cache-Control", "public, max-age=86400")
+        self.send_header("Cache-Control", "public, max-age=604800")
         self.end_headers()
         if self.command != "HEAD":
             self.wfile.write(png)

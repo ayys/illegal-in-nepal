@@ -17,6 +17,7 @@ ssh -t "$HOST" "
     sudo install -m 644 /tmp/Caddyfile /etc/caddy/Caddyfile
     sudo systemctl daemon-reload
     sudo systemctl enable --now og
+    sudo rm -rf /var/cache/og/*
     sudo systemctl restart og
     sudo systemctl reload caddy
 "
