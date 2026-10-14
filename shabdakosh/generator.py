@@ -614,7 +614,7 @@ async def generate_index_page(links_list):
             }} catch (error) {{
                 if (error.name === "AbortError") return;
                 console.error("Search failed:", error);
-                resultsContainer.innerHTML = "<p>खोज गर्न सकिएन। केही बेरपछि फेरि प्रयास गर्नुहोस्।</p>";
+                resultsContainer.innerHTML = "<p>खोज्न सकिएन। एकछिनपछि फेरि खोज्नुहोस्।</p>";
             }}
         }};
 

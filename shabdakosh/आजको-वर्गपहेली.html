@@ -5,20 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="only light">
     <title>आजको वर्गपहेली</title>
-    <meta name="description" content="शब्दकोशका शब्दबाट हरेक दिन आफैं बन्ने सानो नेपाली वर्गपहेली।">
+    <meta name="description" content="शब्दकोशकै शब्दले बनेको, दिनदिनै नयाँ आउने सानो नेपाली वर्गपहेली।">
     <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="/common.css">
     <style>
         .kosh-nav { margin-bottom: 1rem; }
-        .cw-date, .cw-status, .cw-rules { color: var(--mute); }
+        .cw-status, .cw-rules { color: var(--mute); }
+        .cw-rules { padding-left: 1.2rem; line-height: 1.7; }
+        .cw-rules b { color: var(--ink); font-weight: normal; }
         .cw-score { font-size: 1.2rem; margin: 0; }
         .cw-board {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 3px;
             width: min(100%, 26rem);
+            box-sizing: border-box;
             margin: 1rem 0;
-            padding: 3px;
+            padding: 6px;
             background: var(--ink);
             border-radius: 0.5rem;
         }
@@ -83,6 +86,18 @@
         .cw-mark { margin-left: 0.35rem; white-space: nowrap; }
         .cw-mark.right { color: #2f6b2f; }
         .cw-mark.wrong { color: var(--link); }
+        body { max-width: 64rem; }
+        .cw-layout {
+            display: grid;
+            grid-template-columns: min(100%, 26rem) 1fr;
+            gap: 0 2rem;
+            align-items: start;
+        }
+        .cw-layout .cw-clues h2 { margin-top: 0.8rem; }
+        @media (max-width: 960px) {
+            body { max-width: 45rem; }
+            .cw-layout { grid-template-columns: 1fr; }
+        }
         @media (max-width: 600px) {
             .cw-clues { grid-template-columns: 1fr; }
         }
@@ -91,10 +106,11 @@
 <body>
     <p class="kosh-nav"><a href="/">गृह</a> · <a href="/shabdakosh/">शब्दकोश</a> · <a href="./आजको-शब्द.html">आजको शब्द</a></p>
     <p class="heading">आजको वर्गपहेली</p>
-    <p id="date" class="cw-date"></p>
-    <p id="status" class="cw-status">पहेली बनाइँदैछ…</p>
+    <p id="status" class="cw-status">पहेली बन्दैछ…</p>
     <div id="game" hidden>
         <p id="score" class="cw-score"></p>
+        <div class="cw-layout">
+        <div>
         <div id="board" class="cw-board" role="grid" aria-label="वर्गपहेली"></div>
         <p class="cw-actions">
             <button type="button" id="check">जाँच</button>
@@ -102,6 +118,7 @@
             <button type="button" id="reveal">उत्तर</button>
             <button type="button" id="clear">मेटाउ</button>
         </p>
+        </div>
         <section class="cw-clues">
             <div>
                 <h2>तेर्सो</h2>
@@ -112,7 +129,15 @@
                 <ol id="clues-down"></ol>
             </div>
         </section>
-        <p class="cw-rules">हरेक कोठामा एउटा अक्षर (मात्रासहित) लेख्नुहोस्। पूरा अङ्क (हरेक शब्दको १०) बाट सुरु हुन्छ; हरेक गलत अनुमानको −२, “शब्द भर” वा “उत्तर” ले भरेको हरेक शब्दको −१०। पहेली हरेक दिन आफैं बदलिन्छ।</p>
+        </div>
+        <ul class="cw-rules">
+            <li>एउटा कोठामा एउटा अक्षर लेख्नुहोस्। का, कि, कु जस्ता अक्षर पनि एउटै कोठामा अटाउँछन्।</li>
+            <li>प्रत्येक शब्दको १० अङ्क हुन्छ।</li>
+            <li>अशुद्ध शब्द लेखेमा <b>२ अङ्क</b> कट्छ।</li>
+            <li>“शब्द भर” वा “उत्तर” थिचेर भरेको शब्दको <b>१० अङ्क</b> कट्छ।</li>
+            <li>“मेटाउ” ले कोठा मात्र मेटाउँछ, कटेको अङ्क फर्किँदैन।</li>
+            <li>पहेली दिनदिनै फेरिन्छ।</li>
+        </ul>
     </div>
     <noscript>
         <p>वर्गपहेली खेल्न JavaScript चाहिन्छ।</p>
@@ -126,7 +151,7 @@
             const $ = (id) => document.getElementById(id);
             const status = $("status");
             const day = Wotd.nepalDay();
-            $("date").textContent = day;
+            const nepali = (n) => String(n).replace(/\d/g, (d) => "०१२३४५६७८९"[d]);
 
             let puzzle;
             try {
@@ -156,8 +181,15 @@
 
             const board = $("board");
             const startNumber = new Map(words.map((w) => [w.row * size + w.col, w.number]));
-            for (let r = 0; r < size; r++) {
-                for (let c = 0; c < size; c++) {
+            // Leave out all-black rows and columns at the edges.
+            const used = (lines) => lines.map((any, i) => any && i).filter((i) => i !== false);
+            const rows = used(grid.map((row) => row.some(Boolean)));
+            const cols = used(grid[0].map((_, c) => grid.some((row) => row[c])));
+            const [r0, r1, c0, c1] = [rows[0], rows.at(-1), cols[0], cols.at(-1)];
+            board.style.gridTemplateColumns = `repeat(${c1 - c0 + 1}, 1fr)`;
+            board.style.width = `min(100%, ${(c1 - c0 + 1) * 3.7}rem)`;
+            for (let r = r0; r <= r1; r++) {
+                for (let c = c0; c <= c1; c++) {
                     const cell = document.createElement("div");
                     cell.className = "cw-cell";
                     cellEls[r][c] = cell;
@@ -168,7 +200,7 @@
                         if (n) {
                             const num = document.createElement("span");
                             num.className = "cw-num";
-                            num.textContent = n;
+                            num.textContent = nepali(n);
                             cell.appendChild(num);
                         }
                         const input = document.createElement("input");
@@ -191,9 +223,9 @@
                     if (w.dir !== dir) return;
                     const li = document.createElement("li");
                     const b = document.createElement("b");
-                    b.textContent = w.number;
+                    b.textContent = nepali(w.number);
                     marks[wi] = document.createElement("span");
-                    li.append(b, `${w.clue} (${w.cells.length})`, marks[wi]);
+                    li.append(b, `${w.clue} (${nepali(w.cells.length)})`, marks[wi]);
                     li.addEventListener("click", (e) => {
                         if (!e.target.closest("a")) goToWord(wi);
                     });
@@ -231,7 +263,7 @@
                     mark.append("✓ ", a);
                 });
                 const points = Crossword.score(words, filled.size, misses.size);
-                $("score").textContent = `अङ्क: ${points.toLocaleString("ne")} / ${Crossword.maxScore(words).toLocaleString("ne")}`;
+                $("score").textContent = `अङ्क: ${nepali(points)} / ${nepali(Crossword.maxScore(words))}`;
                 status.textContent = words.every((_, wi) => isRight(wi)) ? "बधाई छ! पहेली पूरा भयो।" : "";
             };
 
@@ -265,7 +297,7 @@
             } catch (_) {}
 
             const highlight = (r0, c0) => {
-                for (const row of cellEls) for (const el of row) el.classList.remove("in-word", "current");
+                for (const row of cellEls) for (const el of row) el?.classList.remove("in-word", "current");
                 clueEls.forEach((li) => li.classList.remove("active"));
                 cellsOf(words[active]).forEach(([r, c]) => cellEls[r][c].classList.add("in-word"));
                 if (r0 !== undefined) cellEls[r0][c0].classList.add("current");
@@ -454,6 +486,7 @@
             });
 
             $("clear").addEventListener("click", () => {
+                if (!confirm("सबै कोठा मेटाउने? कटेको अङ्क फर्किँदैन।")) return;
                 grid.forEach((row, r) => row.forEach((a, c) => {
                     if (!a) return;
                     inputs[r][c].value = "";
