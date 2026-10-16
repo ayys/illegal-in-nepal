@@ -1,0 +1,89 @@
+EAP760-1-5-1 | Two Stotras | 1
+EAP760-1-5-2 | Alphabet book | 8
+EAP760-1-5-3 | List of jewelries and ornaments for Bhimsen Jatra | 1
+EAP760-1-5-4 | Letters, Receipts, Express Orders, and Revenue Accounts | 8
+EAP760-1-5-5 | A bundle of documents related to Lokmān Rājbhaṇḍārī | 10
+EAP760-1-5-6 | Proficiency skills for government service | 2
+EAP760-1-5-7 | Public notice on accreditation exams for ‘Gaṇit Adālati Śreṣṭa’ | 2
+EAP760-1-5-8 | Pṛthvinārāyan Sāha Dev’s Lālmohar to Kesavasīmpradhān | 1
+EAP760-1-5-9 | King’s Express Order (Rūkkā) to Rājendra Sība Narsīṃ Vir Kṛīṣṇa Sīṃ Bhājū Dhana Nevār | 1
+EAP760-1-5-10 | Documents on Clan Deity and a letter | 4
+EAP760-1-5-11 | Āyudharāj Gubhāju’s letter to Sāhu (?) and Sāhu Anīrūdra Śreṣṭa | 1
+EAP760-1-5-12 | Diagrammatic formula of Bagalāmuṣi | 1
+EAP760-1-5-13 | Cakramāṃ’s letter to grandfather Gayālāl | 1
+EAP760-1-5-14 | Mānīk Sīṃha’s letter to Jujū Bhāi | 1
+EAP760-1-5-15 | Kulvāhādur Bhoṭecā Śreṣṭa’s letter to Mohaṃlāl Śreṣṭa | 1
+EAP760-1-5-16 | MTM: Book on holy sites of pilgrimage in Nepal Valley | 21
+EAP760-1-5-17 | Śrīmadbhāgvat Gītā | 27
+EAP760-1-5-18 | Two Kṛṣṇa Bhajans | 1
+EAP760-1-5-19 | Institution of Śrī Ananteśvar Māhādev, Śrī Nārāyaṇ | 3
+EAP760-1-5-20 | Department of Archaeology’s letter to Keśar Bahādur Rājbhaṇḍārī | 1
+EAP760-1-5-21 | Siṅgavīrasiṅg’s land deed to the lineage deity (Kūla Devatā) | 1
+EAP760-1-5-22 | Sora Sarādha Garne Kītāp | 4
+EAP760-1-5-23 | Puṣparatnākar by Navamīsiṃha | 35
+EAP760-1-5-24 | Bhajan Notebook | 23
+EAP760-1-5-25 | MTM. Vaṃśāvalī and geography of Nepal | 109
+EAP760-1-5-26 | MTM. Documents related to Gayalal’s house ownership dispute | 4
+EAP760-1-5-27 | Note on service years | 1
+EAP760-1-5-28 | MTM. Bunch of land-related documents | 6
+EAP760-1-5-29 | Pāṇḍavakṛta Prapanna Gītā | 4
+EAP760-1-5-30 | MTM. Hātakeśvar Mahādev, Gṛhaśuddhi Yajñavidhi | 15
+EAP760-1-5-31 | Song book | 15
+EAP760-1-5-32 | MTM. Tarpaṇ, Genealogical details, Event notes, Post-mortuary rites, Later additions | 11
+EAP760-1-5-33 | Bhaviṣyottara Purāṇa | 33
+EAP760-1-5-34 | MTM. Prātakṛt‍ti Vidhi, Bhojan Vidhi, Misāyā Nityakarmayā Vidhi, Dakṣiṇakālī Mahānirvāṇa Vidhi, Durvā Pūjā, Naimirtika Pūjā Paddhati, Royal Salutation | 49
+EAP760-1-5-35 | Copper plate donation deed of Śivakṛṣṇa Bhandiri Bhāro | 1
+EAP760-1-5-36 | Copper plate donation deed of Mānsiṃha Bhāro | 2
+EAP760-1-5-37 | Śubhāṣita | 3
+EAP760-1-5-38 | MTM. 1. Vedantic text, 2. Bhajan, 3. Bhajan fragments | 20
+EAP760-1-5-39 | MTM. 1. Donation deed, 2. Guthi Rules | 15
+EAP760-1-5-40 | Bhāsvati | 16
+EAP760-1-5-41 | Golodhyāya | 49
+EAP760-1-5-42 | Śubhāṣitāvalī | 31
+EAP760-1-5-43 | Nāma Saṅgīti | 10
+EAP760-1-5-44 | MTM. 1. Gurūmaṇḍala Pūjā, 2. Dakṣiṇakālī Hṛdaya, 3. Vijayādaśamī Vidhi | 17
+EAP760-1-5-45 | MTM. 1. Snāna Vidhi, 2. Jantramantra, 3. Nityakarma Vidhi | 16
+EAP760-1-5-46 | MTM Fragments. 1. Tripurasundarī Pūjā, 2. Sadāśiva Pūjā, 3. Pārthiva Pūjā, 4. Nityapūjā, 5. Matapūjā Vidhi, 6. Śuddhādi Śodhanama | 18
+EAP760-1-5-47 | Nityārcana Vidhi | 2
+EAP760-1-5-48 | MTM. 1. Family genealogy, 2. Ugracaṇḍā Siddhilakṣmī Abheda Stuti, 3. Maṅgala Stotra, 4. Yāmala Tantra, 5. Various dated entries, 6. fragmentary note | 21
+EAP760-1-5-49 | MTM. 1. Multiplication Table, 2. Mantrarāja, 3. Hanumata Kavaca, 4. Viṣṇu Stotra, 5. Mahādev Stotra, 6. Gṛhaśuddhi Yajñavidhi | 10
+EAP760-1-5-50 | MTM. Buddhist text, Samādhirāja Sūtra (?) | 2
+EAP760-1-5-51 | MTM. 1. Svapantāvati, 2. Lakṣmaṇa Kuṇḍalī Varṇana 3. Svapnādhyāye Vicāra | 20
+EAP760-1-5-52 | Courtyard Plan | 10
+EAP760-1-5-53 | Siṃhalasārthavāha | 66
+EAP760-1-5-54 | Birasiṣā | 82
+EAP760-1-5-55 | Instructions on the rituals for Buddhist deity | 4
+EAP760-1-5-56 | Almanac | 7
+EAP760-1-5-57 | Saṃvarttakramasūtra Nirṇaya | 31
+EAP760-1-5-58 | Text related to Śaivatantra | 2
+EAP760-1-5-59 | MTM. 1. Japas, 2. Samvart‍ta Pūjā, 3. Mātṛkā Nyāsa | 13
+EAP760-1-5-60 | Tantracintāmaṇi by Navamisiṃha | 1
+EAP760-1-5-61 | Copperplate rubbings, two copies on Nepali paper | 2
+EAP760-1-5-62 | Yantroddhāra | 17
+EAP760-1-5-63 | MTM. 1. Gosāikuṇḍa Birahinī Giṭ, 2. Petition to king, 3. Song | 9
+EAP760-1-5-64 | Caṇḍī Bhaktivinodini by Navami Siṃ | 18
+EAP760-1-5-65 | Puṣparatnākara | 2
+EAP760-1-5-66 | Dāphā Songs | 1
+EAP760-1-5-67 | Saṃvartadevī Pūjā Vidhi | 1
+EAP760-1-5-68 | MTM. 1. Mātṛkā Nighaṇṭu, 2. Vījopavījā Kuṭopakuṭa | 62
+EAP760-1-5-69 | Collection of eight documents, all xerox | 11
+EAP760-1-5-70 | Almanac | 6
+EAP760-1-5-71 | Donation deed of land by Gaṅgāmuni Bhali | 2
+EAP760-1-5-72 | Phalita Jyotiṣa text | 28
+EAP760-1-5-73 | MTM. 1. Bhavānī Stotra, 2. Pūjā Sāmagrī 3. Dravyakaraṇa Śuddhi | 2
+EAP760-1-5-74 | MTM. 1. Pāṇḍava Gītā, 2. Mṛtyuñjaya Stotra, 3. Kṣamāpana Stotra, 4. Maṅgala Stotra, 5. Caṇḍī Stotra, 6. Indrākṣīstava | 16
+EAP760-1-5-75 | Memo | 2
+EAP760-1-5-76 | MTM. 1. Lakṣmīpūjā Vidhi, 2. Ātmatamotkarṣa Stotra | 3
+EAP760-1-5-77 | Scrapbook | 45
+EAP760-1-5-78 | Notes | 1
+EAP760-1-5-79 | Notes | 11
+EAP760-1-5-80 | Notes | 1
+EAP760-1-5-81 | Rāmāyaṇ | 14
+EAP760-1-5-82 | MTM. A compendium of Phalita Jyotiṣa | 32
+EAP760-1-5-83 | MTM. Svachandalalitabhairava Mahātantra Mantrapiṭha | 64
+EAP760-1-5-84 | MTM. 1. Entries on death anniversaries, 2. Potāko Utār, 3. Supplementary to 1, 4. List of Ṭols, 5. Earthquake and Kot massacre | 20
+EAP760-1-5-85 | MTM. 1. Mahimna Stotra, 2. Nirañjanā Stotra, 3. Tulasī Mahimā Stotra | 6
+EAP760-1-5-86 | MTM. 1. Saptaśati Caṇḍī, 2. Devīsūkta, 3. Devīnāmarahasya, 4. Devyāprakṛtirahasya, 5. Mūrtirahasya | 187
+EAP760-1-5-87 | Harivaṃśapurāṇa Kathā Smaraṇa Patrikā | 110
+EAP760-1-5-88 | MTM. 1. Rāmarakṣā Stotra, 2. Hanumanta Stotra | 22
+EAP760-1-5-89 | Fragment of a Paurāṇik story | 8

@@ -1,0 +1,83 @@
+bs_year,month,first_day,source,pdf_page,note
+2035,2,1978-05-14,https://archive.org/download/2081_20240828/2035.pdf,4,sankranti 45:20 before the night midpoint 46:40
+2035,10,1979-01-15,https://archive.org/download/2081_20240828/2035.pdf,21,Makara 26:56 after sunset (dinamana 26:05)
+2046,11,1990-02-12,https://archive.org/download/2081_20240828/2046.pdf,21,Kumbha 43:21 before the night midpoint
+2051,4,1994-07-16,https://archive.org/download/2081_20240828/2051.pdf,8,"Karka 59:35, before the next sunrise"
+2062,2,2005-05-15,https://archive.org/download/2081_20240828/2062.pdf,5,py-nepali has 05-14; the book prints the sankranti on the 15th's row
+2062,7,2005-10-18,https://archive.org/download/2081_20240828/2062.pdf,15,Tula 44:58 after the night midpoint 44:19
+2066,12,2010-03-14,https://archive.org/download/2081_20240828/2066.pdf,25,"Mina 44:52, exactly at the night midpoint: a tie goes to the earlier day"
+2073,11,2017-02-12,https://archive.org/download/2081_20240828/2073.pdf,24,Kumbha 43:09 before the night midpoint 43:52
+2076,9,2019-12-17,https://archive.org/download/2081_20240828/2076.pdf,20,"Dhanu sankranti 0:17 NST, past the night midpoint"
+2082,10,2026-01-15,https://giwmscdnone.gov.np/media/pages/files/npnbs_2082_ussfian.pdf,20,Makara after sunset
+2078,4,2021-07-16,nepali-datetime and py-nepali tables (agree),,night sankranti
+2078,10,2022-01-15,nepali-datetime and py-nepali tables (agree),,night sankranti
+2070,4,2013-07-16,nepali-datetime and py-nepali tables (agree),,night sankranti
+2074,10,2018-01-15,nepali-datetime and py-nepali tables (agree),,night sankranti
+2066,4,2009-07-16,nepali-datetime and py-nepali tables (agree),,night sankranti
+2014,3,1957-06-14,nepali-datetime and py-nepali tables (agree),,night sankranti
+2029,5,1972-08-16,nepali-datetime and py-nepali tables (agree),,night sankranti
+1993,4,1936-07-15,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/04/1993,,also https://nepali-calendar.com/1993/Shrawan; nepali-datetime has 07-16
+2084,3,2027-06-16,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/03/2084,,py-nepali agrees; nepali-datetime has 2027-06-15
+2084,5,2027-08-18,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/05/2084,,py-nepali agrees; nepali-datetime has 2027-08-17
+2084,6,2027-09-18,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/06/2084,,py-nepali agrees; nepali-datetime has 2027-09-17
+2084,7,2027-10-18,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/07/2084,,py-nepali agrees; nepali-datetime has 2027-10-17
+2084,8,2027-11-17,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/08/2084,,py-nepali agrees; nepali-datetime has 2027-11-16
+2084,9,2027-12-17,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/09/2084,,py-nepali agrees; nepali-datetime has 2027-12-16
+2084,10,2028-01-15,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/10/2084,,py-nepali agrees; nepali-datetime has 2028-01-14
+2085,1,2028-04-14,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/01/2085,,py-nepali agrees; nepali-datetime has 2028-04-13
+2085,6,2028-09-17,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/06/2085,,py-nepali agrees; nepali-datetime has 2028-09-16
+2085,12,2029-03-14,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/12/2085,,py-nepali agrees; nepali-datetime has 2029-03-15
+2086,2,2029-05-15,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/02/2086,,py-nepali agrees; nepali-datetime has 2029-05-14
+2086,4,2029-07-17,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/04/2086,,py-nepali agrees; nepali-datetime has 2029-07-16
+2086,7,2029-10-18,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/07/2086,,py-nepali agrees; nepali-datetime has 2029-10-17
+2086,8,2029-11-17,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/08/2086,,py-nepali agrees; nepali-datetime has 2029-11-16
+2086,10,2030-01-15,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/10/2086,,py-nepali agrees; nepali-datetime has 2030-01-14
+2087,5,2030-08-18,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/05/2087,,py-nepali agrees; nepali-datetime has 2030-08-17
+2087,6,2030-09-18,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/06/2087,,py-nepali agrees; nepali-datetime has 2030-09-17
+2087,11,2031-02-13,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/11/2087,,py-nepali agrees; nepali-datetime has 2031-02-14
+2087,12,2031-03-15,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/12/2087,,py-nepali agrees; nepali-datetime has 2031-03-16
+2088,1,2031-04-14,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/01/2088,,py-nepali agrees; nepali-datetime has 2031-04-15
+2088,3,2031-06-16,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/03/2088,,py-nepali agrees; nepali-datetime has 2031-06-15
+2088,6,2031-09-18,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/06/2088,,py-nepali agrees; nepali-datetime has 2031-09-17
+2088,11,2032-02-13,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/11/2088,,py-nepali agrees; nepali-datetime has 2032-02-14
+2088,12,2032-03-14,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/12/2088,,py-nepali agrees; nepali-datetime has 2032-03-15
+2089,12,2033-03-14,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/12/2089,,py-nepali agrees; nepali-datetime has 2033-03-15
+2090,2,2033-05-15,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/02/2090,,py-nepali agrees; nepali-datetime has 2033-05-14
+2090,4,2033-07-17,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/04/2090,,py-nepali agrees; nepali-datetime has 2033-07-16
+2090,7,2033-10-18,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/07/2090,,py-nepali agrees; nepali-datetime has 2033-10-17
+2090,8,2033-11-17,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/08/2090,,py-nepali agrees; nepali-datetime has 2033-11-16
+2090,10,2034-01-15,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/10/2090,,py-nepali agrees; nepali-datetime has 2034-01-14
+2091,5,2034-08-18,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/05/2091,,py-nepali agrees; nepali-datetime has 2034-08-17
+2091,6,2034-09-18,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/06/2091,,py-nepali agrees; nepali-datetime has 2034-09-17
+2091,9,2034-12-16,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/09/2091,,py-nepali agrees; nepali-datetime has 2034-12-17
+2091,11,2035-02-13,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/11/2091,,py-nepali agrees; nepali-datetime has 2035-02-14
+2091,12,2035-03-15,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/12/2091,,py-nepali agrees; nepali-datetime has 2035-03-16
+2092,1,2035-04-14,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/01/2092,,py-nepali agrees; nepali-datetime has 2035-04-15
+2092,3,2035-06-16,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/03/2092,,py-nepali agrees; nepali-datetime has 2035-06-15
+2092,11,2036-02-13,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/11/2092,,py-nepali agrees; nepali-datetime has 2036-02-14
+2092,12,2036-03-14,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/12/2092,,py-nepali agrees; nepali-datetime has 2036-03-15
+2093,2,2036-05-15,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/02/2093,,py-nepali agrees; nepali-datetime has 2036-05-14
+2093,7,2036-10-18,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/07/2093,,py-nepali agrees; nepali-datetime has 2036-10-17
+2093,12,2037-03-14,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/12/2093,,py-nepali agrees; nepali-datetime has 2037-03-15
+2094,7,2037-10-18,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/07/2094,,py-nepali agrees; nepali-datetime has 2037-10-17
+2094,8,2037-11-17,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/08/2094,,py-nepali agrees; nepali-datetime has 2037-11-16
+2094,10,2038-01-15,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/10/2094,,py-nepali agrees; nepali-datetime has 2038-01-14
+2095,5,2038-08-18,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/05/2095,,py-nepali agrees; nepali-datetime has 2038-08-17
+2095,6,2038-09-18,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/06/2095,,py-nepali agrees; nepali-datetime has 2038-09-17
+2095,11,2039-02-13,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/11/2095,,py-nepali agrees; nepali-datetime has 2039-02-14
+2095,12,2039-03-15,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/12/2095,,py-nepali agrees; nepali-datetime has 2039-03-16
+2096,1,2039-04-14,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/01/2096,,py-nepali agrees; nepali-datetime has 2039-04-15
+2096,3,2039-06-16,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/03/2096,,py-nepali agrees; nepali-datetime has 2039-06-15
+2096,9,2039-12-17,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/09/2096,,py-nepali agrees; nepali-datetime has 2039-12-16
+2097,1,2040-04-14,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/01/2097,,py-nepali agrees; nepali-datetime has 2040-04-13
+2097,2,2040-05-15,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/02/2097,,py-nepali agrees; nepali-datetime has 2040-05-14
+2097,7,2040-10-18,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/07/2097,,py-nepali agrees; nepali-datetime has 2040-10-17
+2097,10,2041-01-15,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/10/2097,,py-nepali agrees; nepali-datetime has 2041-01-14
+2098,8,2041-11-17,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/08/2098,,py-nepali agrees; nepali-datetime has 2041-11-16
+2098,10,2042-01-15,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/10/2098,,py-nepali agrees; nepali-datetime has 2042-01-14
+2098,12,2042-03-15,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/12/2098,,py-nepali agrees; nepali-datetime has 2042-03-14
+2099,5,2042-08-18,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/05/2099,,py-nepali agrees; nepali-datetime has 2042-08-17
+2099,6,2042-09-18,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/06/2099,,py-nepali agrees; nepali-datetime has 2042-09-17
+2099,10,2043-01-15,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/10/2099,,py-nepali agrees; nepali-datetime has 2043-01-14
+2100,6,2043-09-18,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/06/2100,,py-nepali agrees; nepali-datetime has 2043-09-17
+2100,9,2043-12-17,https://www.drikpanchang.com/nepali/calendar/nepali-patro.html?solar-date=01/09/2100,,py-nepali agrees; nepali-datetime has 2043-12-16

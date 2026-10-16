@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Human Verification</title>
+    <style>
+        body {
+            font-family: "Arial";
+        }
+    </style>
+    <script type="text/javascript">
+    window.awsWafCookieDomainList = [];
+    window.gokuProps = {
+"key":"AQIDAHjcYu/GjX+QlghicBgQ/7bFaQZ+m5FKCMDnO+vTbNg96AFQ3X20mY1BFAUdKQcCUFOcAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMg5y3Op5mV7QXa2niAgEQgDvu6pDuuSyCZxfojgZpMJD0/C921fx4N5kyH5hQcKZ0t8pnlHJ1ho9iwM+plL9b3eFMh0vLlptEjpFdBA==",
+          "iv":"grC4SQArZgAABOSM",
+          "context":"i6t8qozeJeJf8+NEWMmP1Epocy260H3jWnsHlQz9tp8FYItIYT4vEYvI6d1GH0f0ZSR06IlBjGQt+Ya0VAnIaM+gYfHiYxoVnnv3PPXMLVO5id/v779cwnXlh49hqhcy94GYqWt+FWD+u4Wi7rFDKN/Gkp4vo/S37UQrcVcRctTWzNXzl2eehH/rhhuruPfbHP1re2C1SJLo21IaHga0fK/noT1UZ4sccflwpZ60FGXU8gPs+505nxvZesTZ1vQY5Lk2+SN4902rNLHV4n6iaT2eOJ+Uy58xcsk2BvSWbXvi8a3QobNdRs3DGA+PJ/d7bwYSjrffeokLsw57tq/RvDaWLw2cXLy+CVJFc/4+5GmOQZaRv6/JYoDp27nEhoge/4u0wQG3brpFzk39XQlV9zfH9eGQgRz2U01kl4XG1TomnVlNsN4S"
+};
+    </script>
+    <script src="https://6ca958a2dc40.4e92aadf.ap-southeast-1.token.awswaf.com/6ca958a2dc40/75fda36074a4/2d62de8175b1/challenge.js"></script>
+    <script src="https://6ca958a2dc40.4e92aadf.ap-southeast-1.captcha.awswaf.com/6ca958a2dc40/75fda36074a4/2d62de8175b1/captcha.js"></script>
+</head>
+<body>
+    <div id="captcha-container"></div>
+    <script type="text/javascript">
+        AwsWafIntegration.saveReferrer();
+        window.addEventListener("load", function() {
+          const container = document.querySelector("#captcha-container");
+          CaptchaScript.renderCaptcha(container, async (voucher) => {
+              await ChallengeScript.submitCaptcha(voucher);
+              window.location.reload(true);
+          }
+      );
+    });
+    </script>
+    <noscript>
+        <h1>JavaScript is disabled</h1>
+        In order to continue, you need to verify that you're not a robot by solving a CAPTCHA puzzle.
+         The CAPTCHA puzzle requires JavaScript. Enable JavaScript and then reload the page.
+    </noscript>
+</body>
+</html>

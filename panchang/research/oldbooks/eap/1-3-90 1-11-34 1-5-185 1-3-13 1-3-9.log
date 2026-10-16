@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/Users/ayys/git/illegal-in-nepal/panchang/research/oldbooks/eapfull.py", line 38, in <module>
+    m = json.loads(fetch(f"https://eap.bl.uk/archive-file/{pid}/manifest"))
+                   ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ayys/git/illegal-in-nepal/panchang/research/oldbooks/eapfull.py", line 15, in fetch
+    raise RuntimeError(url)
+RuntimeError: https://eap.bl.uk/archive-file/EAP1485-1-3-90 1-11-34 1-5-185 1-3-13 1-3-9/manifest

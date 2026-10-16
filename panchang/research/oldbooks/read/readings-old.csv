@@ -1,0 +1,37 @@
+bs_year,sign,sign_name,ghati,pala,sunrise_day,book,pdf_page,source,confidence,note
+1986,0,mesha,9,3,1929-04-13,1986,3,https://eap.bl.uk/archive-file/EAP1485-1-3-127,high,मेषसंक्रान्ति ९।३
+1986,1,vrisha,6,1,1929-05-14,1986,5,https://eap.bl.uk/archive-file/EAP1485-1-3-127,high,वृषसंक्रांतिः ६।१
+1986,2,mithuna,31,58,1929-06-14,1986,7,https://eap.bl.uk/archive-file/EAP1485-1-3-127,high,मिथुनसंक्रान्ति † -> time ३१।५८ in inverted continuation line marked †
+1986,3,karka,10,41,1929-07-16,1986,9,https://eap.bl.uk/archive-file/EAP1485-1-3-127,high,कर्कसंक्रान्ति १०।४१
+1986,4,simha,38,35,1929-08-16,1986,11,https://eap.bl.uk/archive-file/EAP1485-1-3-127,high,सिंहसंक्रान्ति ३८।३५
+1986,5,kanya,38,50,1929-09-16,1986,13,https://eap.bl.uk/archive-file/EAP1485-1-3-127,high,कन्यासंक्रान्ति ३८।५०
+1986,6,tula,4,0,1929-10-17,1986,15,https://eap.bl.uk/archive-file/EAP1485-1-3-127,medium,तुलसंक्रान्ति ४। (no pala printed; recorded as 4:00)
+1986,7,vrischika,56,58,1929-11-15,1986,17,https://eap.bl.uk/archive-file/EAP1485-1-3-127,high,वृश्चिकेर्कः ५६।५८
+1986,8,dhanu,25,47,1929-12-15,1986,19,https://eap.bl.uk/archive-file/EAP1485-1-3-127,high,धनुष्यर्कः २५।४७
+1986,9,makara,44,50,1930-01-13,1986,21,https://eap.bl.uk/archive-file/EAP1485-1-3-127,high,मकरेऽर्कः ४४।५०
+1986,10,kumbha,12,17,1930-02-12,1986,23,https://eap.bl.uk/archive-file/EAP1485-1-3-127,high,कुंभसंक्रान्तिः १२।१७
+1986,11,mina,2,24,1930-03-14,1986,25,https://eap.bl.uk/archive-file/EAP1485-1-3-127,high,मीनसंक्रान्तिः २।२४ (in inverted overflow line)
+2016,0,mesha,54,53,1959-04-13,2016,6,https://eap.bl.uk/archive-file/EAP1485-1-3-45,high,मेषेऽर्कः ५४।५३ on Chaitra 31 / Apr 13 row
+2016,1,vrisha,51,54,1959-05-14,2016,8,https://eap.bl.uk/archive-file/EAP1485-1-3-45,high,वृषेर्कः ५१।५४
+2016,2,mithuna,17,52,1959-06-15,2016,10,https://eap.bl.uk/archive-file/EAP1485-1-3-45,high,मिथुनेर्कः १७।५२
+2016,3,karka,55,44,1959-07-16,2016,12,https://eap.bl.uk/archive-file/EAP1485-1-3-45,medium,५५।४४ संक्रान्तिः (in inverted overflow text)
+2016,4,simha,24,57,1959-08-17,2016,14,https://eap.bl.uk/archive-file/EAP1485-1-3-45,high,सिंहेर्कः २४।५७
+2016,5,kanya,25,22,1959-09-17,2016,17,https://eap.bl.uk/archive-file/EAP1485-1-3-45,high,कन्यामर्कः २५।२२
+2016,6,tula,50,41,1959-10-17,2016,19,https://eap.bl.uk/archive-file/EAP1485-1-3-45,high,तुलायामर्कः ५०।४१
+2016,7,vrischika,43,7,1959-11-16,2016,21,https://eap.bl.uk/archive-file/EAP1485-1-3-45,high,विशाखायां ४ वृश्चिकेर्कः ४३।७ संक्रान्तिः on Mangsir 1 / Nov 16 row
+2016,8,dhanu,12,4,1959-12-16,2016,23,https://eap.bl.uk/archive-file/EAP1485-1-3-45,high,मूले १ धनुष्यर्कः १२।४ संक्रान्तिः on Poush 1 / Dec 16 row
+2016,9,makara,30,57,1960-01-14,2016,25,https://eap.bl.uk/archive-file/EAP1485-1-3-45,high,उषायां २ मकरेर्कः ३०।५७ on Magh 1 / Jan 14 row
+2016,10,kumbha,58,10,1960-02-12,2016,26,https://eap.bl.uk/archive-file/EAP1485-1-3-45,medium,"धनिष्ठायां ३ कुंभेर्कः ५८।१० in inverted overflow text on the Feb 10 line (rows Feb 9 and Feb 12 both end in overflow markers); Phagun 1 = Feb 13 row says only संक्रान्तिः, so assigned to Feb 12"
+2016,11,mina,48,15,1960-03-13,2016,28,https://eap.bl.uk/archive-file/EAP1485-1-3-45,medium,"पूभाद्रायां ४ मीनेर्क(printed म.नेक) ४८।१५ on Mar 13 row (last row of Phagun); Chaitra 1 = Mar 14 row says संक्रान्ति; final digit ५ vs ८ checked at 6x"
+2028,0,mesha,1,28,1971-04-14,2028,2,https://archive.org/details/nepali-patro-2028,high,मेषेरविः १।२८
+2028,1,vrisha,56,42,1971-05-14,2028,4,https://archive.org/details/nepali-patro-2028,high,कृत्तिकायां २ वृषेरविः ५६।४२
+2028,2,mithuna,22,40,1971-06-15,2028,6,https://archive.org/details/nepali-patro-2028,high,मिथुनेरविः २२।४०
+2028,3,karka,0,3,1971-07-17,2028,8,https://archive.org/details/nepali-patro-2028,high,कर्कटेरविः ०।३
+2028,4,simha,28,50,1971-08-17,2028,10,https://archive.org/details/nepali-patro-2028,high,सिंहेरविः ❀ -> २८।५० in inverted continuation line marked ❀
+2028,5,kanya,30,6,1971-09-17,2028,12,https://archive.org/details/nepali-patro-2028,high,कन्यायांरविः ३०।६
+2028,6,tula,56,17,1971-10-17,2028,14,https://archive.org/details/nepali-patro-2028,high,चित्रायां ३ तुलायां रविः ५६।१७
+2028,7,vrischika,50,17,1971-11-16,2028,16,https://archive.org/details/nepali-patro-2028,high,विशाखायां ४ वृश्चिकेरविः ५०।१७
+2028,8,dhanu,18,59,1971-12-16,2028,18,https://archive.org/details/nepali-patro-2028,high,मूलर्क्षे १ धनुषिरविः १८।५९
+2028,9,makara,38,18,1972-01-14,2028,20,https://archive.org/details/nepali-patro-2028,high,उषायां २ मकरे रविः * -> ३८।१८ in inverted continuation line marked *
+2028,10,kumbha,4,36,1972-02-13,2028,22,https://archive.org/details/nepali-patro-2028,high,† ४।३६ कुम्भसंक्रान्तिः (time in inverted continuation line marked †)
+2028,11,mina,54,45,1972-03-13,2028,24,https://archive.org/details/nepali-patro-2028,high,"पूभाद्रायां ४ मीने रविः [] -> ५४।४५ in inverted continuation line marked []; on ता. 13 (March) row; next row (Mar 14) says मीनसंक्रान्तिः"

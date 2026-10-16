@@ -1,0 +1,15 @@
+ERR https://eap.bl.uk/archive-file/EAP1485-1-3-11 1-11-35 1-8-12 1-3-83 1-4-16/manifest InvalidURL("URL can't contain control characters. '/archive-file/EAP1485-1-3-11 1-11-35 1-8-12 1-3-83 1-4-16/manifest' (
+ERR https://eap.bl.uk/archive-file/EAP1485-1-3-11 1-11-35 1-8-12 1-3-83 1-4-16/manifest InvalidURL("URL can't contain control characters. '/archive-file/EAP1485-1-3-11 1-11-35 1-8-12 1-3-83 1-4-16/manifest' (
+ERR https://eap.bl.uk/archive-file/EAP1485-1-3-11 1-11-35 1-8-12 1-3-83 1-4-16/manifest InvalidURL("URL can't contain control characters. '/archive-file/EAP1485-1-3-11 1-11-35 1-8-12 1-3-83 1-4-16/manifest' (
+ERR https://eap.bl.uk/archive-file/EAP1485-1-3-11 1-11-35 1-8-12 1-3-83 1-4-16/manifest InvalidURL("URL can't contain control characters. '/archive-file/EAP1485-1-3-11 1-11-35 1-8-12 1-3-83 1-4-16/manifest' (
+ERR https://eap.bl.uk/archive-file/EAP1485-1-3-11 1-11-35 1-8-12 1-3-83 1-4-16/manifest InvalidURL("URL can't contain control characters. '/archive-file/EAP1485-1-3-11 1-11-35 1-8-12 1-3-83 1-4-16/manifest' (
+ERR https://eap.bl.uk/archive-file/EAP1485-1-3-11 1-11-35 1-8-12 1-3-83 1-4-16/manifest InvalidURL("URL can't contain control characters. '/archive-file/EAP1485-1-3-11 1-11-35 1-8-12 1-3-83 1-4-16/manifest' (
+ERR https://eap.bl.uk/archive-file/EAP1485-1-3-11 1-11-35 1-8-12 1-3-83 1-4-16/manifest InvalidURL("URL can't contain control characters. '/archive-file/EAP1485-1-3-11 1-11-35 1-8-12 1-3-83 1-4-16/manifest' (
+ERR https://eap.bl.uk/archive-file/EAP1485-1-3-11 1-11-35 1-8-12 1-3-83 1-4-16/manifest InvalidURL("URL can't contain control characters. '/archive-file/EAP1485-1-3-11 1-11-35 1-8-12 1-3-83 1-4-16/manifest' (
+Traceback (most recent call last):
+  File "/Users/ayys/git/illegal-in-nepal/panchang/research/oldbooks/eapfull.py", line 39, in <module>
+    m = json.loads(fetch(f"https://eap.bl.uk/archive-file/{pid}/manifest"))
+                   ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ayys/git/illegal-in-nepal/panchang/research/oldbooks/eapfull.py", line 16, in fetch
+    raise RuntimeError(url)
+RuntimeError: https://eap.bl.uk/archive-file/EAP1485-1-3-11 1-11-35 1-8-12 1-3-83 1-4-16/manifest

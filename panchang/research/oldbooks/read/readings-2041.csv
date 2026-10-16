@@ -1,0 +1,31 @@
+bs_year,sign,sign_name,ghati,pala,sunrise_day,book,pdf_page,source,confidence,note
+2038,1,vrisha,31,55,1981-05-14,2038,4,https://archive.org/download/2081_20240828/2038.pdf,high,वृषेऽर्कः ३१।५५
+2038,2,mithuna,57,53,1981-06-14,2038,6,https://archive.org/download/2081_20240828/2038.pdf,high,मिथुनेऽर्कः ५७।५३
+2038,3,karka,35,16,1981-07-16,2038,8,https://archive.org/download/2081_20240828/2038.pdf,high,कर्कटेऽर्कः ३५।१६
+2038,7,vrischika,25,30,1981-11-16,2038,17,https://archive.org/download/2081_20240828/2038.pdf,high,वृश्चिकेऽर्कः २५।३०
+2038,9,makara,13,31,1982-01-14,2038,21,https://archive.org/download/2081_20240828/2038.pdf,high,मकरेऽर्कः १३।३१ (माघ) संक्रान्तिः
+2039,1,vrisha,47,26,1982-05-14,2039,4,https://archive.org/download/2081_20240828/2039.pdf,high,वृषेऽर्कः ४७।२६
+2039,2,mithuna,13,24,1982-06-15,2039,6,https://archive.org/download/2081_20240828/2039.pdf,high,मिथुनेऽर्कः १३।२४
+2039,3,karka,50,47,1982-07-16,2039,8,https://archive.org/download/2081_20240828/2039.pdf,high,कर्कटेऽर्कः ५०।४७
+2039,7,vrischika,41,1,1982-11-16,2039,17,https://archive.org/download/2081_20240828/2039.pdf,high,वृश्चिकेऽर्कः ४१।१
+2039,9,makara,29,2,1983-01-14,2039,20,https://archive.org/download/2081_20240828/2039.pdf,high,मकरेऽर्कः २९।२
+2040,1,vrisha,2,57,1983-05-15,2040,4,https://archive.org/download/2081_20240828/2040.pdf,high,वृषेऽर्कः २।५७
+2040,2,mithuna,28,56,1983-06-15,2040,6,https://archive.org/download/2081_20240828/2040.pdf,high,मिथुनेऽर्कः २८।५६
+2040,3,karka,6,19,1983-07-17,2040,8,https://archive.org/download/2081_20240828/2040.pdf,high,कर्कटेऽर्कः ६।१९
+2040,7,vrischika,56,32,1983-11-16,2040,16,https://archive.org/download/2081_20240828/2040.pdf,high,वृश्चिकेऽर्कः ५६।३२
+2040,9,makara,44,33,1984-01-14,2040,20,https://archive.org/download/2081_20240828/2040.pdf,high,मकरेऽर्कः ४४।३३
+2041,1,vrisha,18,28,1984-05-14,2041,4,https://archive.org/download/2081_20240828/2041.pdf,high,कृत्तिकायां २ वृषेऽर्कः १८।२८
+2041,2,mithuna,44,26,1984-06-14,2041,7,https://archive.org/download/2081_20240828/2041.pdf,high,मृगशीर्षे ३ मिथुनेऽर्कः ४४।२६ आषाढ संक्रान्तिः
+2041,3,karka,21,49,1984-07-16,2041,9,https://archive.org/download/2081_20240828/2041.pdf,high,पुनर्बसौ ४ कर्कटेऽर्कः २१।४९ श्रावण
+2041,7,vrischika,12,3,1984-11-16,2041,17,https://archive.org/download/2081_20240828/2041.pdf,high,वृश्चिकेऽर्कः १२।३ मार्ग संक्रान्तिः
+2041,9,makara,0,4,1985-01-14,2041,21,https://archive.org/download/2081_20240828/2041.pdf,high,उषायां २ मकरेऽर्कः ०।४ माघ संक्रान्तिः (row 14; prediction was 58:59 on Jan 13)
+2042,1,vrisha,34,0,1985-05-14,2042,4,https://archive.org/download/2081_20240828/2042.pdf,medium,वृषेऽर्कः ३४।० (ज्येष्ठ) संक्रान्तिः (heavy ink; first digit read as ३)
+2042,2,mithuna,59,57,1985-06-14,2042,6,https://archive.org/download/2081_20240828/2042.pdf,high,मिथुनेऽर्कः ५९।५७ (row 14; (आषाढ) संक्रान्तिः on row 15; prediction was 2:02 on Jun 15)
+2042,3,karka,37,20,1985-07-16,2042,8,https://archive.org/download/2081_20240828/2042.pdf,high,कर्कटेऽर्कः ३७।२० (श्रावण) संक्रान्तिः
+2042,7,vrischika,27,34,1985-11-16,2042,17,https://archive.org/download/2081_20240828/2042.pdf,high,वृश्चिकेऽर्कः २७।३४ (मार्ग) संक्रान्तिः
+2042,9,makara,15,36,1986-01-14,2042,21,https://archive.org/download/2081_20240828/2042.pdf,high,मकरेऽर्कः १५।३६ (माघ) संक्रान्तिः
+2044,1,vrisha,5,4,1987-05-15,2044,5,https://archive.org/download/2081_20240828/2044.pdf,high,वृषेऽर्कः ५।४ (ज्येष्ठ) संक्रान्तिः
+2044,2,mithuna,31,2,1987-06-15,2044,7,https://archive.org/download/2081_20240828/2044.pdf,high,मिथुनेऽर्कः ३१।२ (आषाढ) संक्रान्तिः
+2044,3,karka,8,25,1987-07-17,2044,9,https://archive.org/download/2081_20240828/2044.pdf,high,कर्कटेऽर्कः ८।२५ (श्रावण) संक्रान्तिः
+2044,7,vrischika,58,39,1987-11-16,2044,17,https://archive.org/download/2081_20240828/2044.pdf,high,वृश्चिकेऽर्कः ५८।३९ (row 16; (मार्ग) संक्रान्तिः on row 17)
+2044,9,makara,46,40,1988-01-14,2044,21,https://archive.org/download/2081_20240828/2044.pdf,high,मकरेऽर्कः ४६।४० (row 14; (माघ) संक्रान्तिः on row 15)

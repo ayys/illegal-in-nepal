@@ -1,0 +1,35 @@
+2016 page 21 (guess; Makara/Jan 14 page) rows Jan 13-15 1960  | if refraction:  26:13 26:15 26:17  | if none:  25:58 26:01 26:03
+2020 page 21 (guess; Makara/Jan 14 page) rows Jan 13-15 1964  | if refraction:  26:13 26:15 26:17  | if none:  25:59 26:01 26:03
+2022 page 21 (guess; Makara/Jan 14 page) rows Jan 13-15 1966  | if refraction:  26:14 26:16 26:18  | if none:  26:00 26:02 26:04
+2025 page 21 (guess; Makara/Jan 14 page) rows Jan 13-15 1969  | if refraction:  26:14 26:16 26:18  | if none:  26:00 26:02 26:04
+2028 page 21 (guess; Makara/Jan 14 page) rows Jan 13-15 1972  | if refraction:  26:13 26:15 26:17  | if none:  25:59 26:01 26:03
+2029 page 21 (guess; Makara/Jan 14 page) rows Jan 13-15 1973  | if refraction:  26:14 26:16 26:18  | if none:  26:00 26:02 26:04
+2031 page 21 (guess; Makara/Jan 14 page) rows Jan 13-15 1975  | if refraction:  26:13 26:15 26:17  | if none:  25:59 26:01 26:03
+2032 page 21 (guess; Makara/Jan 14 page) rows Jan 13-15 1976  | if refraction:  26:13 26:15 26:17  | if none:  25:59 26:01 26:03
+2033 page 20 rows Jan 13-15 1977  | if refraction:  26:14 26:16 26:19  | if none:  26:00 26:02 26:05
+2035 page 21 rows Jan 13-15 1979  | if refraction:  26:13 26:15 26:17  | if none:  25:59 26:01 26:03
+2038 page 21 rows Jan 13-15 1982  | if refraction:  26:14 26:16 26:18  | if none:  26:00 26:02 26:04
+2039 page 20 rows Jan 13-15 1983  | if refraction:  26:13 26:15 26:18  | if none:  25:59 26:01 26:04
+2040 page 20 rows Jan 13-15 1984  | if refraction:  26:13 26:15 26:17  | if none:  25:59 26:01 26:03
+2041 page 21 rows Jan 13-15 1985  | if refraction:  26:14 26:16 26:19  | if none:  26:00 26:02 26:05
+2042 page 21 rows Jan 13-15 1986  | if refraction:  26:14 26:16 26:18  | if none:  26:00 26:02 26:04
+2044 page 21 rows Jan 13-15 1988  | if refraction:  26:13 26:15 26:17  | if none:  25:59 26:01 26:03
+2045 page 21 rows Jan 13-15 1989  | if refraction:  26:14 26:17 26:19  | if none:  26:00 26:02 26:05
+2046 page 21 (guess; Makara/Jan 14 page) rows Jan 13-15 1990  | if refraction:  26:14 26:16 26:18  | if none:  26:00 26:02 26:04
+2051 page 21 (guess; Makara/Jan 14 page) rows Jan 13-15 1995  | if refraction:  26:13 26:16 26:18  | if none:  25:59 26:01 26:04
+2058 page 21 rows Jan 13-15 2002  | if refraction:  26:14 26:16 26:18  | if none:  26:00 26:02 26:04
+2059 page 21 (guess; Makara/Jan 14 page) rows Jan 13-15 2003  | if refraction:  26:14 26:16 26:18  | if none:  25:59 26:02 26:04
+2060 page 21 rows Jan 13-15 2004  | if refraction:  26:13 26:15 26:17  | if none:  25:59 26:01 26:03
+2061 page 21 rows Jan 13-15 2005  | if refraction:  26:15 26:17 26:19  | if none:  26:01 26:03 26:05
+2062 page 21 rows Jan 13-15 2006  | if refraction:  26:14 26:16 26:18  | if none:  26:00 26:02 26:04
+2063 page 20 rows Jan 13-15 2007  | if refraction:  26:14 26:16 26:18  | if none:  26:00 26:02 26:04
+2064 page 21 (guess; Makara/Jan 14 page) rows Jan 13-15 2008  | if refraction:  26:13 26:15 26:17  | if none:  25:59 26:01 26:03
+2065 page 22 rows Jan 13-15 2009  | if refraction:  26:15 26:17 26:19  | if none:  26:01 26:03 26:05
+2066 page 21 (guess; Makara/Jan 14 page) rows Jan 13-15 2010  | if refraction:  26:14 26:16 26:18  | if none:  26:00 26:02 26:04
+2067 page 22 rows Jan 13-15 2011  | if refraction:  26:14 26:16 26:18  | if none:  26:00 26:02 26:04
+2068 page 21 rows Jan 13-15 2012  | if refraction:  26:13 26:15 26:17  | if none:  25:59 26:01 26:03
+2069 page 20 rows Jan 13-15 2013  | if refraction:  26:15 26:17 26:19  | if none:  26:01 26:03 26:05
+2071 page 22 rows Jan 13-15 2015  | if refraction:  26:14 26:16 26:18  | if none:  26:00 26:02 26:04
+2072 page 22 rows Jan 13-15 2016  | if refraction:  26:13 26:15 26:17  | if none:  25:59 26:01 26:03
+2073 page 21 (guess; Makara/Jan 14 page) rows Jan 13-15 2017  | if refraction:  26:15 26:17 26:19  | if none:  26:01 26:03 26:05
+2076 page 22 rows Jan 13-15 2020  | if refraction:  26:13 26:15 26:17  | if none:  25:59 26:01 26:03

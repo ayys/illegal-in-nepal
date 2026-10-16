@@ -1,0 +1,116 @@
+# राष्ट्रिय पञ्चाङ्ग generator
+
+This computes Nepal's national panchang, the yearly almanac published by the
+Nepal Panchang Nirnayak Bikas Samiti, from first principles. The Sun and
+Moon come from the Surya Siddhanta. Sunrise and everything else that needs
+the equinox uses the Lahiri ("Ketaki") frame.
+
+The output is JSON plus a PDF laid out like the printed book. It reproduces
+the 2082 and 2083 books to the minute on most entries. Every BS month start
+from 1975 to 2083 matches the published tables, except where the tables
+themselves are wrong.
+
+The astronomy and calendar code is small (`surya.py` and `panchanga.py`,
+about 840 lines including comments, standard library only) and
+written to be read. The docs explain every step in enough detail to write
+your own implementation in another language.
+
+## Quickstart
+
+```sh
+cd panchang
+python3 -m unittest test_surya test_panchanga     # ~3 s, no dependencies
+./generate.py 2083 --no-pdf                       # JSON for every fortnight → output/
+./generate.py 2083 --page 21                      # one fortnight, JSON + PDF (needs weasyprint)
+./generate.py 2083 --config 2083.json             # with samvatsara, notes, papakshani
+./build_status.py                                 # writes status.html (needs nepali-datetime, nepali)
+```
+
+`generate.py` and `build_status.py` are [uv](https://docs.astral.sh/uv/)
+scripts, so `./generate.py` installs their dependencies on first run.
+`python3 generate.py 2083 --no-pdf` also works with no dependencies at all.
+
+As a library:
+
+```python
+import panchanga
+pages = panchanga.year(2083)          # list of fortnight pages
+pages[0]["header"]["lunar_month"]     # 'वैशाख'
+pages[0]["rows"][0]["tithi"]          # {'index': ..., 'ends': [{'ghati': .., 'pala': .., 'clock': [h, m]}], ...}
+panchanga.month_starts(2083)          # 13 dates: बैशाख 1 … चैत 1, बैशाख 1 of 2084
+```
+
+## Files
+
+| File | What it does |
+|---|---|
+| `surya.py` | Astronomy: SS mean and true Sun and Moon, the sine table, sunrise, sunset, दिनमान, equation of time, lagna, Rahu, and a generic "when does this angle cross a multiple of N" solver |
+| `panchanga.py` | Calendar: day rows (tithi, nakshatra, yoga, karana, आनन्दादि, …), solar month starts (the sankranti day rule and eras), lunar months, adhik masa, page headers, the year layout |
+| `render.py` | HTML/PDF typesetting in the book's page layout |
+| `generate.py` | Command line: year → JSON and PDF |
+| `build_status.py` | Writes `status.html`, a dashboard comparing the output with the books and the BS tables |
+| `test_surya.py` | Unit tests for the astronomy |
+| `test_panchanga.py` | Book regression tests and calendar invariants |
+| `data/book_sankrantis.csv` | Sankranti moments read from old books, with PDF pages |
+| `data/month_starts.csv` | Month starts that settle disagreements between references, with sources |
+| `research/` | Working scripts and notes from reading the old books (`oldbooks/fetch_ocr.sh`, `oldbooks/crops.py`, `oldbooks/read/`); the PDFs and page images are git-ignored and re-downloadable |
+
+## Documentation
+
+| Doc | Read it for |
+|---|---|
+| [docs/ALGORITHM.md](docs/ALGORITHM.md) | Every column, step by step, with formulas and a worked example for one day |
+| [docs/CALIBRATION.md](docs/CALIBRATION.md) | The fitted things (Moon apogee −1.7°, Rahu offset, sankranti eras, each book's sunrise convention) and the evidence for each |
+| [docs/VERIFICATION.md](docs/VERIFICATION.md) | Match rates, the known errors in the reference tables, open cases |
+| [docs/SOURCES.md](docs/SOURCES.md) | Every book and page used, with URLs |
+
+## The model in one paragraph
+
+- **Positions.** Mean longitudes come from the SS revolution numbers counted
+  from the Kali epoch. One manda correction with the SS sine table gives the
+  true Sun and Moon. The Moon's apogee is shifted by −1.7°.
+- **Limbs.** Tithi, nakshatra, yoga and karana are 12°, 13°20′, 13°20′ and
+  6° divisions of Moon − Sun, Moon, and Moon + Sun. Their ends are found by
+  Newton's method and printed in ghati and pala after Kathmandu sunrise.
+- **Sunrise.** The SS true Sun plus the Lahiri ayanamsha, with the modern
+  obliquity and a −34′ horizon.
+- **Month starts.** A BS month starts on the civil day its sankranti belongs
+  to under the night-midpoint rule: Karka by sunrise, Makara by sunset. Each
+  book era has a small offset on the sankranti.
+- **Lunar months.** They are amanta and named by the sankranti they
+  contain. One with no sankranti is adhik.
+
+## Data file formats
+
+**`data/book_sankrantis.csv`:** one row per sankranti read from a book.
+
+| Column | Meaning |
+|---|---|
+| `bs_year` | BS year the sankranti opens a month of (2077 for the Mesha printed at the end of the 2076 book) |
+| `sign` | Sign being entered, 0 = Mesha |
+| `sign_name` | For readability |
+| `ghati`, `pala` | Time after sunrise of `sunrise_day`, as printed |
+| `sunrise_day` | Gregorian date of the book row the sankranti is printed in |
+| `book` | Which book (BS year) |
+| `pdf_page` | 1-based page in the PDF (blank if not located) |
+| `source` | PDF URL |
+
+**`data/month_starts.csv`:** one row per month whose first day is settled
+by a primary source.
+
+| Column | Meaning |
+|---|---|
+| `bs_year`, `month` | BS year and month, 1 = बैशाख |
+| `first_day` | Gregorian date of गते 1 |
+| `source` | URL of the book or calendar, or the library tables that agree |
+| `pdf_page` | Page in the book, when it is a book |
+| `note` | Why: sankranti time against the boundary, or which table was wrong |
+
+## Not computed
+
+- **Editorial fields.** Samvatsara, पापाक्षणी, पापांश, and festival and vrat
+  notes come from the `--config` JSON.
+- **Planets.** Mars to Saturn, planetary rise and set, and the kundali need
+  the Ketaki tables and are placeholders.
+
+See the component matrix in `status.html` for the full list.

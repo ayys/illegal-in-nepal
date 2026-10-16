@@ -1,0 +1,16 @@
+output/
+__pycache__/
+.venv/
+
+# research/ keeps the scratch scripts, OCR text and notes in git; the scanned
+# books and page images are large and re-downloadable (docs/SOURCES.md).
+research/**/venv/
+research/**/*.pdf
+research/**/*.jpg
+research/**/*.jpeg
+research/**/*.png
+research/**/*.ppm
+research/**/*.tif
+research/**/*.jp2
+research/**/*.zip
+research/**/jar

@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panchang 2083 — generator status</title>
+<style>
+  :root {
+    --bg: #f4f1ea; --ink: #1a1a1a; --muted: #5c5c5c; --card: #fff;
+    --ok: #2d6a4f; --warn: #bc6c25; --fail: #9b2226; --line: #ddd;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.45 system-ui, sans-serif; background: var(--bg); color: var(--ink); }
+  header { background: #111; color: #fff; padding: 1.5rem 2rem; }
+  header h1 { margin: 0 0 .25rem; font-size: 1.5rem; }
+  header p { margin: 0; color: #ccc; max-width: 70ch; }
+  main { max-width: 1100px; margin: 0 auto; padding: 1.5rem; display: grid; gap: 1.25rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 1rem 1.1rem; }
+  .card h2 { margin: 0 0 .75rem; font-size: 1rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  .metric { font-size: 2rem; font-weight: 700; line-height: 1.1; }
+  .metric small { display: block; font-size: .85rem; font-weight: 500; color: var(--muted); margin-top: .35rem; }
+  table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+  th, td { border-bottom: 1px solid var(--line); padding: .45rem .35rem; text-align: left; vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+  .badge { display: inline-block; padding: .15rem .45rem; border-radius: 4px; font-size: .75rem; font-weight: 700; }
+  .badge.ok { background: #d8f3dc; color: var(--ok); }
+  .badge.warn { background: #ffe8cc; color: var(--warn); }
+  .badge.fail { background: #ffdad6; color: var(--fail); }
+  .bar { height: 8px; background: #eee; border-radius: 4px; overflow: hidden; flex: 1; }
+  .bar i { display: block; height: 100%; }
+  .hist-row { display: flex; align-items: center; gap: .5rem; margin: .35rem 0; }
+  .hist-row span:first-child { width: 3.5rem; font-size: .8rem; color: var(--muted); }
+  .hist-row span:last-child { width: 2rem; text-align: right; font-size: .8rem; }
+  pre { background: #f8f8f8; border: 1px solid var(--line); padding: .75rem; overflow: auto; font-size: .78rem; max-height: 280px; }
+  code { font-family: ui-monospace, monospace; font-size: .88em; }
+  .pipeline { display: flex; flex-wrap: wrap; gap: .5rem; align-items: stretch; }
+  .pipe { flex: 1 1 140px; background: #fafafa; border: 1px dashed var(--line); padding: .6rem; border-radius: 6px; }
+  .pipe b { display: block; margin-bottom: .25rem; }
+  .tests { font-weight: 700; color: var(--ok); }
+  a { color: #005fcc; }
+  .const-intro { margin: 0 0 1rem; color: var(--muted); font-size: .92rem; }
+  .const-group { margin-top: 1.1rem; }
+  details.card > summary { cursor: pointer; font-size: 1rem; text-transform: uppercase; letter-spacing: .04em;
+    color: var(--muted); font-weight: 600; margin: -.2rem 0; padding: .2rem 0; }
+  details.card[open] > summary { margin-bottom: .75rem; }
+  .const-group > summary { cursor: pointer; font-size: .95rem; font-weight: 700; padding: .25rem 0; }
+  .const-group.const-fitted > summary { color: var(--warn); }
+  .const-group[open] > summary { margin-bottom: .45rem; }
+  .toolbar { display: flex; gap: .5rem; justify-content: flex-end; }
+  .toolbar button { font: inherit; font-size: .85rem; padding: .3rem .7rem; border: 1px solid var(--line);
+    background: var(--card); border-radius: 6px; cursor: pointer; }
+  table.const { font-size: .86rem; }
+  table.const code { font-size: .82rem; }
+  table.const td:nth-child(2) { font-family: ui-monospace, monospace; font-size: .82rem; white-space: nowrap; }
+  table.scan { font-size: .8rem; }
+  table.scan td.best { background: #d8f3dc; font-weight: 700; }
+</style>
+</head>
+<body>
+<header>
+  <h1>राष्ट्रिय पञ्चाङ्ग generator — status dashboard</h1>
+  <p>Reverse-engineered from FORMAT-2083-A, cross-checked against the 2082 book. Compares computed output
+     to transcribed book values (2083 वैशाख, कार्तिक, पौष/माघ; 2082 वैशाख, माघ). Regenerate with <code>./build_status.py</code> in <code>panchang/</code>.</p>
+</header>
+<main>
+  <div class="toolbar">
+    <button onclick="document.querySelectorAll('details').forEach(d => d.open = true)">Expand all</button>
+    <button onclick="document.querySelectorAll('details').forEach(d => d.open = false)">Collapse all</button>
+  </div>
+  <details class="card" open>
+    <summary>Summary</summary>
+  <section class="grid">
+    <div class="card"><h2>Tests</h2><div class="metric tests">PASS<small>54 unittest methods</small></div></div>
+    <div class="card"><h2>Year</h2><div class="metric">26<small>fortnight pages · 365 civil days</small></div></div>
+    <div class="card"><h2>Limb ends</h2><div class="metric">116/139<small>exact minute match (calibration set)</small></div></div>
+    <div class="card"><h2>Sun times</h2><div class="metric">61/66<small>printed sunrise/sunset exact</small></div></div>
+    <div class="card"><h2>Dinamana</h2><div class="metric">15/15<small>within 2 pala (Jan 8–22)</small></div></div>
+    <div class="card"><h2>Repo</h2><div class="metric" style="font-size:1rem">uncommitted<small><code>panchang/</code> not in git yet</small></div></div>
+  </section>
+  </details>
+
+  <details class="card" open>
+    <summary>Computation pipeline</summary>
+    <div class="pipeline">
+      <div class="pipe"><b>Surya Siddhanta</b>Sun & Moon longitudes, tithi/nak/yoga/karana boundaries, Moon apogee −1.7°</div>
+      <div class="pipe"><b>Lahiri frame</b>Sunrise, sunset, lagna, belantar, Rahu; modern obliquity; refraction at disc centre</div>
+      <div class="pipe"><b>Ketaki (missing)</b>Mars–Saturn, graha udaya/asta, kundali — placeholders in PDF</div>
+      <div class="pipe"><b>Editorial JSON</b>Samvatsara, papakshani, festival notes — optional config</div>
+    </div>
+  </details>
+
+  <details class="card" open>
+    <summary>Accuracy &amp; outputs</summary>
+  <section class="grid">
+    <div class="card">
+      <h2>Limb error histogram</h2>
+      <div class='hist-row'><span>-1 min</span><div class="bar"><i style="width:6.5%;background:#333"></i></div><span>9</span></div><div class='hist-row'><span>0 min</span><div class="bar"><i style="width:83.5%;background:#333"></i></div><span>116</span></div><div class='hist-row'><span>1 min</span><div class="bar"><i style="width:10.1%;background:#333"></i></div><span>14</span></div>
+      <p style="font-size:.85rem;color:var(--muted);margin:.75rem 0 0">Count mismatches (stacked days): 0</p>
+    </div>
+    <div class="card">
+      <h2>Outputs</h2>
+      <ul style="margin:0;padding-left:1.2rem">
+        <li><code>generate.py 2083</code> → JSON + PDF (1007×556 pt)</li>
+        <li>PDF sample: <code>/Users/ayys/git/illegal-in-nepal/panchang/output/panchang-2083.pdf</code> exists</li>
+        <li>JSON sample: <code>/Users/ayys/git/illegal-in-nepal/panchang/output/panchang-2083.json</code> exists</li>
+      </ul>
+    </div>
+  </section>
+  </details>
+
+  <details class="card" open>
+    <summary>Cross-year check (2082 book)</summary>
+    <p>Exact-minute tithi/nakshatra/yoga matches per fortnight for each Moon apogee correction.
+       Best values span −1.74° to −1.70° with no trend from Apr 2025 to Jan 2027, so −1.7° is a constant.</p>
+    <table class="scan"><tr><th>Fortnight</th><th>-1.80</th><th>-1.78</th><th>-1.76</th><th>-1.74</th><th>-1.72</th><th>-1.70</th><th>-1.68</th><th>-1.66</th><th>-1.64</th><th>-1.62</th><th>-1.60</th><th>Best</th></tr><tr><td>2082 वैशाख शुक्ल</td><td>22/44</td><td>25/44</td><td>28/44</td><td>34/44</td><td>37/44</td><td class=best>40/44</td><td>34/44</td><td>30/44</td><td>27/44</td><td>19/44</td><td>16/44</td><td><b>-1.70°</b></td></tr><tr><td>2082 माघ कृष्ण</td><td>23/45</td><td>32/45</td><td>37/45</td><td class=best>38/45</td><td>38/45</td><td>35/45</td><td>30/45</td><td>23/45</td><td>17/45</td><td>13/45</td><td>9/45</td><td><b>-1.74°</b></td></tr><tr><td>2083 वैशाख</td><td>21/51</td><td>28/51</td><td>32/51</td><td>40/51</td><td class=best>44/51</td><td>40/51</td><td>40/51</td><td>37/51</td><td>32/51</td><td>29/51</td><td>25/51</td><td><b>-1.72°</b></td></tr><tr><td>2083 कार्तिक</td><td>16/45</td><td>21/45</td><td>25/45</td><td>31/45</td><td>36/45</td><td class=best>39/45</td><td>39/45</td><td>35/45</td><td>27/45</td><td>22/45</td><td>17/45</td><td><b>-1.70°</b></td></tr><tr><td>2083 पौष/माघ</td><td>13/43</td><td>21/43</td><td>27/43</td><td>30/43</td><td>32/43</td><td class=best>37/43</td><td>35/43</td><td>31/43</td><td>26/43</td><td>21/43</td><td>14/43</td><td><b>-1.70°</b></td></tr></table>
+    <p style="margin-top:1rem">Rahu residual (computed − book). At local sunrise it swings with the season;
+       at a fixed daily moment (Ujjain mean sunrise) it stays within a few arcseconds across both books.</p>
+    <table class="scan"><tr><th>Date</th><th>At local sunrise</th><th>At Ujjain mean sunrise (used)</th></tr><tr><td>2025-04-28</td><td>+8.0″</td><td>-1.6″</td></tr><tr><td>2025-04-29</td><td>+7.3″</td><td>-2.4″</td></tr><tr><td>2025-04-30</td><td>+7.7″</td><td>-2.2″</td></tr><tr><td>2026-01-04</td><td>-2.1″</td><td>-0.2″</td></tr><tr><td>2026-01-05</td><td>-1.9″</td><td>+0.0″</td></tr><tr><td>2026-01-06</td><td>-1.7″</td><td>+0.3″</td></tr><tr><td>2026-01-07</td><td>-2.5″</td><td>-0.5″</td></tr><tr><td>2026-01-08</td><td>-2.3″</td><td>-0.3″</td></tr><tr><td>2026-01-09</td><td>-2.1″</td><td>-0.0″</td></tr><tr><td>2027-01-08</td><td>+0.2″</td><td>+2.3″</td></tr><tr><td>2027-01-09</td><td>+0.4″</td><td>+2.5″</td></tr><tr><td>2027-01-10</td><td>-0.4″</td><td>+1.7″</td></tr><tr><td>2027-01-11</td><td>-0.1″</td><td>+1.9″</td></tr><tr><td>2027-01-12</td><td>+0.1″</td><td>+2.2″</td></tr></table>
+  </details>
+
+  <details class="card" open>
+    <summary>Month starts vs published BS tables</summary>
+    <p>First day of every solar month from <code>panchanga.month_starts</code> against the lookup tables in
+       <code>nepali-datetime</code> and <code>py-nepali</code>. Rule, as printed in the books: the day runs from one
+       night's midpoint (30 ghati + half the दिनमान after sunrise) to the next, a tie going to the earlier day;
+       a Karka sankranti before sunrise counts for the day before and a Makara sankranti after sunset for the day
+       after. Each era's sankrantis sit slightly off ours (<code>SANKRANTI_ERAS</code>): measured from the
+       2031–2083 books (for 2024–2040, a separate value per sign), fitted to the tables before 2024.
+       After 2083 the two libraries disagree with each other; the computed dates match py-nepali throughout.
+       A ✓ marks a miss where a book or Drik Panchang confirms the computed date, i.e. the table is wrong
+       (sources in <code>data/month_starts.csv</code>; see <code>docs/VERIFICATION.md</code>). The one open case is
+       2093/10, a Makara sankranti about 1 pala after sunset, where Drik sides with nepali-datetime.</p>
+    <table class="scan"><tr><th>Table</th><th>Years</th><th>Match</th><th></th><th>Table wrong</th><th>Misses (computed vs table)</th></tr><tr><td>nepali-datetime</td><td>BS 1975–2083</td><td>1304/1308</td><td>99.7%</td><td>1/4</td><td style='font-size:.78rem'>1977/7: 10-17 vs 10-16, 1989/8: 11-16 vs 11-15, 1993/4: 07-15 vs 07-16 ✓, 2018/9: 12-16 vs 12-15</td></tr><tr><td>py-nepali</td><td>BS 2000–2083</td><td>1006/1008</td><td>99.8%</td><td>1/2</td><td style='font-size:.78rem'>2018/9: 12-16 vs 12-15, 2062/2: 05-15 vs 05-14 ✓</td></tr><tr><td>nepali-datetime</td><td>BS 2084–2100</td><td>139/204</td><td>68.1%</td><td>64/65</td><td style='font-size:.78rem'>2084/3: 06-16 vs 06-15 ✓, 2084/5: 08-18 vs 08-17 ✓, 2084/6: 09-18 vs 09-17 ✓, 2084/7: 10-18 vs 10-17 ✓, 2084/8: 11-17 vs 11-16 ✓, 2084/9: 12-17 vs 12-16 ✓, 2084/10: 01-15 vs 01-14 ✓, 2085/1: 04-14 vs 04-13 ✓, 2085/6: 09-17 vs 09-16 ✓, 2085/12: 03-14 vs 03-15 ✓, 2086/2: 05-15 vs 05-14 ✓, 2086/4: 07-17 vs 07-16 ✓, 2086/7: 10-18 vs 10-17 ✓, 2086/8: 11-17 vs 11-16 ✓, 2086/10: 01-15 vs 01-14 ✓, 2087/5: 08-18 vs 08-17 ✓, 2087/6: 09-18 vs 09-17 ✓, 2087/11: 02-13 vs 02-14 ✓, 2087/12: 03-15 vs 03-16 ✓, 2088/1: 04-14 vs 04-15 ✓ …</td></tr><tr><td>py-nepali</td><td>BS 2084–2099</td><td>192/192</td><td>100.0%</td><td>0/0</td><td style='font-size:.78rem'></td></tr></table>
+  </details>
+
+  <details class="card" open>
+    <summary>Constants reference</summary>
+    <p class="const-intro">Defined mainly in <code>surya.py</code> and <code>panchanga.py</code>. Fitted values are checked against the 2082 and 2083 books.</p><details class="const-group"><summary>Place & time</summary><table class="const"><tr><th>Name</th><th>Value</th><th>Role</th></tr><tr><td><code>NST</code></td><td>UTC+5:45</td><td>Civil timezone for all clock times</td></tr><tr><td><code>LATITUDE</code></td><td>27.7° N</td><td>Kathmandu — rise/set, lagna</td></tr><tr><td><code>LONGITUDE</code></td><td>85.3167° E</td><td>LMT→NST: (86.25 − lon) × 4 min</td></tr><tr><td><code>UJJAIN_LONGITUDE</code></td><td>75.7682° E</td><td>Kali epoch Julian day</td></tr></table></details><details class="const-group"><summary>Surya Siddhanta epoch & rates</summary><table class="const"><tr><th>Name</th><th>Value</th><th>Role</th></tr><tr><td><code>MAHAYUGA_DAYS</code></td><td>1,577,917,828</td><td>Days per mahayuga</td></tr><tr><td><code>sun revolutions / mahayuga</code></td><td>4,320,000</td><td>Mean Sun</td></tr><tr><td><code>moon revolutions / mahayuga</code></td><td>57,753,336</td><td>Mean Moon</td></tr><tr><td><code>moon_apogee rev / mahayuga</code></td><td>488,203</td><td>Mean Moon apogee</td></tr><tr><td><code>CREATION_TO_KALI_DAYS</code></td><td>1,955,880,000 × (mahayuga days / 4,320,000)</td><td>Ahargana from creation</td></tr><tr><td><code>KALI_JD</code></td><td>588465.289533</td><td>Kali midnight at Ujjain</td></tr><tr><td><code>KALI_MOON_APOGEE</code></td><td>90°</td><td>Moon apogee at Kali; other mean longitudes 0°</td></tr><tr><td><code>SUN_APOGEE_AT_KALI</code></td><td>77.13°</td><td>From 387 rev/kalpa; drifts with time</td></tr><tr><td><code>SUN_APOGEE_KALPA_REVOLUTIONS</code></td><td>387</td><td>Sun apogee motion per kalpa</td></tr></table></details><details class="const-group"><summary>Manda (true Sun & Moon)</summary><table class="const"><tr><th>Name</th><th>Value</th><th>Role</th></tr><tr><td><code>RADIUS</code></td><td>3438</td><td>SS jyā table</td></tr><tr><td><code>SINES</code></td><td>24 SS values, 3°45′ steps</td><td>Linear interpolation in _jya()</td></tr><tr><td><code>Sun manda circumference</code></td><td>14° → 13°40′</td><td>Even/odd at kendra; eq. subtracted</td></tr><tr><td><code>Moon manda circumference</code></td><td>32° → 31°40′</td><td>Even/odd at kendra</td></tr></table></details><details class="const-group const-fitted" open><summary>Fitted to 2082 + 2083 books</summary><table class="const"><tr><th>Name</th><th>Value</th><th>Role</th></tr><tr><td><code>MOON_APOGEE_CORRECTION</code></td><td>−1.7°</td><td>Added to mean Moon apogee — tithi/nak times; constant Apr 2025–Jan 2027</td></tr><tr><td><code>RAHU_OFFSET</code></td><td>−50.4″</td><td>After Lahiri, Rahu taken at Ujjain mean sunrise (fixed daily moment)</td></tr><tr><td><code>(not in surya.py)</code></td><td>ceil sunrise / floor sunset</td><td>Printed clock minutes</td></tr></table></details><details class="const-group"><summary>Lahiri / Ketaki frame</summary><table class="const"><tr><th>Name</th><th>Value</th><th>Role</th></tr><tr><td><code>Lahiri ayanamsha</code></td><td>23.857092° + (5029.0966·T + 1.11113·T²)/3600</td><td>T = Julian centuries from J2000</td></tr><tr><td><code>Applied to</code></td><td>true SS Sun (+ shift)</td><td>Rise, set, lagna, belantar, Rahu — not Moon limbs</td></tr><tr><td><code>Obliquity</code></td><td>23.439291° − 0.0130042·T</td><td>Declination, oblique ascension</td></tr><tr><td><code>HORIZON</code></td><td>−34′ (−34/60°)</td><td>Disc centre + refraction only</td></tr><tr><td><code>SIDEREAL_DAY</code></td><td>0.99726957</td><td>Lagna advance rate after sunrise</td></tr><tr><td><code>Rahu mean node</code></td><td>125.04452 − 1934.136261·T + …</td><td>At Ujjain 6:00 LMT, then − Lahiri + RAHU_OFFSET</td></tr><tr><td><code>Not used for book match</code></td><td>SS trepidation (600/yuga), 24° obl., −0.83° horizon</td><td>Earlier experiments</td></tr></table></details><details class="const-group"><summary>Display & rounding</summary><table class="const"><tr><th>Name</th><th>Value</th><th>Role</th></tr><tr><td><code>Ghati/pala from sunrise</code></td><td>(jd − sunrise) × 1440 × 2.5</td><td>1 ghati = 24 min ⇒ 2.5 pala/min</td></tr><tr><td><code>दिनमान</code></td><td>floor(2 × half_day × 2.5) palas</td><td>Half-day from same rise geometry</td></tr></table></details><details class="const-group"><summary>Panchāṅga divisions (panchanga.py)</summary><table class="const"><tr><th>Name</th><th>Value</th><th>Role</th></tr><tr><td><code>TITHI_WIDTH</code></td><td>12°</td><td>30 tithis per cycle</td></tr><tr><td><code>KARANA_WIDTH</code></td><td>6°</td><td>First-half karanas before next sunrise</td></tr><tr><td><code>NAKSHATRA_WIDTH</code></td><td>360/27°</td><td>27 nakshatras</td></tr><tr><td><code>PADA_WIDTH</code></td><td>360/108°</td><td>Sun rail (nakshatra quarters)</td></tr><tr><td><code>SIGN_WIDTH</code></td><td>30°</td><td>Rashi, sankranti, lagna signs</td></tr><tr><td><code>ABHIJIT</code></td><td>276°40′ – 280°53′20″</td><td>28-nakshatra Anandadi index 21</td></tr><tr><td><code>ANANDADI_START</code></td><td>[4,8,12,16,20,24,0]</td><td>By weekday Mon=0 … Sun=6</td></tr></table></details><details class="const-group"><summary>Calendar / header</summary><table class="const"><tr><th>Name</th><th>Value</th><th>Role</th></tr><tr><td><code>BS → Gregorian anchor</code></td><td>bs_year − 57</td><td>Month boundaries from solar sankranti</td></tr><tr><td><code>Shaka</code></td><td>bs_year − 135 (+1 after Chaitra NM)</td><td>From computed new moon</td></tr><tr><td><code>Nepal Samvat</code></td><td>bs_year − 937 (+1 after Kartik NM)</td><td>From computed new moon</td></tr><tr><td><code>Uttarayana signs</code></td><td>{9,10,11,0,1,2}</td><td>Makar through Mithun</td></tr><tr><td><code>Solar month start</code></td><td>Nishitha to nishitha</td><td>Karka: sunrise; Makara: sunset</td></tr><tr><td><code>SANKRANTI_ERAS</code></td><td>−2.9 to +1.1 ghati</td><td>Per-era, per-sign sankranti offset; 0 from 2070</td></tr></table></details><details class="const-group"><summary>PDF layout (render.py)</summary><table class="const"><tr><th>Name</th><th>Value</th><th>Role</th></tr><tr><td><code>PAGE_WIDTH × HEIGHT</code></td><td>1007.01 × 555.591 pt</td><td>From InDesign export</td></tr><tr><td><code>Column widths</code></td><td>Measured pt values</td><td>Typography only, not astronomy</td></tr></table></details><details class="const-group"><summary>Config only (generate.py JSON)</summary><table class="const"><tr><th>Name</th><th>Value</th><th>Role</th></tr><tr><td><code>samvatsara</code></td><td>e.g. रौद्र</td><td>Not computed</td></tr><tr><td><code>papakshani, papamsha, notes</code></td><td>Per page/day</td><td>Editorial</td></tr></table></details>
+  </details>
+
+  <details class="card" open>
+    <summary>Component matrix</summary>
+    <table>
+      <tr><th>Component</th><th>Status</th><th>Notes</th></tr>
+      <tr><td>Year layout (26 pages, 365 days)</td><td><span class="badge ok">Works</span></td><td>Matches FORMAT-2083-A structure</td></tr><tr><td>Solar month starts (sankranti date rule)</td><td><span class="badge ok">Works</span></td><td>1304/1308 vs nepali-datetime 1975–2083 (1993/4 is its error; 1977/7, 1989/8, 2018/9 open); nishitha day, Karka/Makara rule, per-era offsets read from books, geometric sunrise before 2064</td></tr><tr><td>Adhik maas naming</td><td><span class="badge ok">Works</span></td><td>Adhik Jyeshtha pages 5–6</td></tr><tr><td>Page headers (month, NS, Gregorian, ayana, ritu)</td><td><span class="badge ok">Works</span></td><td>7 pages regression-tested</td></tr><tr><td>Tithi / nakshatra / yoga end times</td><td><span class="badge ok">Works</span></td><td>±1 min on calibrated fortnights</td></tr><tr><td>Stacked endings & अहोरात्र</td><td><span class="badge ok">Works</span></td><td>Double endings in one civil day</td></tr><tr><td>Karana column</td><td><span class="badge ok">Works</span></td><td>First-half karanas before next sunrise</td></tr><tr><td>Anandadi yoga</td><td><span class="badge ok">Works</span></td><td>15/15 on Paush page 21</td></tr><tr><td>Moon sign change times</td><td><span class="badge ok">Works</span></td><td>Checked on Jan 8–21</td></tr><tr><td>Sunrise / sunset (printed clock)</td><td><span class="badge ok">Works</span></td><td>Ceil rise, floor set; Lahiri frame</td></tr><tr><td>Sun / Moon / Rahu at sunrise</td><td><span class="badge ok">Works</span></td><td>Arc-second to sub-arcminute</td></tr><tr><td>Belantar (equation of time)</td><td><span class="badge ok">Works</span></td><td>±2 s at noon</td></tr><tr><td>Lagna start table</td><td><span class="badge ok">Works</span></td><td>±1 min (Jan fortnight)</td></tr><tr><td>Sun pada rail (nakshatra / rashi entries)</td><td><span class="badge ok">Works</span></td><td>5 events on page 21</td></tr><tr><td>Dinamana (day length)</td><td><span class="badge warn">Approximate</span></td><td>Within 2 pala; rule not exact</td></tr><tr><td>Ghati-pala for tithi ends</td><td><span class="badge warn">Approximate</span></td><td>Mostly exact; 1 pala drift on some rows</td></tr><tr><td>Mars – Saturn spashta</td><td><span class="badge fail">Missing</span></td><td>Needs Ketaki tables; Swiss/Lahiri wrong</td></tr><tr><td>Planet rise/set rail (non-Sun)</td><td><span class="badge fail">Missing</span></td><td>Not implemented</td></tr><tr><td>Kundali chart</td><td><span class="badge fail">Missing</span></td><td>Placeholder box</td></tr><tr><td>Festival / vrat notes column</td><td><span class="badge fail">Missing</span></td><td>Editorial; optional JSON config</td></tr><tr><td>Samvatsara, papakshani, papamsha</td><td><span class="badge fail">Missing</span></td><td>Config only</td></tr><tr><td>PDF typography vs InDesign book</td><td><span class="badge warn">Approximate</span></td><td>Layout approximates; not pixel-identical</td></tr><tr><td>Other BS years</td><td><span class="badge ok">Works</span></td><td>2082 book: limb ends ±1 min, Sun/Moon/Rahu/belantar in tolerance with 2083 constants</td></tr>
+    </table>
+  </details>
+
+  <details class="card">
+    <summary>2083 page timeline (computed)</summary>
+    <table>
+      <tr><th>Book p.</th><th>Rows</th><th>First day</th><th>Last day</th><th>Header</th></tr>
+      <tr><td>2</td><td>4</td><td>2026-04-14</td><td>2026-04-17</td><td>वैशाखकृष्ण · NS 1146 · अप्रिल 2026</td></tr><tr><td>3</td><td>14</td><td>2026-04-18</td><td>2026-05-01</td><td>वैशाखशुक्ल · NS 1146 · अप्रिल + मे 2026</td></tr><tr><td>4</td><td>15</td><td>2026-05-02</td><td>2026-05-16</td><td>शुद्ध ज्येष्ठकृष्ण · NS 1146 · मे 2026</td></tr><tr><td>5</td><td>15</td><td>2026-05-17</td><td>2026-05-31</td><td>अधिक ज्येष्ठशुक्ल · NS 1146 · मे 2026</td></tr><tr><td>6</td><td>15</td><td>2026-06-01</td><td>2026-06-15</td><td>अधिक ज्येष्ठकृष्ण · NS 1146 · जुन 2026</td></tr><tr><td>7</td><td>14</td><td>2026-06-16</td><td>2026-06-29</td><td>शुद्ध ज्येष्ठशुक्ल · NS 1146 · जुन 2026</td></tr><tr><td>8</td><td>15</td><td>2026-06-30</td><td>2026-07-14</td><td>आषाढकृष्ण · NS 1146 · जुन + जुलाई 2026</td></tr><tr><td>9</td><td>15</td><td>2026-07-15</td><td>2026-07-29</td><td>आषाढशुक्ल · NS 1146 · जुलाई 2026</td></tr><tr><td>10</td><td>14</td><td>2026-07-30</td><td>2026-08-12</td><td>श्रावणकृष्ण · NS 1146 · जुलाई + अगस्ट 2026</td></tr><tr><td>11</td><td>16</td><td>2026-08-13</td><td>2026-08-28</td><td>श्रावणशुक्ल · NS 1146 · अगस्ट 2026</td></tr><tr><td>12</td><td>14</td><td>2026-08-29</td><td>2026-09-11</td><td>भाद्रकृष्ण · NS 1146 · अगस्ट + सेप्टेम्बर 2026</td></tr><tr><td>13</td><td>15</td><td>2026-09-12</td><td>2026-09-26</td><td>भाद्रशुक्ल · NS 1146 · सेप्टेम्बर 2026</td></tr><tr><td>14</td><td>14</td><td>2026-09-27</td><td>2026-10-10</td><td>आश्विनकृष्ण · NS 1146 · सेप्टेम्बर + अक्टोबर 2026</td></tr><tr><td>15</td><td>16</td><td>2026-10-11</td><td>2026-10-26</td><td>आश्विनशुक्ल · NS 1146 · अक्टोबर 2026</td></tr><tr><td>16</td><td>14</td><td>2026-10-27</td><td>2026-11-09</td><td>कार्तिककृष्ण · NS 1146 · अक्टोबर + नोभेम्बर 2026</td></tr><tr><td>17</td><td>15</td><td>2026-11-10</td><td>2026-11-24</td><td>कार्तिकशुक्ल · NS 1147 · नोभेम्बर 2026</td></tr><tr><td>18</td><td>14</td><td>2026-11-25</td><td>2026-12-08</td><td>मार्गशीर्षकृष्ण · NS 1147 · नोभेम्बर + डिसेम्बर 2026</td></tr><tr><td>19</td><td>16</td><td>2026-12-09</td><td>2026-12-24</td><td>मार्गशीर्षशुक्ल · NS 1147 · डिसेम्बर 2026</td></tr><tr><td>20</td><td>14</td><td>2026-12-25</td><td>2027-01-07</td><td>पौषकृष्ण · NS 1147 · डिसेम्बर 2026 + जनवरी 2027</td></tr><tr><td>21</td><td>15</td><td>2027-01-08</td><td>2027-01-22</td><td>पौषशुक्ल · NS 1147 · जनवरी 2027</td></tr><tr><td>22</td><td>15</td><td>2027-01-23</td><td>2027-02-06</td><td>माघकृष्ण · NS 1147 · जनवरी + फेब्रुअरी 2027</td></tr><tr><td>23</td><td>14</td><td>2027-02-07</td><td>2027-02-20</td><td>माघशुक्ल · NS 1147 · फेब्रुअरी 2027</td></tr><tr><td>24</td><td>16</td><td>2027-02-21</td><td>2027-03-08</td><td>फाल्गुनकृष्ण · NS 1147 · फेब्रुअरी + मार्च 2027</td></tr><tr><td>25</td><td>14</td><td>2027-03-09</td><td>2027-03-22</td><td>फाल्गुनशुक्ल · NS 1147 · मार्च 2027</td></tr><tr><td>26</td><td>15</td><td>2027-03-23</td><td>2027-04-06</td><td>चैत्रकृष्ण · NS 1147 · मार्च + अप्रिल 2027</td></tr><tr><td>27</td><td>7</td><td>2027-04-07</td><td>2027-04-13</td><td>चैत्रशुक्ल · NS 1147 · अप्रिल 2027</td></tr>
+    </table>
+  </details>
+
+  <details class="card">
+    <summary>Test log</summary>
+    <pre>test_crossings_are_sorted_and_in_range (test_surya.CrossingTest.test_crossings_are_sorted_and_in_range) ... ok
+test_thirty_tithis_per_lunation (test_surya.CrossingTest.test_thirty_tithis_per_lunation) ... ok
+test_twelve_sankrantis_a_year (test_surya.CrossingTest.test_twelve_sankrantis_a_year) ... ok
+test_daily_motions (test_surya.MotionTest.test_daily_motions) ... ok
+test_equation_of_centre_bounds (test_surya.MotionTest.test_equation_of_centre_bounds) ... ok
+test_lahiri (test_surya.MotionTest.test_lahiri) ... ok
+test_no_correction_at_apsides (test_surya.MotionTest.test_no_correction_at_apsides) ... ok
+test_sun_apogee_near_77_degrees (test_surya.MotionTest.test_sun_apogee_near_77_degrees) ... ok
+test_close_to_true_sine (test_surya.SineTableTest.test_close_to_true_sine) ... ok
+test_inverse (test_surya.SineTableTest.test_inverse) ... ok
+test_symmetry (test_surya.SineTableTest.test_symmetry) ... ok
+test_table_points (test_surya.SineTableTest.test_table_points) ... ok
+test_equation_of_time_range (test_surya.SunriseTest.test_equation_of_time_range) ... ok
+test_lagna_starts (test_surya.SunriseTest.test_lagna_starts) ... ok
+test_order (test_surya.SunriseTest.test_order) ... ok
+test_seasons (test_surya.SunriseTest.test_seasons) ... ok
+test_julian_day_epoch (test_surya.TimeScaleTest.test_julian_day_epoch) ... ok
+test_kali_epoch (test_surya.TimeScaleTest.test_kali_epoch) ... ok
+test_local_julian_day_is_nst (test_surya.TimeScaleTest.test_local_julian_day_is_nst) ... ok
+test_round_trip (test_surya.TimeScaleTest.test_round_trip) ... ok
+test_ujjain_mean_sunrise (test_surya.TimeScaleTest.test_ujjain_mean_sunrise) ... ok
+test_2082_spashta (test_panchanga.BookTest.test_2082_spashta) ... ok
+test_2082_tithi_nakshatra_yoga (test_panchanga.BookTest.test_2082_tithi_nakshatra_yoga) ... ok
+test_anandadi (test_panchanga.BookTest.test_anandadi) ... ok
+test_dinamana (test_panchanga.BookTest.test_dinamana) ... ok
+test_headers (test_panchanga.BookTest.test_headers) ... ok
+test_karana (test_panchanga.BookTest.test_karana) ... ok
+test_lagna (test_panchanga.BookTest.test_lagna) ... ok
+test_month_starts (test_panchanga.BookTest.test_month_starts) ... ok
+test_page_count (test_panchanga.BookTest.test_page_count) ... ok
+test_spashta (test_panchanga.BookTest.test_spashta) ... ok
+test_sun_moon_across_seasons (test_panchanga.BookTest.test_sun_moon_across_seasons) ... ok
+test_sun_padas (test_panchanga.BookTest.test_sun_padas) ... ok
+test_sunrise_sunset (test_panchanga.BookTest.test_sunrise_sunset) ... ok
+test_tithi_nakshatra_yoga (test_panchanga.BookTest.test_tithi_nakshatra_yoga) ... ok
+test_arc (test_panchanga.DayRowTest.test_arc) ... ok
+test_end_times_fall_inside_the_day (test_panchanga.DayRowTest.test_end_times_fall_inside_the_day) ... ok
+test_karana_names (test_panchanga.DayRowTest.test_karana_names) ... ok
+test_lagna_order (test_panchanga.DayRowTest.test_lagna_order) ... ok
+test_nakshatra28 (test_panchanga.DayRowTest.test_nakshatra28) ... ok
+test_tithi_numbering (test_panchanga.DayRowTest.test_tithi_numbering) ... ok
+test_book_horizon (test_panchanga.MonthStartTest.test_book_horizon) ... ok
+test_book_sankrantis (test_panchanga.MonthStartTest.test_book_sankrantis) ... ok
+test_documented_month_starts (test_panchanga.MonthStartTest.test_documented_month_starts) ... ok
+test_eras (test_panchanga.MonthStartTest.test_eras) ... ok
+test_karka_and_makara_rules (test_panchanga.MonthStartTest.test_karka_and_makara_rules) ... ok
+test_month_and_year_lengths (test_panchanga.MonthStartTest.test_month_and_year_lengths) ... ok
+test_new_year_near_mid_april (test_panchanga.MonthStartTest.test_new_year_near_mid_april) ... ok
+test_night_midpoint_boundary (test_panchanga.MonthStartTest.test_night_midpoint_boundary) ... ok
+test_year_chains_into_the_next (test_panchanga.MonthStartTest.test_year_chains_into_the_next) ... ok
+test_every_day_once (test_panchanga.YearLayoutTest.test_every_day_once) ... ok
+test_gates_restart_each_month (test_panchanga.YearLayoutTest.test_gates_restart_each_month) ... ok
+test_one_paksha_per_page (test_panchanga.YearLayoutTest.test_one_paksha_per_page) ... ok
+test_pages_number_from_two (test_panchanga.YearLayoutTest.test_pages_number_from_two) ... ok
+
+----------------------------------------------------------------------
+Ran 54 tests in 2.765s
+
+OK
+</pre>
+  </details>
+</main>
+</body>
+</html>
