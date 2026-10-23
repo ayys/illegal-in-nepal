@@ -21,8 +21,10 @@ python3 -m unittest test_surya test_panchanga test_editorial test_ketaki test_ra
 | Lagna starts | all within 1 minute | `LAGNA` (2083 p21) |
 | Sun, Moon, Rahu spashta | Sun within 4″, Rahu within 3″, Moon within 15″ (p21) | `SPASHTA`, `SUN_MOON` |
 | Mars to Saturn spashta (2082 and 2083, 1841 values) | median 1″ Saturn, 2″ Jupiter, 5″ Mars, 11″ Venus, 16″ Mercury; 90% within 3, 5, 15, 45, 41″ | `data/book_planets.csv`, `test_ketaki.py` |
-| Rail planet lines (84 on 11 pages) | every line found, same गते; 78 within 20 minutes, the rest within the planet's few-arc-second error (Mars at its station: 2½ h); stations within a day | `data/book_rail.csv`, `test_rail.py` |
-| राशि प्रवेश box (17 pages) | 14 exact; the other 3 are where the book's box disagrees with its own rail | `test_rail.py` |
+| Rail planet lines, 2083 pp2-27 (179) | every line found on the same गते, within 120″ of position at the planet's speed (Mercury 60 min); stations within a day | `data/book_rail.csv`, `test_rail.py` |
+| राशि प्रवेश box (22 pages) | 18 exact; the other 4 are where the book's box disagrees with its own rail | `test_rail.py` |
+| उदय/अस्त (17) | 7 within an hour; 10 one to eight days off (open) | `test_rail.py` |
+| Planet status box (pp2, 27) | both exact | `test_rail.py` |
 | बेलान्तर | within 2 seconds | `SPASHTA` |
 | Page count and layout | 26 pages, 365 days, headers on 6 pages | `HEADERS` |
 
@@ -67,6 +69,25 @@ The future part of the nepali-datetime table (2084 on) disagrees with
 py-nepali in 65 months, nearly all by one day. Drik Panchang was checked for
 every one of them. It sides with py-nepali, and with this code, in all but
 one.
+
+## Open: उदय and अस्त
+
+The book's heliacal events follow the classic arcs (Mercury 14° direct, 12°
+वक्री; Saturn 15°) to the hour on 7 of 17: 2083 pp3, 5, 8 and 16 (Mercury),
+17 and 23 (Mercury), 25 (Saturn). The other ten are one to eight days off
+with no common rule. Around a single superior conjunction the book's
+Mercury uses 14° on both sides (pp3, 5), around the next 9.4° and 14.75°
+(pp11, 13), and around the one after 12.5° and 8.9° (pp19, 21). Ketaki's
+own criterion (rising-time gaps of 110 पल for Mercury, p290-292) fits only
+4, none of them the arcs' misses consistently.
+
+## Book anomalies
+
+- 2083 pp12-13: the book's Mars runs 40.2′ a day from 2026-09-05 to 09-13
+  against Ketaki's 37.3′, 26′ ahead by 09-13, then jumps back on 09-16 — a
+  daily motion carried forward and corrected. Its rail lines there are late
+  by 7 hours in ours.
+- The राशि प्रवेश box disagrees with the book's own rail on pp18, 20, 21, 22.
 
 ## The one open case: 2093 माघ
 

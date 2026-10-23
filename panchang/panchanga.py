@@ -66,10 +66,10 @@ FIXED_KARANAS = {
     0: ("किंस्तुघ्न", "किं."), 57: ("शकुनि", "श."), 58: ("चतुष्पद", "च."), 59: ("नाग", "ना."),
 }
 # Nakshatra names as the ग्रहचार rail prints them: in full, but the paired
-# ones (पूर्व/उत्तर) shortened and पुष्य as तिष्य (2083 pp2-21).
+# ones (पूर्व/उत्तर) shortened, पुष्य as तिष्य and हस्त as हस्ता (2083 pp2-27).
 RAIL_NAKSHATRAS = [
     "अश्विनी", "भरणी", "कृत्तिका", "रोहिणी", "मृगशिरा", "आर्द्रा", "पुनर्वसु", "तिष्य",
-    "अश्लेषा", "मघा", "पू.फा.", "उ.फा.", "हस्त", "चित्रा", "स्वाती", "विशाखा", "अनुराधा",
+    "अश्लेषा", "मघा", "पू.फा.", "उ.फा.", "हस्ता", "चित्रा", "स्वाती", "विशाखा", "अनुराधा",
     "ज्येष्ठा", "मूल", "पू.षा.", "उ.षा.", "श्रवण", "धनिष्ठा", "शतभिषा", "पू.भा.", "उ.भा.", "रेवती",
 ]
 # The 28 आनन्दादि yogas, from the weekday and the Moon's nakshatra counted
@@ -269,6 +269,40 @@ def planet_events(day: date, gate: int) -> list[dict]:
     return events
 
 
+# Heliacal arcs: how far from the Sun in longitude a planet appears or
+# disappears, in direct and in वक्री motion. These are the Surya Siddhanta's
+# कालांश; the 2083 book's rail hits them to the hour on 7 of its 17 उदय/अस्त
+# (Mercury 14.00° and 12.00°, Saturn 15.00°) and misses the others by days
+# (docs/VERIFICATION.md).
+HELIACAL_ARCS = {"mars": (17, 17), "mercury": (14, 12), "jupiter": (11, 11), "venus": (10, 8), "saturn": (15, 15)}
+
+
+def heliacal_events(day: date) -> list[dict]:
+    """उदय and अस्त on `day`: the moment a planet's elongation from the Sun
+    crosses its arc, east (पूर्व, a morning star) or west (पश्चिम, evening).
+    Growing elongation is उदय, shrinking अस्त. Planet and Sun are linear
+    between this sunrise and the next."""
+    rise, after = ketaki.sunrise(day), ketaki.sunrise(day + timedelta(days=1))
+    sun0, sun1 = surya.true_sun(rise), surya.true_sun(after)
+    found = []
+    for body in ketaki.PLANETS:
+        a, b = _planet_longitude(body, day), _planet_longitude(body, day + timedelta(days=1))
+        motion = (b - a + 180) % 360 - 180
+        arc = HELIACAL_ARCS[body][0 if motion >= 0 else 1]
+        e0, e1 = (a - sun0 + 180) % 360 - 180, (b - sun1 + 180) % 360 - 180
+        if e0 * e1 <= 0 and abs(e0) + abs(e1) < 90:
+            continue  # a conjunction, not a visibility change
+        for side, sign in (("पूर्व", -1), ("पश्चिम", 1)):
+            f0, f1 = sign * e0 - arc, sign * e1 - arc
+            if f0 * f1 < 0 and sign * e0 > 0:
+                jd = rise + f0 / (f0 - f1) * (after - rise)
+                entry = _ending(0, None, jd, surya.sunrise(day), day)
+                entry.pop("index")
+                entry.update(body=body, heliacal="उदय" if f1 > f0 else "अस्त", side=side)
+                found.append(entry)
+    return found
+
+
 def _add_stations(rows: list[dict]) -> None:
     """वक्री and मार्गी: where a planet's daily motion in the स्पष्ट ग्रह table
     changes sign, the turning point by the tables themselves (ketaki.station)
@@ -384,7 +418,7 @@ def day_row(day: date, bs_month: int, gate: int) -> dict:
         "sunset_clock": _clock(set_, day, math.floor),
         "sun_sign": sun_sign(rise),
         "sun_padas": sun_padas,
-        "planet_events": planet_events(day, gate),
+        "planet_events": planet_events(day, gate) + heliacal_events(day),
         "lagna": [
             {"sign": sign, "name": SIGNS[sign], "clock": _clock(jd, day)}
             for sign, jd in surya.lagna_starts(day)
@@ -670,7 +704,25 @@ def year(bs_year: int, config: dict | None = None) -> list[dict]:
             current = [row]
     pages.append(current)
 
-    return [
+    result = [
         {"page": i + 2, "header": header(page, months, new_years, bs_year, config), "rows": page}
         for i, page in enumerate(pages)
     ]
+    # The first and last pages print each planet's state (2083 p27 "मं.मा.उ.,
+    # बु.मा.उ., बृ.व.उ., शु.मा.उ., शं.मा.अ.").
+    for page in (result[0], result[-1]):
+        page["header"]["planet_status"] = planet_status(date.fromisoformat(page["rows"][0]["date"]))
+    return result
+
+
+def planet_status(day: date) -> list[dict]:
+    """Each planet at `day`'s sunrise: मार्गी or वक्री by the day's motion in the
+    स्पष्ट ग्रह table, उदित or अस्त by its elongation against HELIACAL_ARCS."""
+    status = []
+    sun = surya.true_sun(ketaki.sunrise(day))
+    for body in ketaki.PLANETS:
+        a, b = _planet_longitude(body, day), _planet_longitude(body, day + timedelta(days=1))
+        direct = (b - a + 180) % 360 - 180 >= 0
+        visible = abs((a - sun + 180) % 360 - 180) > HELIACAL_ARCS[body][0 if direct else 1]
+        status.append({"body": body, "direct": direct, "visible": visible})
+    return status

@@ -1,7 +1,7 @@
 """The ग्रहचार rail and the राशि प्रवेश box against the 2083 book.
 
-data/book_rail.csv: every planet line of the rail, read off 2083 pp2-9, 18,
-21 and 22 (PDF page = book page):
+data/book_rail.csv: every planet line of the rail, read off 2083 pp2-27
+(PDF page = book page; the Sun's lines are in test_panchanga):
   https://giwmscdnone.gov.np/media/pages/files/FORMAT-2083-A_7f75xmb.pdf
 `kind` is pada (Mars, Jupiter, Saturn, Rahu), nakshatra or sign (Mercury,
 Venus), abhijit, station (वक्री/मार्गी) or heliacal (उदय/अस्त, not computed
@@ -10,6 +10,7 @@ yet); `detail` is what the line names, `again` the पुनः of a re-entry.
 
 import csv
 import unittest
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import panchanga
@@ -17,26 +18,44 @@ import render
 
 DATA = Path(__file__).resolve().parent / "data" / "book_rail.csv"
 
-# Minutes. The rail's times follow the स्पष्ट ग्रह values, so a planet a few
-# arc-seconds off is off by (arc-seconds / its speed): Mars near its January
-# 2027 station moves 3′ a day, and Mercury has a few arc-minute misses
-# (docs/CALIBRATION.md section 5).
-TOLERANCE = {"mars": 150, "mercury": 60, "venus": 30, "jupiter": 30, "saturn": 30, "rahu": 30}
+# The rail's times follow the स्पष्ट ग्रह values, so a planet off by a few
+# arc-seconds is off by (arc-seconds / its speed) in time: Mars near its
+# January 2027 station moves 3′ a day. Allowed: POSITION arc-seconds at the
+# planet's speed that day, and at least MINUTES. Near stations the tables'
+# kinks leave Ketaki up to ~2′ from the book (Mars on 2027-02-03, 2083 p22,
+# is 141 minutes at 12′ a day); Mercury has a few arc-minute misses of its
+# own (docs/CALIBRATION.md section 5).
+POSITION = 120
+MINUTES = {"mercury": 60}
+# The book's own Mars runs 40.2′ a day from 2026-09-05 to 09-13 (2083 pp12-13)
+# against Ketaki's 37.3′, 26′ ahead by 09-13, then jumps back on 09-16: a
+# daily motion carried forward and corrected. Its rail lines there inherit it.
+BOOK_ANOMALIES = {(12, "mars", "पुनर्वसु|2"), (13, "mars", "पुनर्वसु|3")}
+# उदय/अस्त the arcs don't reproduce (ours − book, days): Jupiter p9 −1, p10
+# +5; Mercury p9 −1 (at its station, elongation 13.0°), p11 −5, p13 −1, p19
+# −3, p21 +8, p24 −2; Venus p15 +5, p16 +2.
+# The book's Mercury arcs around one superior conjunction are 14° (pp3, 5),
+# around others 9.4°/14.75° (pp11, 13) and 12.5°/8.9° (pp19, 21).
+HELIACAL_OPEN = {(9, "jupiter"), (10, "jupiter"), (9, "mercury"), (11, "mercury"), (13, "mercury"), (19, "mercury"),
+                 (21, "mercury"), (24, "mercury"), (15, "venus"), (16, "venus")}
 
 # The book's own राशि प्रवेश boxes, 2083.
 BOXES = {
     2: "१सू.१", 3: "१७बु.१, ६शु.२", 4: "१सू.२, २८मं.१, ३१बु.२, ३०शु.३", 5: "१५बु.३",
     6: "१सू.३, १८बृ.४, २४शु.४", 8: "२०बु.३, १९शु.५", 9: "१सू.४", 10: "१८मं.३, २०बु.४, १५शु.६",
-    11: "१सू.५, ६बु.५", 15: "१सू.७", 16: "१२बृ.५, २२शु.६", 23: "१सू.११",
+    11: "१सू.५, ६बु.५", 12: "२२बु.६, १७शु.७", 13: "१सू.६, २मं.४, ९बु.७", 15: "१सू.७",
+    16: "१२बृ.५, २२शु.६", 17: "१सू.८, २६मं.५, २६शु.७", 19: "१सू.९, ७बु.९", 23: "१सू.११", 26: "२२बु.१२",
     24: "११बु.१०, १२शु.१०", 25: "१सू.१२, २५मं.४, २६बु.११, ७शु.११",
 }
 # Where the book's box disagrees with its own rail: p18 "१७बु.८" against the
 # rail's "१६ वृश्चिकमा बुध"; p21 and p22 leave out Mercury's and Jupiter's
-# entries that their rails print.
-BOXES_DIFFERENT = {18: "१७बु.८, १९रा.१०के.४", 21: "३०सू.१०", 22: "१४बु.११, १५शु.९"}
+# entries that their rails print; p20 "१७सू.८" for the rail's "१७ वृश्चिकमा शुक्र".
+BOXES_DIFFERENT = {18: "१७बु.८, १९रा.१०के.४", 20: "१७सू.८", 21: "३०सू.१०", 22: "१४बु.११, १५शु.९"}
 
 
 def describe(entry: dict) -> tuple[str, str]:
+    if "heliacal" in entry:
+        return "heliacal", f"{entry['side']}|{entry['heliacal']}"
     if "station" in entry:
         return "station", entry["station"]
     if entry["body"] in ("mercury", "venus"):
@@ -49,6 +68,12 @@ def describe(entry: dict) -> tuple[str, str]:
 
 
 class RailTest(unittest.TestCase):
+    @staticmethod
+    def speed(body: str, day: date) -> float:
+        """Arc-seconds a minute, from the day's स्पष्ट ग्रह to the next's."""
+        a, b = panchanga._planet_longitude(body, day), panchanga._planet_longitude(body, day + timedelta(days=1))
+        return max(abs((b - a + 180) % 360 - 180) * 3600 / 1440, 1e-6)
+
     @classmethod
     def setUpClass(cls):
         cls.pages = {p["page"]: p for p in panchanga.year(2083)}
@@ -57,23 +82,40 @@ class RailTest(unittest.TestCase):
 
     def test_every_line(self):
         for line in self.lines:
-            if line["kind"] == "heliacal":
+            page = int(line["page"])
+            if (page, line["body"], line["detail"]) in BOOK_ANOMALIES:
                 continue
-            with self.subTest(page=line["page"], gate=line["gate"], body=line["body"], detail=line["detail"]):
-                found = [(row, e) for row in self.pages[int(line["page"])]["rows"] for e in row["planet_events"]
+            if line["kind"] == "heliacal" and (page, line["body"]) in HELIACAL_OPEN:
+                continue
+            with self.subTest(page=page, gate=line["gate"], body=line["body"], detail=line["detail"]):
+                # A planet at its station barely moves, so the turn by the
+                # tables can fall either side of a sunrise, even onto the
+                # next page.
+                nearby = (page - 1, page, page + 1) if line["kind"] in ("station", "heliacal") else (page,)
+                found = [(row, e) for p in nearby if p in self.pages for row in self.pages[p]["rows"]
+                         for e in row["planet_events"]
                          if e["body"] == line["body"] and describe(e) == (line["kind"], line["detail"])
                          and bool(e.get("again")) == (line["again"] == "1")]
+                if line["kind"] == "station":
+                    self.assertTrue(found)
+                    continue
+                if line["kind"] == "heliacal":
+                    # Within an hour of the book's moment, which may be on the next page.
+                    hours, minutes = map(int, line["clock"].split(":"))
+                    printed = next(r for r in self.pages[page]["rows"] if r["gate"] == int(line["gate"]))
+                    midnight = datetime.fromisoformat(f"{printed['date']}T00:00:00+05:45")
+                    gap = min(abs((datetime.fromisoformat(e["at"]) - midnight).total_seconds() / 60 - (hours * 60 + minutes))
+                              for _, e in found)
+                    self.assertLessEqual(gap, 60)
+                    continue
                 self.assertEqual(len(found), 1)
                 row, entry = found[0]
-                if line["kind"] == "station":
-                    # A planet at its station barely moves, so the turn by
-                    # the tables can fall either side of a sunrise.
-                    self.assertLessEqual(abs(row["gate"] - int(line["gate"])), 1)
-                    continue
                 self.assertEqual(row["gate"], int(line["gate"]))
                 hours, minutes = map(int, line["clock"].split(":"))
                 ours = entry["clock"][0] * 60 + entry["clock"][1]
-                self.assertLessEqual(abs(ours - (hours * 60 + minutes)), TOLERANCE[line["body"]])
+                speed = self.speed(line["body"], date.fromisoformat(row["date"]))
+                allowed = max(MINUTES.get(line["body"], 20), POSITION / speed)
+                self.assertLessEqual(abs(ours - (hours * 60 + minutes)), allowed)
 
     def test_boxes(self):
         for page, printed in BOXES.items():
@@ -84,6 +126,13 @@ class RailTest(unittest.TestCase):
         for page, printed in BOXES_DIFFERENT.items():
             with self.subTest(page=page):
                 self.assertNotEqual(render.rashi_pravesh(self.pages[page]["header"]["sign_entries"]), printed)
+
+    def test_status_boxes(self):
+        # 2083 pp2 and 27.
+        for page, printed in ((2, "मं.मा.उ., बु.मा.उ., बृ.मा.उ., शु.मा.उ., शं.मा.उ."),
+                              (27, "मं.मा.उ., बु.मा.उ., बृ.व.उ., शु.मा.उ., शं.मा.अ.")):
+            with self.subTest(page=page):
+                self.assertIn(printed, render.status_box(self.pages[page]["header"]["planet_status"]))
 
     def test_rail_text(self):
         # The wording, against lines as printed.

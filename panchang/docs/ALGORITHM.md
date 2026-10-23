@@ -286,7 +286,19 @@ linear between the स्पष्ट ग्रह of consecutive sunrises, as o
 daily table. A station is the turning point by the tables themselves
 (`ketaki.station`): where a केन्द्र crosses a 10° row and the motion flips;
 flips a few days apart around one station are printed once, as the net
-turn. Heliacal rising and setting (उदय/अस्त) are not computed yet.
+turn.
+
+उदय and अस्त are the moments a planet's elongation from the Sun crosses its
+arc: Mars 17°, Mercury 14° (12° in वक्री motion), Jupiter 11°, Venus 10°
+(8°), Saturn 15°, the Surya Siddhanta's कालांश. East of the arc on the
+morning side is पूर्व, on the evening side पश्चिम; a growing elongation is
+उदय. The book follows these to the hour for 7 of its 17 events and misses
+the others by one to eight days with no single rule (Ketaki's own पल
+criterion, p290-292, fits only 4); see VERIFICATION.md.
+
+The first and last pages also print each planet's state at the page's
+first sunrise: "मं.मा.उ." is Mars मार्गी (direct, वक्री व) and उदित (visible,
+अस्त अ).
 
 **राशि प्रवेश.** The page's sign entries, planet by planet (सू मं बु बृ शु श
 रा), as "गते, planet, sign number": "१सू.२, २८मं.१, ३१बु.२, ३०शु.३".
@@ -504,6 +516,6 @@ index < 15 is शुक्ल). Pages are numbered from 2, as page 1 is the cove
 - **Festival and vrat notes.** These are editorial. `generate.py --config`
   takes them from JSON. Samvatsara, पापर्क्षाणि and पापांश are computed in
   `editorial.py`; see [EDITORIAL.md](EDITORIAL.md).
-- **Planets.** Heliacal rising and setting (उदयास्त) and the kundali chart
-  are not computed yet; the स्पष्ट ग्रह, the rail's entries and stations,
-  and the राशि प्रवेश box are. The kundali is a placeholder in the PDF.
+- **Planets.** The kundali chart is not computed yet: the books' charts fit
+  no single moment of the fortnight (the best, the sixth tithi, fits 17 of
+  21). It is a placeholder in the PDF.

@@ -134,8 +134,7 @@ by a primary source.
   `--config` JSON. Samvatsara, पापर्क्षाणि and पापांश are computed
   (`editorial.py`, [docs/EDITORIAL.md](docs/EDITORIAL.md)); a value in the
   config overrides them.
-- **Planets.** Heliacal rising and setting (उदयास्त) and the kundali are
-  placeholders. Mars to Saturn, their rail entries and stations, and the
-  राशि प्रवेश box are computed.
+- **Kundali.** A placeholder: the books' charts fit no single moment of
+  the fortnight. Everything else about the planets is computed.
 
 See the component matrix in `status.html` for the full list.

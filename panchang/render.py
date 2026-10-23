@@ -207,14 +207,19 @@ def rail(rows: list[dict]) -> str:
                 f'<div class="line">{deva(row["gate"])} {entry["nakshatra"]} '
                 f'{deva(entry["pada"])} {where} सूर्य {clock(entry["clock"])}</div>')
     planets = sorted(((panchanga.RAIL_ORDER.index(e["body"]), e["at"], row["gate"], e)
-                      for row in rows for e in row["planet_events"] if "station" not in e), key=lambda x: x[:2])
+                      for row in rows for e in row["planet_events"] if "station" not in e and "heliacal" not in e),
+                     key=lambda x: x[:2])
     lines += [f'<div class="line">{rail_text(gate, e)}</div>' for _, _, gate, e in planets]
-    # वक्री/मार्गी, shaded at the foot as in the book (2083 p18 "२० मार्गी शनि ६:४३").
-    stations = sorted(((e["at"], row["gate"], e) for row in rows for e in row["planet_events"] if "station" in e),
-                      key=lambda x: x[0])
-    lines += [f'<div class="line special">{deva(gate)} {e["station"]} {STATION_NAMES[e["body"]]} '
-              f'{clock(e["clock"])}</div>' for _, gate, e in stations]
-    lines.append('<div class="pending">उदयास्त: गणना बाँकी</div>')
+    # उदय/अस्त then वक्री/मार्गी, shaded at the foot as in the book (2083 p9
+    # "६ बुध पूर्वमा उदय २५:२३", "९ मार्गी बुध ८:५३").
+    special = sorted(((0 if "heliacal" in e else 1, e["at"], row["gate"], e) for row in rows
+                      for e in row["planet_events"] if "station" in e or "heliacal" in e), key=lambda x: x[:2])
+    for _, _, gate, e in special:
+        if "heliacal" in e:
+            text = f'{deva(gate)} {RAIL_NAMES[e["body"]].replace("मंगल", "मङ्गल")} {e["side"]}मा {e["heliacal"]}'
+        else:
+            text = f'{deva(gate)} {e["station"]} {STATION_NAMES[e["body"]]}'
+        lines.append(f'<div class="line special">{text} {clock(e["clock"])}</div>')
     return (
         '<div class="rail-box"><div class="title">गते ग्रहचार/उदयास्त (बजे)</div>'
         + "".join(lines) + "</div>")
@@ -270,6 +275,18 @@ def rashi_pravesh(entries: list[dict]) -> str:
     return ", ".join(out)
 
 
+STATUS_NAMES = {"mars": "मं", "mercury": "बु", "jupiter": "बृ", "venus": "शु", "saturn": "शं"}
+
+
+def status_box(status: list[dict] | None) -> str:
+    """"मं.मा.उ., बु.मा.उ., …": मार्गी/वक्री, उदित/अस्त."""
+    if not status:
+        return ""
+    text = ", ".join(f"{STATUS_NAMES[s['body']]}.{'मा' if s['direct'] else 'व'}.{'उ' if s['visible'] else 'अ'}."
+                     for s in status)
+    return f'<div class="box" style="left:892pt;top:496pt;width:112pt">{text}</div>'
+
+
 def page_html(page: dict, notes: dict | None = None, papamsha: str = "") -> str:
     rows = page["rows"]
     notes = notes or {}
@@ -290,8 +307,9 @@ def page_html(page: dict, notes: dict | None = None, papamsha: str = "") -> str:
         + graha_table(rows)
         + '<div class="box" style="left:892pt;top:300pt;width:112pt;height:90pt">'
           '<b>कुण्डली</b><br>गणना बाँकी</div>'
-        + f'<div class="box" style="left:892pt;top:396pt;width:112pt;height:120pt">'
+        + f'<div class="box" style="left:892pt;top:396pt;width:112pt;height:96pt">'
           f'<b>पापांशाः</b><br>{escape(papamsha)}</div>'
+        + status_box(page["header"].get("planet_status"))
         + '<div class="imprint">सूर्यसिद्धान्तबाट स्वचालित गणना — आधिकारिक प्रति होइन</div>'
         + f'<div class="chip">राष्ट्रिय-पञ्चाङ्गम् - {deva(page["page"])}</div>'
         + "</section>"
