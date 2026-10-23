@@ -19,10 +19,10 @@ your own implementation in another language.
 
 ```sh
 cd panchang
-python3 -m unittest test_surya test_panchanga     # ~3 s, no dependencies
+python3 -m unittest test_surya test_panchanga test_editorial test_ketaki   # ~10 s, no dependencies
 ./generate.py 2083 --no-pdf                       # JSON for every fortnight → output/
 ./generate.py 2083 --page 21                      # one fortnight, JSON + PDF (needs weasyprint)
-./generate.py 2083 --config 2083.json             # with samvatsara, notes, papakshani
+./generate.py 2083 --config 2083.json             # with festival notes, or overrides
 ./build_status.py                                 # writes status.html (needs nepali-datetime, nepali)
 ```
 
@@ -46,11 +46,16 @@ panchanga.month_starts(2083)          # 13 dates: बैशाख 1 … चै�
 |---|---|
 | `surya.py` | Astronomy: SS mean and true Sun and Moon, the sine table, sunrise, sunset, दिनमान, equation of time, lagna, Rahu, and a generic "when does this angle cross a multiple of N" solver |
 | `panchanga.py` | Calendar: day rows (tithi, nakshatra, yoga, karana, आनन्दादि, …), solar month starts (the sankranti day rule and eras), lunar months, adhik masa, page headers, the year layout |
+| `ketaki.py` | Mars to Saturn by the केतकी ग्रहगणितम्, with the books' conventions |
+| `editorial.py` | Samvatsara (Jovian, from SS mean Jupiter), पापर्क्षाणि and पापांश |
 | `render.py` | HTML/PDF typesetting in the book's page layout |
 | `generate.py` | Command line: year → JSON and PDF |
 | `build_status.py` | Writes `status.html`, a dashboard comparing the output with the books and the BS tables |
 | `test_surya.py` | Unit tests for the astronomy |
 | `test_panchanga.py` | Book regression tests and calendar invariants |
+| `test_editorial.py` | Samvatsara, पापर्क्षाणि and पापांश against the books |
+| `test_ketaki.py` | Mars to Saturn against Ketaki's worked example and both books |
+| `data/book_planets.csv` | Mars to Saturn as printed, hand-read and OCR, with pages |
 | `data/book_sankrantis.csv` | Sankranti moments read from old books, with PDF pages |
 | `data/month_starts.csv` | Month starts that settle disagreements between references, with sources |
 | `research/` | Working scripts and notes from reading the old books (`oldbooks/fetch_ocr.sh`, `oldbooks/crops.py`, `oldbooks/read/`); the PDFs and page images are git-ignored and re-downloadable |
@@ -62,6 +67,7 @@ panchanga.month_starts(2083)          # 13 dates: बैशाख 1 … चै�
 | [docs/ALGORITHM.md](docs/ALGORITHM.md) | Every column, step by step, with formulas and a worked example for one day |
 | [docs/CALIBRATION.md](docs/CALIBRATION.md) | The fitted things (Moon apogee −1.7°, Rahu offset, sankranti eras, each book's sunrise convention) and the evidence for each |
 | [docs/VERIFICATION.md](docs/VERIFICATION.md) | Match rates, the known errors in the reference tables, open cases |
+| [docs/EDITORIAL.md](docs/EDITORIAL.md) | Samvatsara, पापर्क्षाणि and पापांश: what they are, the rules, the evidence |
 | [docs/SOURCES.md](docs/SOURCES.md) | Every book and page used, with URLs |
 
 ## The model in one paragraph
@@ -79,6 +85,9 @@ panchanga.month_starts(2083)          # 13 dates: बैशाख 1 … चै�
   book era has a small offset on the sankranti.
 - **Lunar months.** They are amanta and named by the sankranti they
   contain. One with no sankranti is adhik.
+- **Mars to Saturn.** By the केतकी ग्रहगणितम्, as the committee requires: an
+  1878 epoch, mean motions, and 10° tables read by linear interpolation,
+  with five conventions read off the books' own tables.
 
 ## Data file formats
 
@@ -95,6 +104,17 @@ panchanga.month_starts(2083)          # 13 dates: बैशाख 1 … चै�
 | `pdf_page` | 1-based page in the PDF (blank if not located) |
 | `source` | PDF URL |
 
+**`data/book_planets.csv`:** one row per Mars–Saturn value read from a
+book's स्पष्ट ग्रह table.
+
+| Column | Meaning |
+|---|---|
+| `date` | Gregorian date of the row (Kathmandu sunrise) |
+| `body` | `mars`, `mercury`, `jupiter`, `venus` or `saturn` |
+| `longitude` | As printed: sign, degree, minute, second |
+| `source` | `hand` (read off the page) or `ocr` (two OCR passes agree) |
+| `book`, `pdf_page` | Which book and page |
+
 **`data/month_starts.csv`:** one row per month whose first day is settled
 by a primary source.
 
@@ -108,9 +128,11 @@ by a primary source.
 
 ## Not computed
 
-- **Editorial fields.** Samvatsara, पापाक्षणी, पापांश, and festival and vrat
-  notes come from the `--config` JSON.
-- **Planets.** Mars to Saturn, planetary rise and set, and the kundali need
-  the Ketaki tables and are placeholders.
+- **Festival and vrat notes.** These are editorial and come from the
+  `--config` JSON. Samvatsara, पापर्क्षाणि and पापांश are computed
+  (`editorial.py`, [docs/EDITORIAL.md](docs/EDITORIAL.md)); a value in the
+  config overrides them.
+- **Planets.** Planetary rise and set (उदयास्त), the planets' rail entries
+  and the kundali are placeholders. Mars to Saturn themselves are computed.
 
 See the component matrix in `status.html` for the full list.

@@ -15,6 +15,8 @@ from pathlib import Path
 import panchanga
 import surya
 import test_panchanga as book
+import test_editorial
+import test_ketaki
 import test_surya
 
 OUT = Path(__file__).resolve().parent / "status.html"
@@ -158,7 +160,9 @@ def table_comparison() -> list[dict]:
 def run_tests() -> tuple[bool, str, int]:
     buf = io.StringIO()
     loader = unittest.TestLoader()
-    suite = unittest.TestSuite([loader.loadTestsFromModule(test_surya), loader.loadTestsFromModule(book)])
+    suite = unittest.TestSuite([loader.loadTestsFromModule(test_surya), loader.loadTestsFromModule(book),
+                                  loader.loadTestsFromModule(test_editorial),
+                                  loader.loadTestsFromModule(test_ketaki)])
     result = unittest.TextTestRunner(stream=buf, verbosity=2).run(suite)
     return result.wasSuccessful(), buf.getvalue(), result.testsRun
 
@@ -181,11 +185,11 @@ def components() -> list[dict]:
         {"area": "Sun pada rail (nakshatra / rashi entries)", "status": "ok", "note": "5 events on page 21"},
         {"area": "Dinamana (day length)", "status": "warn", "note": "Within 2 pala; rule not exact"},
         {"area": "Ghati-pala for tithi ends", "status": "warn", "note": "Mostly exact; 1 pala drift on some rows"},
-        {"area": "Mars – Saturn spashta", "status": "fail", "note": "Needs Ketaki tables; Swiss/Lahiri wrong"},
+        {"area": "Mars – Saturn spashta", "status": "ok", "note": "ketaki.py: median 1–16″ over 1841 book values (2082, 2083)"},
         {"area": "Planet rise/set rail (non-Sun)", "status": "fail", "note": "Not implemented"},
         {"area": "Kundali chart", "status": "fail", "note": "Placeholder box"},
         {"area": "Festival / vrat notes column", "status": "fail", "note": "Editorial; optional JSON config"},
-        {"area": "Samvatsara, papakshani, papamsha", "status": "fail", "note": "Config only"},
+        {"area": "Samvatsara, papakshani, papamsha", "status": "ok", "note": "editorial.py; papakshani 50/51 pages, papamsha Mars 81/82, Saturn 32/33"},
         {"area": "PDF typography vs InDesign book", "status": "warn", "note": "Layout approximates; not pixel-identical"},
         {"area": "Other BS years", "status": "ok", "note": "2082 book: limb ends ±1 min, Sun/Moon/Rahu/belantar in tolerance with 2083 constants"},
     ]
@@ -256,9 +260,12 @@ def constants_sections() -> list[tuple[str, list[tuple[str, str, str]]]]:
             ("PAGE_WIDTH × HEIGHT", "1007.01 × 555.591 pt", "From InDesign export"),
             ("Column widths", "Measured pt values", "Typography only, not astronomy"),
         ]),
+        ("editorial.py", [
+            ("samvatsara", "Jovian, SS mean Jupiter", "Current at शुक्ल चैत्र; no repeats, क्षय skipped"),
+            ("papakshani, papamsha", "Per page", "Malefics, सप्तशलाका and corner vedha; navamshas"),
+        ]),
         ("Config only (generate.py JSON)", [
-            ("samvatsara", "e.g. रौद्र", "Not computed"),
-            ("papakshani, papamsha, notes", "Per page/day", "Editorial"),
+            ("notes", "Per day", "Editorial"),
         ]),
     ]
 
@@ -423,7 +430,6 @@ def html_report(data: dict) -> str:
     <div class="card"><h2>Limb ends</h2><div class="metric">{data['limb']['exact']}/{data['limb']['total']}<small>exact minute match (calibration set)</small></div></div>
     <div class="card"><h2>Sun times</h2><div class="metric">{data['sun']['exact']}/{data['sun']['total']}<small>printed sunrise/sunset exact</small></div></div>
     <div class="card"><h2>Dinamana</h2><div class="metric">{data['dinamana']['within2']}/{data['dinamana']['total']}<small>within 2 pala (Jan 8–22)</small></div></div>
-    <div class="card"><h2>Repo</h2><div class="metric" style="font-size:1rem">uncommitted<small><code>panchang/</code> not in git yet</small></div></div>
   </section>
   </details>
 
@@ -432,8 +438,8 @@ def html_report(data: dict) -> str:
     <div class="pipeline">
       <div class="pipe"><b>Surya Siddhanta</b>Sun & Moon longitudes, tithi/nak/yoga/karana boundaries, Moon apogee −1.7°</div>
       <div class="pipe"><b>Lahiri frame</b>Sunrise, sunset, lagna, belantar, Rahu; modern obliquity; refraction at disc centre</div>
-      <div class="pipe"><b>Ketaki (missing)</b>Mars–Saturn, graha udaya/asta, kundali — placeholders in PDF</div>
-      <div class="pipe"><b>Editorial JSON</b>Samvatsara, papakshani, festival notes — optional config</div>
+      <div class="pipe"><b>Ketaki</b>Mars–Saturn spashta (ketaki.py); graha udaya/asta and kundali still placeholders</div>
+      <div class="pipe"><b>Editorial JSON</b>Festival notes — optional config</div>
     </div>
   </details>
 
@@ -512,7 +518,7 @@ def html_report(data: dict) -> str:
 
 
 def main() -> None:
-    pages = panchanga.year(2083, {"samvatsara": "रौद्र"})
+    pages = panchanga.year(2083)
     rows = {date.fromisoformat(r["date"]): r for p in pages for r in p["rows"]}
     ok, log, ntests = run_tests()
     data = {

@@ -4,7 +4,8 @@ year(bs_year) returns one dict per printed page (one paksha each). Every page
 has a header (lunar month, paksha, Shaka, Nepal Sambat, ayana, ritu) and one
 row per civil day, whose fields follow the book's columns left to right:
 tithi, nakshatra, yoga, karana, आनन्दादि, Moon's sign, दिनमान, sunrise and
-sunset, the Sun's nakshatra padas, lagna starts, स्पष्ट ग्रह and बेलान्तर.
+sunset, the Sun's nakshatra padas, lagna starts, स्पष्ट ग्रह (Mars to Saturn
+from ketaki.py) and बेलान्तर.
 
 A civil day runs from sunrise to the next sunrise at Kathmandu. Each limb
 reports what is current at sunrise plus every end inside the day, in ghati
@@ -21,6 +22,7 @@ import math
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 
+import ketaki
 import surya
 
 # Degrees of the angle that measures each limb: tithi and karana of the
@@ -264,6 +266,8 @@ def day_row(day: date, bs_month: int, gate: int) -> dict:
         "spashta": {
             "sun": arc(surya.true_sun(rise)),
             "moon": arc(moon),
+            # Mars to Saturn by the Ketaki tables, at the same sunrise.
+            **{body: arc(ketaki.geocentric(body, rise)) for body in ketaki.PLANETS},
             # Not at Kathmandu sunrise; see surya.RAHU_OFFSET.
             "rahu": arc(surya.rahu(surya.ujjain_mean_sunrise(day))),
         },
@@ -297,8 +301,10 @@ SHAPE_2045 = (-0.01, -0.15, 0.04, 0.10, 0.04, 0.19, 0.01, -0.04, -0.01, -0.11, -
 
 # Where each era's printed sankrantis sit relative to ours, in ghati after the
 # book's own sunrise (see book_horizon), per sign from Mesha. Each era applies
-# from its year until the next one. Every era is read from books: 1986 from
-# the 1986 book (EAP1485-1-3-127), 2016 from the 2016 book (EAP1485-1-3-45),
+# from its year until the next one. Every era is read from books: 1975 from
+# the 1986 and 1987 books (EAP1485-1-3-127, EAP1485-1-6-123; the 1986 book
+# prints तुला as "४।" with no pala, so तुला is the 1987 book's alone), 2016 from
+# the 2016 book (EAP1485-1-3-45),
 # 2028 from the 2028 and 2031-2044 books, the rest from the books of their
 # years. The boundaries from 2045 on are bracketed by books of consecutive
 # years (2044/2045, 2059/2060, 2062/2063); the two earlier ones fall in the
@@ -311,7 +317,7 @@ SHAPE_2045 = (-0.01, -0.15, 0.04, 0.10, 0.04, 0.19, 0.01, -0.04, -0.01, -0.11, -
 # about 2 pala early (2066 book p25: मीनेऽर्कः 44।52, exactly on the night
 # midpoint, so चैत starts 2010-03-14).
 SANKRANTI_ERAS = [
-    (1975, (-0.76, -0.93, -0.55, -0.10, -0.04, -0.34, -1.03, -0.83, -0.52, -0.13, -0.01, -0.34)),
+    (1975, (-0.77, -0.97, -0.55, -0.10, -0.02, -0.40, -0.66, -0.79, -0.51, -0.13, -0.06, -0.35)),
     (2005, (-0.67, -0.80, -0.40, -0.82, 0.58, 0.44, -0.12, -0.43, 0.02, 0.22, 0.12, -0.24)),
     (2017, (-0.46, -2.36, -1.94, -2.82, -1.84, -1.14, -0.84, 0.40, 0.61, 1.22, 0.19, -0.09)),
     (2045, tuple(s - 0.43 for s in SHAPE_2045)),
@@ -426,9 +432,11 @@ def header(rows: list[dict], months: list[Lunation], new_years: dict, bs_year: i
 
     शुक्ल pages are named for their own amanta month. कृष्ण pages are named
     purnimanta-style, for the month that follows, unless they are themselves
-    in an adhik month. The month after an adhik one is शुद्ध. Samvatsara and
-    पापाक्षणी are not computed; they come from `config`.
+    in an adhik month. The month after an adhik one is शुद्ध. Samvatsara,
+    पापर्क्षाणि and पापांश come from editorial.py (docs/EDITORIAL.md); a value
+    in `config` overrides the computed one.
     """
+    import editorial  # here, not at the top: editorial imports panchanga
     first_rise = _jd(rows[0]["sunrise"])
     position = next(i for i, l in enumerate(months) if l.start <= first_rise < l.end)
     lunation = months[position]
@@ -452,9 +460,10 @@ def header(rows: list[dict], months: list[Lunation], new_years: dict, bs_year: i
     signs = [row["sun_sign"] for row in rows]
     ayanas = ["उत्तरायण" if s in UTTARAYANA_SIGNS else "दक्षिणायन" for s in signs]
     ritus = [RITUS[((s + 1) % 12) // 2] for s in signs]
+    # Shaka turns at शुक्ल चैत्र 1, Nepal Sambat at शुक्ल कार्तिक 1.
+    shaka = bs_year - 135 + (first_rise >= new_years["shaka"])
     return {
-        # Shaka turns at शुक्ल चैत्र 1, Nepal Sambat at शुक्ल कार्तिक 1.
-        "shaka": bs_year - 135 + (first_rise >= new_years["shaka"]),
+        "shaka": shaka,
         "vikram_samvat": bs_year,
         "lunar_month": f"{prefix}{LUNAR_MONTHS[named.month]}",
         "lunar_month_kind": kind,
@@ -465,8 +474,11 @@ def header(rows: list[dict], months: list[Lunation], new_years: dict, bs_year: i
         "ayana": _joined(ayanas),
         "ritu": _joined(ritus),
         "ayana_ritu": _joined([[a, r] for a, r in zip(ayanas, ritus)]),
-        "samvatsara": config.get("samvatsara"),
-        "papakshani": config.get("papakshani", {}).get(first.isoformat()),
+        "samvatsara": config.get("samvatsara") or editorial.samvatsara(shaka),
+        "papakshani": (config.get("papakshani", {}).get(first.isoformat())
+                       or editorial.papakshani(rows)),
+        # {body: [(गते it changes on, or None at the start; navamsha 1-12)]}
+        "papamsha": editorial.papamsha(rows),
     }
 
 

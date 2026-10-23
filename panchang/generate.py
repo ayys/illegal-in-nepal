@@ -8,7 +8,7 @@
 
     ./generate.py 2083                     # every fortnight
     ./generate.py 2083 --page 21           # one fortnight (pages number from 2, as in the book)
-    ./generate.py 2083 --config 2083.json  # samvatsara, notes, papakshani, papamsha
+    ./generate.py 2083 --config 2083.json  # festival notes; overrides for computed fields
 """
 
 import argparse

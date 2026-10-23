@@ -11,6 +11,7 @@ re-fit them.
 | `RAHU_OFFSET` and the Ujjain-sunrise moment | `surya.py` | −50.4″ | राहु in the स्पष्ट ग्रह tables of the 2082 and 2083 books |
 | `SANKRANTI_ERAS` | `panchanga.py` | per era | Sankranti ghati in the 1986–2076 books |
 | `REFRACTION_FROM` | `panchanga.py` | BS 2064 | दिनमान printed in the 2058–2066 books |
+| How the books apply Ketaki | `ketaki.py` | five conventions | Mars–Saturn in the 2082 and 2083 स्पष्ट ग्रह tables (section 5) |
 
 All figures below come from running the code in this directory. Regenerate
 them with `build_status.py` (constants 1 and 2) or the snippets given.
@@ -78,6 +79,12 @@ the Sun's centre on the horizon), book minus ours:
 
 | Book (PDF page) | Day | Printed | vs −34′ | vs 0° |
 |---|---|---|---|---|
+| 1986 (p9) | 1929-07-16 | 33।57 | −16.2 | −2.2 |
+| 1986 (p21) | 1930-01-14 | 26।1 | −14.8 | −0.7 |
+| 1987 (p14) | 1930-07-11 | 34।7 | −15.5 | −1.4 |
+| 1987 (p26) | 1931-01-14 | 26।4 | −11.3 | +2.8 |
+| 2016 (p12) | 1959-07-20 | 33।50 | −15.5 | −1.5 |
+| 2016 (p25) | 1960-01-20 | 26।13 | −15.9 | −2.0 |
 | 2035 (p21) | 1979-01-14 | 26।5 | −10.8 | +3.2 |
 | 2058 (p20) | 2002-01-13 | 26।3 | −11.5 | +2.5 |
 | 2062 (p5) | 2005-05-14 | 33।23 | −13.9 | −0.1 |
@@ -94,7 +101,17 @@ So the books up to 2063 leave refraction out, in every season, and the
 books from 2064 put it in. The older books (2035, 2058) run another
 2–3 pala long, which is too small to matter for the day rule.
 `panchanga.book_horizon` encodes this, `REFRACTION_FROM = 2064`, and
-`test_book_horizon` checks the table above.
+`test_book_horizon` checks the 2062–2066 rows.
+
+The same column says which *place* a book was computed for, because the
+seasonal swing of the day length grows with latitude. The 1986, 1987 and
+2016 books, which the 1975 and 2005 eras are read from, fit Kathmandu with
+a geometric horizon to within 3 pala on the days above; at 29.1° N they would be 12–22 pala
+off (short in July, long in January). The 2016 book's July page drifts
+from −6 to −1.5 pala over 1959-07-07 to 07-20; it is still far from any
+other latitude. The 1995 almanac fails this check (see
+[SOURCES.md](SOURCES.md#older-books-elsewhere)), so check the दिनमान of
+any new book, in July and in January, before using its sankrantis.
 
 This matters because a geometric sunrise is about 7 pala later than a
 refracted one. Measuring a pre-2064 book's ghati from the refracted
@@ -108,14 +125,15 @@ show; don't use it.)
 ### 3.2 Reading the sankrantis
 
 Every reading is in
-[`data/book_sankrantis.csv`](../data/book_sankrantis.csv), 187 rows, with
+[`data/book_sankrantis.csv`](../data/book_sankrantis.csv), 198 rows, with
 the book, the PDF page and the source URL. The raw offset is the book's
 moment minus our unshifted SS moment, both measured from the book's own
 sunrise, in ghati (sign 0 = Mesha):
 
 | Book | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1986 | −0.76 | −0.93 | −0.55 | −0.10 | −0.04 | −0.34 | −1.03 | −0.83 | −0.52 | −0.13 | −0.01 | −0.34 |
+| 1986 | −0.76 | −0.93 | −0.55 | −0.10 | −0.04 | −0.34 | | −0.83 | −0.52 | −0.13 | −0.01 | −0.34 |
+| 1987 | −0.78 | −1.00 | −0.56 | −0.10 | −0.00 | −0.46 | −0.66 | −0.75 | −0.50 | −0.12 | −0.11 | −0.37 |
 | 2016 | −0.67 | −0.80 | −0.40 | −0.82 | +0.58 | +0.44 | −0.12 | −0.43 | +0.02 | +0.22 | +0.12 | −0.24 |
 | 2028 | −0.44 | −2.31 | −1.90 | −2.80 | −1.84 | −1.13 | −0.82 | +0.43 | +0.63 | +1.26 | +0.22 | −0.04 |
 | 2033 | | −2.37 | −1.95 | −2.83 | | | −0.85 | +0.42 | +0.58 | +1.22 | +0.18 | −0.12 |
@@ -134,14 +152,17 @@ sunrise, in ghati (sign 0 = Mesha):
 (A selection; the 2031–2044, 2061 and 2066–2073 books repeat their
 neighbours to within 2 pala. `research/oldbooks/` has the reading scripts.)
 
-The 1986 and 2016 books are from the British Library's Endangered Archives
-Programme (EAP1485-1-3-127 and EAP1485-1-3-45); the 2028 one is the
+The 1986, 1987 and 2016 books are from the British Library's Endangered
+Archives Programme (EAP1485-1-3-127, EAP1485-1-6-123 and EAP1485-1-3-45). The
+1986 book prints its तुला sankranti as "४।" with no pala (p15), so that sign
+is left out; the 2028 one is the
 archive.org item `nepali-patro-2028`. See [SOURCES.md](SOURCES.md).
 
 What the readings show:
 
-- **1986 and 2016.** Each has its own per-sign pattern. With no books in
-  between, each gets its own era.
+- **1986–1987 and 2016.** Each has its own per-sign pattern; the 1986 and
+  1987 books agree to within 4 pala in every sign. With no books in between,
+  1986–1987 and 2016 get separate eras.
 - **2028–2044.** One per-sign table, repeated book to book to within
   2 pala (2028 sits 2 pala later than the rest): Karka −2.82,
   Makara +1.22.
@@ -154,14 +175,14 @@ What the readings show:
 
 | From BS | Offset | Read from | Boundary set by |
 |---|---|---|---|
-| 1975 | 1986 table | 1986 book | first verified year |
+| 1975 | 1986–1987 table | 1986 and 1987 books | first verified year |
 | 2005 | 2016 table | 2016 book | month tables (any of 2005–2016 fits equally) |
 | 2017 | 2028–2044 table | 2028, 2031–2044 books | month tables (any of 2017–2027 fits equally) |
 | 2045 | shape − 0.43 | 2045–2059 books | 2044 and 2045 books |
 | 2060 | shape | 2060–2062 books | 2059 and 2060 books |
 | 2063 | Mesha −0.06, Mina −0.03 | 2063–2076 books | 2062 and 2063 books |
 
-The two pre-2045 boundaries fall in years with no book read (1987–2015,
+The two pre-2045 boundaries fall in years with no book read (1988–2015,
 2017–2027). They are placed where the published month tables are best
 matched. Every split in the ranges shown leaves the same 3 misses in
 1975–2044 against `nepali-datetime`:
@@ -172,7 +193,7 @@ matched. Every split in the ranges shown leaves the same 3 misses in
 | 1989/8 | 1932-11-16 | 1932-11-15 (nepali-datetime only) | 12 pala past it |
 | 2018/9 | 1961-12-16 | 1961-12-15 (both tables) | 54 pala past it |
 
-2018/9 is the clear one: only the 1986 table puts it on the 15th, so the
+2018/9 is the clear one: only the 1975 era's table puts it on the 15th, so the
 2018 book probably follows yet another convention. The 2017–2027 books
 (not yet found in a readable copy) would settle it. The fitted curves the
 model used before had none of these misses, but they were fitted to these
@@ -206,3 +227,62 @@ These were tried and made the match worse:
 
 The books use the Lahiri ayanamsha, the modern obliquity, and the disc
 centre: with refraction only from 2064, without it before (section 3.1).
+
+## 5. Ketaki planets
+
+**Problem.** The books print Mars to Saturn to the arc-second. They are
+neither the Surya Siddhanta (off by 1–8°) nor a modern ephemeris (off by
+5–50′, with odd jumps in the daily motion). The committee's notices name
+the केतकी ग्रहगणितम्, and implemented as written it lands within about a
+minute. Five conventions take it the rest of the way. None is a fitted
+number; each is a discrete choice, and each was found with the others
+fixed.
+
+**Data.** `data/book_planets.csv`: 1841 values from both books, 68 read by
+hand (all five planets on 2083 p21, Mercury on 2082 pp6-8), the rest OCR
+cells two independent passes read identically (research/planets/book-ocr/).
+
+**The conventions**, with the 90th-percentile error before and after:
+
+| Convention | Alternative | Before → after |
+|---|---|---|
+| Planets at true Kathmandu sunrise | half an hour earlier or later | Mars median 46″ or 52″ → 30″ (before the other fixes) |
+| Ketaki's Sun for the शीघ्र step at mean sunrise (06:00 Kathmandu mean time) | at true sunrise | Mars 131″ → 69″, Jupiter 42″ → 23″ |
+| The Sun's मन्दफल row read from perigee (reversed) | as printed | Mars 69″ → 15″, Venus 191″ → 45″, Saturn 12″ → 3″ |
+| Saturn without the two optional short-period terms (p159) | with them | Saturn 4.6′ → 6″ median |
+| Mercury's distance from the table of verses 11-13; Mars's from the cosine of verse 8, unrounded | the cosine for both; the table for both | Mercury 229″ → 17″ median; Mars 63″ → 5″ median |
+
+The reversed Sun row is the only surprising one. The row is nearly
+symmetric, so reading it backwards changes only its e² asymmetry, by ±1-2′
+at 45° and 135°; but Mercury, Venus and Mars, each placed through the Sun,
+all agreed on that pattern before it was found. A likely reason: Ketaki
+works with the Earth ("सूर्यः स्थिरः भूर्भ्रमति"), and its रवि-उच्च 2:18:41 is
+the Earth's perihelion; taken as the Earth's उच्च, the row is read from the
+wrong end. Ketaki's own worked example uses the row as printed.
+
+Mercury's distance was found from the book's own irregular daily motion
+(2082 p7: steps of 1°09′52″ four days running, then 57′46″, 46′20″, 41′55″,
+45′02″, 55′46″, …). The distance each day's value implies rises in exact
+steps of 0.409 or 0.818 a day and sits flat at 45.00, 46.00 and 46.97: the
+whole-number table, interpolated.
+
+**Result** (`test_ketaki.py`, book − ours, arc-seconds):
+
+| Planet | median | 90% | hand-read |
+|---|---|---|---|
+| Saturn | 1 | 3 | ≤1 |
+| Jupiter | 2 | 5 | ≤5 |
+| Mars | 5 | 15 | ≤16 |
+| Venus | 11 | 45 | ≤17 |
+| Mercury | 16 | 41 | median 24; up to 3′ at the July 2025 station |
+
+The books print whole arc-seconds, so Saturn and Jupiter are exact. What is
+left in the others is smooth, under a minute, and largest where a केन्द्र
+crosses a table row a fraction of a day from the book's crossing.
+
+The tables are Ketkar's verses decoded (भूतसंख्या, digits right to left).
+Where the commentary's digit list or a low-resolution reading differed, the
+verse decided: Venus शीघ्रफल 140° is "द्विषट्सागराः" 462, Mercury's मन्दफल row
+is 0, 32, 65, 97, 125, 153, 178, 199, 217, 229, 236, 236, 228, 211, 185, 149,
+105, 54, 0. The full investigation is in research/planets/NOTES.md.
+

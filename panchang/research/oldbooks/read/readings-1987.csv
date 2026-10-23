@@ -1,0 +1,13 @@
+bs_year,sign,sign_name,ghati,pala,sunrise_day,book,pdf_page,source,confidence,note
+1987,0,mesha,24,33,1930-04-13,1987,8,https://eap.bl.uk/archive-file/EAP1485-1-6-123,high,मेषसंक्रान्तिः २४।३३
+1987,1,vrisha,21,28,1930-05-14,1987,10,https://eap.bl.uk/archive-file/EAP1485-1-6-123,high,वृषसंक्रान्तिः २१।२८
+1987,2,mithuna,47,29,1930-06-14,1987,12,https://eap.bl.uk/archive-file/EAP1485-1-6-123,high,मिथुनेऽर्कः ४७।२९
+1987,3,karka,26,13,1930-07-16,1987,14,https://eap.bl.uk/archive-file/EAP1485-1-6-123,high,कर्कसंक्रान्तिः २६।१३
+1987,4,simha,54,9,1930-08-16,1987,16,https://eap.bl.uk/archive-file/EAP1485-1-6-123,high,सिंहेऽर्कः ५४।९
+1987,5,kanya,54,15,1930-09-16,1987,18,https://eap.bl.uk/archive-file/EAP1485-1-6-123,high,कन्यायामर्कः ५४।१५
+1987,6,tula,19,54,1930-10-17,1987,20,https://eap.bl.uk/archive-file/EAP1485-1-6-123,high,तुलायामर्कः १९।५४
+1987,7,vrischika,12,33,1930-11-16,1987,22,https://eap.bl.uk/archive-file/EAP1485-1-6-123,medium,वृश्चिक संक्रान्तिः १२।३३ (first pala digit malformed/smudged; read as ३; second ३ clear)
+1987,8,dhanu,41,20,1930-12-15,1987,24,https://eap.bl.uk/archive-file/EAP1485-1-6-123,high,धनुःसंक्रान्तिः ४१।२० (दिलिपूजा)
+1987,9,makara,0,22,1931-01-14,1987,26,https://eap.bl.uk/archive-file/EAP1485-1-6-123,high,मकर संक्रान्तिः ०।२२ (घ्योचाकु सँग्यु)
+1987,10,kumbha,27,42,1931-02-12,1987,28,https://eap.bl.uk/archive-file/EAP1485-1-6-123,high,कुंभसंक्रान्तिः २७।४२ (row's date cell faded; 12 inferred from neighbouring rows 11 and 13)
+1987,11,mina,17,53,1931-03-14,1987,30,https://eap.bl.uk/archive-file/EAP1485-1-6-123,medium,मीनसंक्रान्तिः १७।५३ (५ faintly printed but shape consistent)

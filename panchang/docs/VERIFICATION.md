@@ -4,7 +4,7 @@ All numbers are from `build_status.py` (which writes `status.html`) and the
 two test files. Re-run them after any change.
 
 ```
-python3 -m unittest test_surya test_panchanga     # all tests
+python3 -m unittest test_surya test_panchanga test_editorial test_ketaki   # all tests
 /path/to/venv/bin/python build_status.py          # needs nepali-datetime and nepali
 ```
 
@@ -20,6 +20,7 @@ python3 -m unittest test_surya test_panchanga     # all tests
 | आनन्दादि | 15/15 | `ANANDADI` (2083 p21) |
 | Lagna starts | all within 1 minute | `LAGNA` (2083 p21) |
 | Sun, Moon, Rahu spashta | Sun within 4″, Rahu within 3″, Moon within 15″ (p21) | `SPASHTA`, `SUN_MOON` |
+| Mars to Saturn spashta (2082 and 2083, 1841 values) | median 1″ Saturn, 2″ Jupiter, 5″ Mars, 11″ Venus, 16″ Mercury; 90% within 3, 5, 15, 45, 41″ | `data/book_planets.csv`, `test_ketaki.py` |
 | बेलान्तर | within 2 seconds | `SPASHTA` |
 | Page count and layout | 26 pages, 365 days, headers on 6 pages | `HEADERS` |
 
@@ -45,7 +46,7 @@ compares with the lookup tables in two Python libraries:
 Two of the disagreements up to 2083 (1993 साउन, 2062 जेठ) were checked
 against a book or an independent calendar, and the library is wrong. The
 other three (1977/7, 1989/8 and 2018/9) fall in years with no book read;
-the eras there come from the nearest books (1986, 2016, 2028), so these are
+the eras there come from the nearest books (1986–1987, 2016, 2028), so these are
 the model's open cases, listed in
 [CALIBRATION.md](CALIBRATION.md#33-the-eras).
 
@@ -117,3 +118,17 @@ compared.
   - that ends fall inside their day and lagnas are in order;
   - that every day appears once, गते restarts each month, there is one
     paksha per page, and pages are numbered from 2.
+
+**`test_ketaki.py`** covers Mars to Saturn:
+
+- Ketaki's own worked example (Shaka 1815 चैत्र शुक्ल १५): mean longitudes
+  to 1″, heliocentric longitudes to 20″, the कर्ष, the Shaka year;
+- every hand-read value in `data/book_planets.csv`, per planet (Saturn 2″,
+  Jupiter 6″, Mars and Venus 20″, Mercury 70″, 3′ on four days at its July
+  2025 station);
+- the OCR values as a whole: median and 90th percentile per planet;
+- that `ketaki.longitude` equals the sunrise value at sunrise and is linear
+  between sunrises.
+
+**`test_editorial.py`** covers samvatsara, पापर्क्षाणि and पापांश; see
+[EDITORIAL.md](EDITORIAL.md).

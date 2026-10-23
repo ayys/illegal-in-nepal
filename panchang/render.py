@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import date
 from html import escape
 
+import editorial
 import panchanga
 
 PAGE_WIDTH = 1007.01
@@ -15,7 +16,8 @@ RITU_WITH_SUFFIX = {
     "शरद्": "शरदृतुः", "हेमन्त": "हेमन्तर्तुः", "शिशिर": "शिशिरर्तुः",
 }
 PLANETS = ["सूर्य", "चन्द्र", "मंगल", "बुध", "बृहस्पति", "शुक्र", "शनि", "राहु"]
-COMPUTED_PLANETS = {"सूर्य": "sun", "चन्द्र": "moon", "राहु": "rahu"}
+COMPUTED_PLANETS = {"सूर्य": "sun", "चन्द्र": "moon", "मंगल": "mars", "बुध": "mercury",
+                    "बृहस्पति": "jupiter", "शुक्र": "venus", "शनि": "saturn", "राहु": "rahu"}
 DAY_COLUMNS = [
     ("गते", 16), ("वा.", 12), ("ति.", 12), ("घ.प.", 22), ("बजे सम्म", 23),
     ("न.", 17), ("घ.प.", 21), ("बजे सम्म", 22), ("योग", 13), ("घ.प.", 22),
@@ -169,7 +171,7 @@ def rail(rows: list[dict]) -> str:
             lines.append(
                 f'<div class="line">{deva(row["gate"])} {entry["nakshatra"]} '
                 f'{deva(entry["pada"])} {where} सूर्य {clock(entry["clock"])}</div>')
-    lines.append('<div class="pending">मंगलादि ग्रहचार र उदयास्त: केतकी गणना बाँकी</div>')
+    lines.append('<div class="pending">मंगलादि ग्रहचार र उदयास्त: गणना बाँकी</div>')
     return (
         '<div class="rail-box"><div class="title">गते ग्रहचार/उदयास्त (बजे)</div>'
         + "".join(lines) + "</div>")
@@ -242,7 +244,7 @@ def page_html(page: dict, notes: dict | None = None, papamsha: str = "") -> str:
         + pravesh
         + graha_table(rows)
         + '<div class="box" style="left:892pt;top:300pt;width:112pt;height:90pt">'
-          '<b>कुण्डली</b><br>केतकी ग्रहगणना बाँकी</div>'
+          '<b>कुण्डली</b><br>गणना बाँकी</div>'
         + f'<div class="box" style="left:892pt;top:396pt;width:112pt;height:120pt">'
           f'<b>पापांशाः</b><br>{escape(papamsha)}</div>'
         + '<div class="imprint">सूर्यसिद्धान्तबाट स्वचालित गणना — आधिकारिक प्रति होइन</div>'
@@ -256,7 +258,9 @@ def document(pages: list[dict], config: dict | None = None) -> str:
     notes = config.get("notes", {})
     papamsha = config.get("papamsha", {})
     body = "".join(
-        page_html(p, notes, papamsha.get(str(p["page"]), "")) for p in pages)
+        page_html(p, notes, papamsha.get(str(p["page"]))
+                  or editorial.papamsha_text(p["header"]["papamsha"]))
+        for p in pages)
     return (
         '<!doctype html><html lang="ne"><head><meta charset="utf-8">'
         f"<style>{CSS}</style></head><body>{body}</body></html>")

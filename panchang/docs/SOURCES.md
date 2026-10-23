@@ -39,6 +39,20 @@ The 2082 book was not used to fit anything except `MOON_APOGEE_CORRECTION`
 and `RAHU_OFFSET`, which it shares with 2083 (see
 [CALIBRATION.md](CALIBRATION.md)).
 
+### The स्पष्ट ग्रह tables of both books: Mars to Saturn
+
+Every fortnight page prints a स्पष्ट ग्रह row for every day.
+`data/book_planets.csv` holds 1841 of their Mars–Saturn values (both books,
+nearly every page), each with its book and PDF page:
+
+- **hand:** all five planets on 2083 p21 (Jan 8-12, 2027), and Mercury on
+  2082 pp6-8 (Jun 12 – Jul 24, 2025);
+- **ocr:** cells two independent OCR passes read identically (the PDFs have
+  no text layer; research/planets/book-ocr/ has the scripts), less 20 more
+  than 15′ off, gross misreads of a sign or degree digit.
+
+Checked in `test_ketaki.py`; method in [CALIBRATION.md](CALIBRATION.md#5-ketaki-planets).
+
 ### Older books: the archive.org "Nepali patro collection"
 
 - **Item:** <https://archive.org/details/2081_20240828>
@@ -69,19 +83,35 @@ Other books in the item:
   fixes its sunrise convention.
 - **Not yet read:** 2036, 2037, 2047–2050, 2052–2057, 2074, 2075 and
   2077–2079. None of them sits at an era boundary any more; the open
-  boundaries are in 1987–2015 and 2017–2027, which this item doesn't cover
+  boundaries are in 1988–2015 and 2017–2027, which this item doesn't cover
   readably.
 
 ### Older books elsewhere
 
 | Book | Where | Used for |
 |---|---|---|
-| 1986 | British Library Endangered Archives Programme, <https://eap.bl.uk/archive-file/EAP1485-1-3-127> | the 1975 era (12 sankrantis) |
+| 1986 | British Library Endangered Archives Programme, <https://eap.bl.uk/archive-file/EAP1485-1-3-127> | the 1975 era (11 sankrantis; तुला has no pala) |
+| 1987 | <https://eap.bl.uk/archive-file/EAP1485-1-6-123> | the 1975 era (12 sankrantis) |
+| 1995 | <https://eap.bl.uk/archive-file/EAP1485-1-3-77> | not used: computed for another place (below) |
 | 2016 | <https://eap.bl.uk/archive-file/EAP1485-1-3-45> | the 2005 era (12 sankrantis) |
 | 2028 | <https://archive.org/details/nepali-patro-2028> | the 2017 era, with the 2031–2044 books (12 sankrantis) |
 
+The EAP1485 almanacs are privately held copies, and some were computed for
+places other than Kathmandu. The 1986, 1987 and 2016 books pass the दिनमान
+check in [CALIBRATION.md](CALIBRATION.md#31-which-sunrise-the-books-count-from)
+(Kathmandu, geometric horizon, within 3 pala in July and January, 6 on
+part of the 2016 book's July page).
+
+The 1995 book (readings in `research/oldbooks/read/readings-1995.csv`) is
+not a Kathmandu calculation. Its 12 दिनमान fit a geometric horizon at
+latitude 29.1° (4 pala rms; at Kathmandu's 27.7° they are off by up to 18 pala), and
+its sankrantis, counted from that place's sunrise, match the 1975 era's
+offsets at longitude 81.0° E (scatter 7 pala). That is far-western Nepal,
+around Doti and Achham. The longitude assumes the 1975 offsets, so the book
+can't test them.
+
 The EAP1485 project holds more Nepali almanacs of this period. A readable
-book from 2017–2027 (especially 2018) or 1987–2015 would replace the two
+book from 2017–2027 (especially 2018) or 1988–2015 would replace the two
 boundaries that are still set by the month tables.
 
 **How to read a book.** Render a page at 300 dpi and OCR it:
@@ -126,3 +156,10 @@ against in `build_status.py`, not used by the generator.
   in the Swiss Ephemeris (`SE_SIDM_LAHIRI`).
 - **Mean lunar node and obliquity.** Meeus, *Astronomical Algorithms*,
   2nd ed., chapter 22.
+- **केतकी ग्रहगणितम्** (V. B. Ketkar, 1898), for Mars to Saturn: the 2001
+  Chaukhamba reprint with Datta Raj's commentary,
+  <https://archive.org/details/KetakiGrahaGanitam> (PDF page = book page + 6).
+  क्षेपक and ध्रुवक pp48-51, mean motions pp53-62, कर्ष p75, मन्दफल pp95 and
+  156-158, स्पष्ट मन्दकर्ण p167, शीघ्रफल pp171-172, शीघ्रकर्णांक p173,
+  the शीघ्र step pp177-181, worked example pp158-159. The committee's
+  notices requiring it ("केतकीय ग्रहगणितबाट") are in research/npns/.

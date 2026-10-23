@@ -22,7 +22,7 @@ gives the same intermediate numbers, it will give the same book.
 6. [Finding end times](#6-finding-end-times)
 7. [Day-row columns](#7-day-row-columns)
 8. [Lagna table](#8-lagna-table)
-9. [स्पष्ट ग्रह: Sun, Moon, Rahu](#9-स्पष्ट-ग्रह-sun-moon-rahu)
+9. [स्पष्ट ग्रह: Sun, Moon, Rahu, Mars to Saturn](#9-स्पष्ट-ग्रह-sun-moon-rahu-mars-to-saturn)
 10. [Solar months (BS month starts)](#10-solar-months-bs-month-starts)
 11. [Lunar months and adhik masa](#11-lunar-months-and-adhik-masa)
 12. [Page layout and headers](#12-page-layout-and-headers)
@@ -303,7 +303,7 @@ that begins after sunrise to the last before the next sunrise.
 > Example: मकर 7:24, कुम्भ 9:07, मीन 10:36, … धनु 29:16, all within a minute
 > of 2083 book page 21.
 
-## 9. स्पष्ट ग्रह: Sun, Moon, Rahu
+## 9. स्पष्ट ग्रह: Sun, Moon, Rahu, Mars to Saturn
 
 | Body | How |
 |---|---|
@@ -318,8 +318,50 @@ moment and that offset: [CALIBRATION.md](CALIBRATION.md#2-rahu-504-at-ujjain-mea
 
 > Example: Rahu 9।28।13।11 (book 9।28।13।09).
 
-Mars to Saturn are **not** computed. They need the Ketaki tables, and
-modern ephemerides with Lahiri are visibly off.
+### Mars to Saturn: the Ketaki tables
+
+The committee requires the planets to be computed by the केतकी ग्रहगणितम्
+(V. B. Ketkar, 1898), and `ketaki.py` follows it. It is a karana: an epoch,
+mean motions, and 10° tables read by linear interpolation. Its longitudes
+are sidereal in the Lahiri frame already. All at Kathmandu sunrise:
+
+1. **Mean longitude.** The क्षेपक at Shaka 1800 elapsed (1878-04-03, 06:00
+   Ujjain mean time), plus the ध्रुवक for each whole 6940-day चक्र, plus the
+   per-day formula for the days left in the current चक्र. Mars: `10A/19`
+   degrees `− 10A/73` minutes for A days. The planets' are heliocentric, the
+   Sun's geocentric.
+2. **कर्ष (Jupiter and Saturn only).** The 918-year great inequality: with
+   b the भुज of `(Shaka − 1481) mod 918 × 2/153` signs, in degrees,
+   `f = (b/9)(20 − b/9)` minutes; Jupiter `+f/5`, Saturn `−f/2`, signs
+   reversed past 180°.
+3. **मन्दफल.** मन्दकेन्द्र = mean − apogee; the table value (in असु, 0.1°)
+   is subtracted for 0-180° and added beyond. The result is the
+   heliocentric (मन्दस्पष्ट) planet.
+4. **शीघ्रफल.** शीघ्र केन्द्र = heliocentric planet − Ketaki's true Sun; the
+   table value (असु) is added for 0-180° and subtracted beyond for Mercury
+   and Venus, the other way for Mars, Jupiter and Saturn. Mercury and Venus
+   apply it to the Sun, the others to the planet. Mars scales it by
+   `शीघ्रकर्ण / (r + शीघ्रकर्ण − 152)`, where `शीघ्रकर्ण = 252 − table` and
+   `r = 152 + 14 cos(मन्दकेन्द्र + मन्दफल/2)`; Mercury by `r / 39`, with r
+   read from Ketaki's distance table (47 … 31).
+5. **The Sun of step 4** is Ketaki's Sun at the day's mean sunrise (06:00
+   Kathmandu mean time), with its मन्दफल row read from perigee.
+
+Points 4-5 and the choice of r are the books' conventions, found from
+their tables: [CALIBRATION.md](CALIBRATION.md#5-ketaki-planets).
+
+> Example, 8 January 2027 (2083 p21). Mars: 7 चक्र and 5756 days after the
+> epoch, mean 3।13।3।36, apogee 4।12।22।53, मन्दकेन्द्र 330.7°, मन्दफल
+> +4.70°, heliocentric 3।17।45।29; Sun 8।23।14।36, शीघ्र केन्द्र 204.5°;
+> geocentric 4।16।26।31 (book 4।16।26।41). Mercury 8।27।14।46 (book …47),
+> Jupiter 4।1।59।25 (…27), Venus 7।7।9।43 (…35), Saturn 11।14।16।50 (…50).
+
+Because the tables are interpolated linearly, a planet's daily motion
+changes abruptly each time a केन्द्र crosses a 10° row. That is why the
+book's Mars "turns retrograde" overnight on 2027-01-15/16 (from +3′ a day
+to −12′), five days after the real planet: the शीघ्र केन्द्र crosses 200°.
+For moments other than sunrise, `ketaki.longitude` interpolates between
+the sunrises, as a reader of the daily table would.
 
 ## 10. Solar months (BS month starts)
 
@@ -335,7 +377,7 @@ before deciding the day (`SANKRANTI_ERAS` in `panchanga.py`):
 
 | From BS | Offset (ghati) | Where it comes from |
 |---|---|---|
-| 1975 | per sign: −0.76 −0.93 −0.55 −0.10 −0.04 −0.34 −1.03 −0.83 −0.52 −0.13 −0.01 −0.34 | 1986 book |
+| 1975 | per sign: −0.77 −0.97 −0.55 −0.10 −0.02 −0.40 −0.66 −0.79 −0.51 −0.13 −0.06 −0.35 | 1986 and 1987 books |
 | 2005 | per sign: −0.67 −0.80 −0.40 −0.82 +0.58 +0.44 −0.12 −0.43 +0.02 +0.22 +0.12 −0.24 | 2016 book |
 | 2017 | per sign: −0.46 −2.36 −1.94 −2.82 −1.84 −1.14 −0.84 +0.40 +0.61 +1.22 +0.19 −0.09 | 2028 and 2031–2044 books |
 | 2045 | `SHAPE_2045` − 0.43 | 2045–2059 books |
@@ -442,8 +484,10 @@ index < 15 is शुक्ल). Pages are numbered from 2, as page 1 is the cove
 
 ## 13. What is not computed
 
-- **Editorial fields.** Samvatsara name, पापाक्षणी, पापांश, and the festival
-  and vrat notes are editorial. `generate.py --config` takes them from JSON.
-- **Planets.** Mars to Saturn spashta, planetary rise and set, and the
-  kundali chart need the Ketaki tables. They are left as placeholders in the
+- **Festival and vrat notes.** These are editorial. `generate.py --config`
+  takes them from JSON. Samvatsara, पापर्क्षाणि and पापांश are computed in
+  `editorial.py`; see [EDITORIAL.md](EDITORIAL.md).
+- **Planets.** Planetary rise and set (उदयास्त), the planets' rail
+  entries and the kundali chart are not computed yet; the स्पष्ट ग्रह are
+  (section 9). They are left as placeholders in the
   PDF.
