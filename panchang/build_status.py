@@ -190,7 +190,7 @@ def components() -> list[dict]:
         {"area": "Mars – Saturn spashta", "status": "ok", "note": "ketaki.py: median 1–16″ over 1841 book values (2082, 2083)"},
         {"area": "Planet rail: entries, stations, राशि प्रवेश", "status": "ok", "note": "179 rail lines (pp2-27) found on their गते; 18/22 boxes exact"},
         {"area": "Heliacal rising/setting (उदयास्त)", "status": "warn", "note": "Classic arcs: 7/17 book events to the hour, 10 off by days"},
-        {"area": "Kundali chart", "status": "fail", "note": "Placeholder box"},
+        {"area": "Kundali chart", "status": "warn", "note": "Sunrise of the first षष्ठी: 18/21 charts; the book draws the other 3 at a fortnight end"},
         {"area": "Festival / vrat notes column", "status": "fail", "note": "Editorial; optional JSON config"},
         {"area": "Samvatsara, papakshani, papamsha", "status": "ok", "note": "editorial.py; papakshani 50/51 pages, papamsha Mars 81/82, Saturn 32/33"},
         {"area": "PDF typography vs InDesign book", "status": "warn", "note": "Layout approximates; not pixel-identical"},
@@ -441,7 +441,7 @@ def html_report(data: dict) -> str:
     <div class="pipeline">
       <div class="pipe"><b>Surya Siddhanta</b>Sun & Moon longitudes, tithi/nak/yoga/karana boundaries, Moon apogee −1.7°</div>
       <div class="pipe"><b>Lahiri frame</b>Sunrise, sunset, lagna, belantar, Rahu; modern obliquity; refraction at disc centre</div>
-      <div class="pipe"><b>Ketaki</b>Mars–Saturn spashta (ketaki.py); graha udaya/asta and kundali still placeholders</div>
+      <div class="pipe"><b>Ketaki</b>Mars–Saturn spashta (ketaki.py); the rail, उदयास्त and the kundali</div>
       <div class="pipe"><b>Editorial JSON</b>Festival notes — optional config</div>
     </div>
   </details>

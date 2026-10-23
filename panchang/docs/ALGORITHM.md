@@ -392,6 +392,17 @@ to −12′), five days after the real planet: the शीघ्र केन्�
 For moments other than sunrise, `ketaki.longitude` interpolates between
 the sunrises, as a reader of the daily table would.
 
+### The kundali
+
+Each page draws a North Indian chart of the planets' signs, with the Sun's
+sign as the first house and no Moon. `panchanga.kundali` takes the sunrise
+of the first day whose tithi is षष्ठी or later: the Sun by the SS, Mars to
+Saturn by Ketaki, Rahu as in the स्पष्ट ग्रह row and Ketu opposite. No
+single moment fits every chart. This one reproduces 18 of the 21 read from
+the 2083 book. On the other three a planet changes sign during the
+fortnight, and the book draws it at one end (p16 and p24 the start, p17
+the end). `test_rail.KUNDALIS` has the charts.
+
 ## 10. Solar months (BS month starts)
 
 A BS month (बैशाख, जेठ, …) starts on the civil day its sankranti belongs to.
@@ -516,6 +527,3 @@ index < 15 is शुक्ल). Pages are numbered from 2, as page 1 is the cove
 - **Festival and vrat notes.** These are editorial. `generate.py --config`
   takes them from JSON. Samvatsara, पापर्क्षाणि and पापांश are computed in
   `editorial.py`; see [EDITORIAL.md](EDITORIAL.md).
-- **Planets.** The kundali chart is not computed yet: the books' charts fit
-  no single moment of the fortnight (the best, the sixth tithi, fits 17 of
-  21). It is a placeholder in the PDF.

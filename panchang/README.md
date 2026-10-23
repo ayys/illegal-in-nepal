@@ -55,7 +55,7 @@ panchanga.month_starts(2083)          # 13 dates: बैशाख 1 … चै�
 | `test_panchanga.py` | Book regression tests and calendar invariants |
 | `test_editorial.py` | Samvatsara, पापर्क्षाणि and पापांश against the books |
 | `test_ketaki.py` | Mars to Saturn against Ketaki's worked example and both books |
-| `test_rail.py` | The ग्रहचार rail and the राशि प्रवेश box against the 2083 book |
+| `test_rail.py` | The ग्रहचार rail, the राशि प्रवेश and status boxes, and the kundali against the 2083 book |
 | `data/book_planets.csv` | Mars to Saturn as printed, hand-read and OCR, with pages |
 | `data/book_rail.csv` | The rail's planet lines as printed, 2083 pp2-9, 18, 21, 22 |
 | `data/book_sankrantis.csv` | Sankranti moments read from old books, with PDF pages |
@@ -134,7 +134,5 @@ by a primary source.
   `--config` JSON. Samvatsara, पापर्क्षाणि and पापांश are computed
   (`editorial.py`, [docs/EDITORIAL.md](docs/EDITORIAL.md)); a value in the
   config overrides them.
-- **Kundali.** A placeholder: the books' charts fit no single moment of
-  the fortnight. Everything else about the planets is computed.
 
 See the component matrix in `status.html` for the full list.

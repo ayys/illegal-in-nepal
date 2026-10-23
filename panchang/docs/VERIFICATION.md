@@ -25,6 +25,7 @@ python3 -m unittest test_surya test_panchanga test_editorial test_ketaki test_ra
 | राशि प्रवेश box (22 pages) | 18 exact; the other 4 are where the book's box disagrees with its own rail | `test_rail.py` |
 | उदय/अस्त (17) | 7 within an hour; 10 one to eight days off (open) | `test_rail.py` |
 | Planet status box (pp2, 27) | both exact | `test_rail.py` |
+| Kundali (21 charts) | 18 exact; on pp16, 17, 24 the book draws a planet at a fortnight end | `test_rail.py` |
 | बेलान्तर | within 2 seconds | `SPASHTA` |
 | Page count and layout | 26 pages, 365 days, headers on 6 pages | `HEADERS` |
 

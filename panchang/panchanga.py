@@ -661,6 +661,7 @@ def header(rows: list[dict], months: list[Lunation], new_years: dict, bs_year: i
         # {body: [(गते it changes on, or None at the start; navamsha 1-12)]}
         "papamsha": editorial.papamsha(rows),
         "sign_entries": sign_entries(rows),
+        "kundali": kundali(rows),
     }
 
 
@@ -713,6 +714,24 @@ def year(bs_year: int, config: dict | None = None) -> list[dict]:
     for page in (result[0], result[-1]):
         page["header"]["planet_status"] = planet_status(date.fromisoformat(page["rows"][0]["date"]))
     return result
+
+
+def kundali(rows: list[dict]) -> dict:
+    """The page's chart: each planet's sign (0 = मेष) at the sunrise of the
+    first day whose tithi is षष्ठी or later, with the Sun's sign as the first
+    house, as the book draws it; no Moon.
+
+    The book's charts fit no single moment of the fortnight. This one
+    reproduces 18 of the 21 read from 2083 (pp16, 17, 24 differ: there a
+    planet changes sign within two days of the fortnight's start or end).
+    """
+    day = date.fromisoformat(next((r for r in rows if r["tithi"]["index"] % 15 + 1 >= 6), rows[-1])["date"])
+    rise = ketaki.sunrise(day)
+    signs = {"sun": int(surya.true_sun(rise) // SIGN_WIDTH)}
+    signs.update({body: int(ketaki.at_sunrise(body, day) // SIGN_WIDTH) for body in ketaki.PLANETS})
+    rahu = surya.rahu(surya.ujjain_mean_sunrise(day))
+    signs["rahu"], signs["ketu"] = int(rahu // SIGN_WIDTH), int(surya.norm(rahu + 180) // SIGN_WIDTH)
+    return {"date": day.isoformat(), "lagna": signs["sun"], "signs": signs}
 
 
 def planet_status(day: date) -> list[dict]:

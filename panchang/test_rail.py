@@ -52,6 +52,39 @@ BOXES = {
 # entries that their rails print; p20 "१७सू.८" for the rail's "१७ वृश्चिकमा शुक्र".
 BOXES_DIFFERENT = {18: "१७बु.८, १९रा.१०के.४", 20: "१७सू.८", 21: "३०सू.१०", 22: "१४बु.११, १५शु.९"}
 
+# The kundali on each page, as printed: each planet's sign, 1 = मेष (2083,
+# 21 pages read; a planet missing was illegible). The book has no Moon.
+KUNDALIS = {
+    3: {"sun": 1, "venus": 2, "mars": 12, "mercury": 12, "saturn": 12, "rahu": 11, "jupiter": 3, "ketu": 5},
+    4: {"sun": 1, "mercury": 1, "venus": 2, "mars": 12, "saturn": 12, "rahu": 11, "jupiter": 3, "ketu": 5},
+    6: {"sun": 2, "mercury": 3, "venus": 3, "mars": 1, "saturn": 12, "rahu": 11, "jupiter": 4, "ketu": 5},
+    7: {"sun": 3, "mercury": 3, "jupiter": 4, "venus": 4, "ketu": 5, "mars": 1, "saturn": 12, "rahu": 11},
+    9: {"sun": 4, "jupiter": 4, "venus": 5, "ketu": 5, "mercury": 3, "mars": 2, "saturn": 12, "rahu": 11},
+    10: {"sun": 4, "jupiter": 4, "ketu": 5, "mars": 3, "mercury": 3, "venus": 6},
+    11: {"sun": 5, "ketu": 5, "venus": 6, "mercury": 4, "jupiter": 4, "mars": 3},
+    12: {"sun": 5, "mercury": 5, "ketu": 5, "venus": 6, "jupiter": 4, "mars": 3, "rahu": 11, "saturn": 12},
+    13: {"sun": 5, "ketu": 5, "mercury": 6, "venus": 7, "jupiter": 4, "mars": 3, "rahu": 11, "saturn": 12},
+    14: {"sun": 6, "mercury": 7, "venus": 7, "ketu": 5, "mars": 4, "jupiter": 4, "saturn": 12, "rahu": 11},
+    15: {"sun": 6, "mercury": 7, "venus": 7, "ketu": 5, "mars": 4, "jupiter": 4, "saturn": 12, "rahu": 11},
+    16: {"sun": 7, "mercury": 7, "venus": 7, "mars": 4, "jupiter": 4, "rahu": 11, "saturn": 12},
+    17: {"sun": 8, "mercury": 7, "venus": 7, "mars": 5, "jupiter": 5, "ketu": 5, "rahu": 11, "saturn": 12},
+    18: {"sun": 8, "mercury": 7, "venus": 7, "mars": 5, "jupiter": 5, "ketu": 5, "rahu": 11, "saturn": 12},
+    19: {"sun": 8, "mercury": 8, "venus": 7, "mars": 5, "jupiter": 5, "ketu": 4, "rahu": 10, "saturn": 12},
+    20: {"sun": 9, "mercury": 9, "venus": 7, "mars": 5, "jupiter": 5, "ketu": 4, "rahu": 10, "saturn": 12},
+    21: {"sun": 9, "mercury": 10, "rahu": 10, "venus": 8, "saturn": 12, "mars": 5, "jupiter": 5, "ketu": 4},
+    22: {"sun": 10, "mercury": 10, "rahu": 10, "jupiter": 4, "ketu": 4, "mars": 5, "saturn": 12},
+    23: {"sun": 10, "rahu": 10, "mercury": 11, "venus": 9, "saturn": 12},
+    24: {"sun": 11, "mercury": 11, "saturn": 12, "rahu": 10, "venus": 9, "mars": 5},
+    26: {"sun": 12, "saturn": 12, "mercury": 11, "venus": 11, "rahu": 10, "mars": 4, "jupiter": 4, "ketu": 4},
+}
+# Charts no single moment of ours reproduces: a planet changes sign in the
+# fortnight and the book draws it at one end. p16 Jupiter, still in Cancer
+# (enters Leo Oct 29, ours Oct 31), and p24 Mercury and Venus, still in
+# Aquarius and Sagittarius (both enter Capricorn Feb 24, ours Feb 26), are at
+# the start; p17 the Sun, already in Scorpio (enters Nov 17, ours Nov 15), at
+# the end.
+KUNDALI_DIFFERENT = {16: {"jupiter"}, 17: {"sun"}, 24: {"mercury", "venus"}}
+
 
 def describe(entry: dict) -> tuple[str, str]:
     if "heliacal" in entry:
@@ -133,6 +166,13 @@ class RailTest(unittest.TestCase):
                               (27, "मं.मा.उ., बु.मा.उ., बृ.व.उ., शु.मा.उ., शं.मा.अ.")):
             with self.subTest(page=page):
                 self.assertIn(printed, render.status_box(self.pages[page]["header"]["planet_status"]))
+
+    def test_kundali(self):
+        for page, printed in KUNDALIS.items():
+            with self.subTest(page=page):
+                signs = self.pages[page]["header"]["kundali"]["signs"]
+                wrong = {body for body, sign in printed.items() if signs[body] + 1 != sign}
+                self.assertEqual(wrong, KUNDALI_DIFFERENT.get(page, set()))
 
     def test_rail_text(self):
         # The wording, against lines as printed.

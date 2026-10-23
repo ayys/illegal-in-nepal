@@ -51,6 +51,10 @@ th {{ font-weight: 700; }}
              border: 0.6pt solid #000; font-size: 7.4pt; }}
 .rail-box .title {{ background: #000; color: #fff; text-align: center; padding: 1pt; }}
 .rail-box div.line {{ border-bottom: 0.4pt solid #000; padding: 1.2pt 3pt; white-space: normal; }}
+.kundali {{ position: relative; }}
+.kundali .house {{ position: absolute; transform: translate(-50%, -50%); text-align: center;
+                  font-size: 5.6pt; line-height: 6.4pt; white-space: nowrap; }}
+.kundali .house b {{ font-size: 6.4pt; }}
 .rail-box div.special {{ background: #ddd; }}
 .rail-box div.pending {{ color: #666; font-weight: 500; padding: 3pt; white-space: normal; }}
 .title-text {{ position: absolute; font-size: 13pt; font-weight: 700; }}
@@ -275,6 +279,36 @@ def rashi_pravesh(entries: list[dict]) -> str:
     return ", ".join(out)
 
 
+KUNDALI_NAMES = {"sun": "सू", "mercury": "बु", "venus": "शु", "mars": "मं", "jupiter": "बृ",
+                 "saturn": "श", "rahu": "रा", "ketu": "के"}
+# Centres of the twelve houses of a North Indian chart, as fractions of the
+# square, house 1 at the top centre and counting anticlockwise.
+HOUSES = [(0.5, 0.25), (0.25, 0.1), (0.1, 0.25), (0.25, 0.5), (0.1, 0.75), (0.25, 0.9),
+          (0.5, 0.75), (0.75, 0.9), (0.9, 0.75), (0.75, 0.5), (0.9, 0.25), (0.75, 0.1)]
+
+
+def kundali_svg(chart: dict, width: float = 108, height: float = 84) -> str:
+    """The chart's lines as SVG and its text as HTML laid over them (the PDF
+    renderer shapes Devanagari in HTML, not in SVG)."""
+    lines = [
+        (0, 0, width, height), (width, 0, 0, height),
+        (width / 2, 0, 0, height / 2), (0, height / 2, width / 2, height),
+        (width / 2, height, width, height / 2), (width, height / 2, width / 2, 0),
+    ]
+    svg = "".join(f'<line x1="{a}" y1="{b}" x2="{c}" y2="{d}" stroke="#000" stroke-width="0.5"/>' for a, b, c, d in lines)
+    svg = (f'<svg style="position:absolute;left:0;top:0" width="{width}pt" height="{height}pt" '
+           f'viewBox="0 0 {width} {height}"><rect x="0" y="0" width="{width}" height="{height}" fill="none" '
+           f'stroke="#000" stroke-width="0.6"/>{svg}</svg>')
+    text = []
+    for house, (fx, fy) in enumerate(HOUSES):
+        sign = (chart["lagna"] + house) % 12
+        here = " ".join(f"{KUNDALI_NAMES[b]}." for b in KUNDALI_NAMES if chart["signs"][b] == sign)
+        text.append(
+            f'<div class="house" style="left:{fx * width:.1f}pt;top:{fy * height:.1f}pt">'
+            + (f"<b>{here}</b><br>" if here else "") + f"{deva(sign + 1)}</div>")
+    return f'<div class="kundali" style="width:{width}pt;height:{height}pt">{svg}{"".join(text)}</div>'
+
+
 STATUS_NAMES = {"mars": "मं", "mercury": "बु", "jupiter": "बृ", "venus": "शु", "saturn": "शं"}
 
 
@@ -305,8 +339,8 @@ def page_html(page: dict, notes: dict | None = None, papamsha: str = "") -> str:
         + '<div class="title-text" style="left:420pt;top:281pt">उदयकालिक सूर्यादि स्पष्ट ग्रह</div>'
         + pravesh
         + graha_table(rows)
-        + '<div class="box" style="left:892pt;top:300pt;width:112pt;height:90pt">'
-          '<b>कुण्डली</b><br>गणना बाँकी</div>'
+        + '<div class="box" style="left:892pt;top:300pt;width:112pt;height:90pt;padding:2pt">'
+          + kundali_svg(page["header"]["kundali"]) + '</div>'
         + f'<div class="box" style="left:892pt;top:396pt;width:112pt;height:96pt">'
           f'<b>पापांशाः</b><br>{escape(papamsha)}</div>'
         + status_box(page["header"].get("planet_status"))
