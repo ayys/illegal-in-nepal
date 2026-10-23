@@ -65,6 +65,13 @@ MOVABLE_KARANAS = [
 FIXED_KARANAS = {
     0: ("किंस्तुघ्न", "किं."), 57: ("शकुनि", "श."), 58: ("चतुष्पद", "च."), 59: ("नाग", "ना."),
 }
+# Nakshatra names as the ग्रहचार rail prints them: in full, but the paired
+# ones (पूर्व/उत्तर) shortened and पुष्य as तिष्य (2083 pp2-21).
+RAIL_NAKSHATRAS = [
+    "अश्विनी", "भरणी", "कृत्तिका", "रोहिणी", "मृगशिरा", "आर्द्रा", "पुनर्वसु", "तिष्य",
+    "अश्लेषा", "मघा", "पू.फा.", "उ.फा.", "हस्त", "चित्रा", "स्वाती", "विशाखा", "अनुराधा",
+    "ज्येष्ठा", "मूल", "पू.षा.", "उ.षा.", "श्रवण", "धनिष्ठा", "शतभिषा", "पू.भा.", "उ.भा.", "रेवती",
+]
 # The 28 आनन्दादि yogas, from the weekday and the Moon's nakshatra counted
 # with अभिजित् as the 22nd.
 ANANDADI = [
@@ -194,6 +201,116 @@ def _limb(angle, width, names, day, rise, next_rise):
     }
 
 
+def _planet_longitude(body: str, day: date) -> float:
+    if body == "rahu":
+        return surya.rahu(surya.ujjain_mean_sunrise(day))
+    return ketaki.at_sunrise(body, day)
+
+
+def _boundaries(body: str) -> list[float]:
+    """Longitudes whose crossing the rail prints: every pada for Mars,
+    Jupiter, Saturn and Rahu; for Mercury and Venus every nakshatra, every
+    sign and the two ends of अभिजित् (2083 p21: "अभिजितमा बुध", "अभिजितत्याग")."""
+    if body in ("mercury", "venus"):
+        return sorted(set([k * NAKSHATRA_WIDTH for k in range(27)] + [k * SIGN_WIDTH for k in range(12)]
+                          + list(ABHIJIT)))
+    return [k * PADA_WIDTH for k in range(108)]
+
+
+def planet_events(day: date, gate: int) -> list[dict]:
+    """The ग्रहचार rail's entries for Mars to Saturn and Rahu on `day`.
+
+    Each planet's स्पष्ट ग्रह is taken as moving linearly from this sunrise to
+    the next, as a reader of the daily table would, and every boundary it
+    crosses is an entry: the new pada (or nakshatra), the sign when the
+    boundary starts one, and "again" when a planet in वक्री motion re-enters
+    a division it has left (printed पुनः; 2083 p21 "२ पुनःपू.फा. १ मा मंगल").
+    """
+    rise, after = ketaki.sunrise(day), ketaki.sunrise(day + timedelta(days=1))
+    events = []
+    for body in ketaki.PLANETS + ["rahu"]:
+        a, b = _planet_longitude(body, day), _planet_longitude(body, day + timedelta(days=1))
+        step = (b - a + 180) % 360 - 180
+        if step == 0:
+            continue
+        for x in _boundaries(body):
+            ahead = (x - a) % 360 if step > 0 else (a - x) % 360
+            if not 0 < ahead <= abs(step):
+                continue
+            jd = rise + ahead / abs(step) * (after - rise)
+            # The division entered starts at x going forward, ends at x going back.
+            inside = surya.norm(x + (1e-7 if step > 0 else -1e-7))
+            entry = _ending(0, None, jd, surya.sunrise(day), day)
+            entry.pop("index")
+            entry.update(body=body, again=step < 0 and body != "rahu")
+            on_sign = abs(x / SIGN_WIDTH - round(x / SIGN_WIDTH)) < 1e-9
+            if body in ("mercury", "venus"):
+                on_nakshatra = abs(x / NAKSHATRA_WIDTH - round(x / NAKSHATRA_WIDTH)) < 1e-9
+                if on_nakshatra:
+                    entry["nakshatra"] = RAIL_NAKSHATRAS[int(inside // NAKSHATRA_WIDTH)]
+                if on_sign:
+                    entry["enters"] = SIGNS[int(inside // SIGN_WIDTH)]
+                if x in ABHIJIT:
+                    entry["abhijit"] = "in" if ABHIJIT[0] <= inside < ABHIJIT[1] else "out"
+            else:
+                pada = int(inside // PADA_WIDTH)
+                entry["nakshatra"] = RAIL_NAKSHATRAS[pada // 4]
+                entry["pada"] = pada % 4 + 1
+                if on_sign:
+                    entry["enters"] = SIGNS[int(inside // SIGN_WIDTH)]
+                elif pada == ABHIJIT_PADA and step > 0:
+                    entry["enters"] = "अभिजित"
+                if body == "rahu":
+                    ketu = (pada + 54) % 108
+                    entry["ketu"] = {"nakshatra": RAIL_NAKSHATRAS[ketu // 4], "pada": ketu % 4 + 1}
+                    if on_sign:
+                        entry["ketu"]["enters"] = SIGNS[ketu // 9]
+            events.append(entry)
+    return events
+
+
+def _add_stations(rows: list[dict]) -> None:
+    """वक्री and मार्गी: where a planet's daily motion in the स्पष्ट ग्रह table
+    changes sign, the turning point by the tables themselves (ketaki.station)
+    near that sunrise, filed under the day it falls in (2083 p21 "१ वक्री
+    मङ्गल २८:२२", p18 "२० मार्गी शनि ६:४३")."""
+    days = [date.fromisoformat(r["date"]) for r in rows]
+    by_day = dict(zip(days, rows))
+    span = [days[0] - timedelta(days=2)] + days + [days[-1] + timedelta(days=k) for k in (1, 2)]
+    for body in ketaki.PLANETS:
+        values = [ketaki.at_sunrise(body, d) for d in span]
+        steps = [(b - a + 180) % 360 - 180 for a, b in zip(values, values[1:])]
+        flips = [i for i in range(1, len(steps)) if steps[i - 1] * steps[i] < 0]
+        # Near a station the table's kinks can flip the daily motion back and
+        # forth over a few days; the book prints the net turn once, at the
+        # last flip (2083 p9: only "९ मार्गी बुध").
+        turns = []
+        for i in flips:
+            if turns and i - turns[-1][-1] <= 5:
+                turns[-1].append(i)
+            else:
+                turns.append([i])
+        for group in turns:
+            if steps[group[0] - 1] * steps[group[-1]] >= 0:
+                continue
+            i = group[-1]
+            turn = span[i]  # the sunrise between the two opposite steps
+            found = ketaki.station(body, ketaki.sunrise(turn - timedelta(days=1)), ketaki.sunrise(turn + timedelta(days=1)))
+            if not found:
+                continue
+            jd, kind = found
+            if (kind == "वक्री") != (steps[i] < 0):
+                continue
+            day = surya.from_julian_day(jd).date()
+            if jd < surya.sunrise(day):
+                day -= timedelta(days=1)
+            if day in by_day:
+                entry = _ending(0, None, jd, surya.sunrise(day), day)
+                entry.pop("index")
+                entry.update(body=body, station=kind)
+                by_day[day]["planet_events"].append(entry)
+
+
 def day_row(day: date, bs_month: int, gate: int) -> dict:
     """Every column of one day. `gate` is the day of the BS month (गते)."""
     rise = surya.sunrise(day)
@@ -228,12 +345,20 @@ def day_row(day: date, bs_month: int, gate: int) -> dict:
     for index, jd in surya.crossings(surya.true_sun, PADA_WIDTH, rise, next_rise):
         pada = (index + 1) % 108
         entry = _ending(pada, None, jd, rise, day)
-        entry["nakshatra"] = NAKSHATRAS[pada // 4][1]
+        entry["nakshatra"] = RAIL_NAKSHATRAS[pada // 4]
         entry["pada"] = pada % 4 + 1
         if pada % 9 == 0:
             entry["enters"] = SIGNS[pada // 9]
         elif pada == ABHIJIT_PADA:
             entry["enters"] = "अभिजित"
+        sun_padas.append(entry)
+    # Leaving अभिजित् is printed too, though it is not a pada boundary (2083
+    # p22: "११ अभिजितत्याग सूर्य १९:१२").
+    if surya.true_sun(rise) < ABHIJIT[1] <= surya.true_sun(next_rise):
+        jd = surya._solve(surya.true_sun, ABHIJIT[1], rise)
+        entry = _ending(0, None, jd, rise, day)
+        entry.pop("index")
+        entry["leaves"] = "अभिजित"
         sun_padas.append(entry)
 
     return {
@@ -259,6 +384,7 @@ def day_row(day: date, bs_month: int, gate: int) -> dict:
         "sunset_clock": _clock(set_, day, math.floor),
         "sun_sign": sun_sign(rise),
         "sun_padas": sun_padas,
+        "planet_events": planet_events(day, gate),
         "lagna": [
             {"sign": sign, "name": SIGNS[sign], "clock": _clock(jd, day)}
             for sign, jd in surya.lagna_starts(day)
@@ -266,8 +392,8 @@ def day_row(day: date, bs_month: int, gate: int) -> dict:
         "spashta": {
             "sun": arc(surya.true_sun(rise)),
             "moon": arc(moon),
-            # Mars to Saturn by the Ketaki tables, at the same sunrise.
-            **{body: arc(ketaki.geocentric(body, rise)) for body in ketaki.PLANETS},
+            # Mars to Saturn by the Ketaki tables, at Ketaki's sunrise.
+            **{body: arc(ketaki.at_sunrise(body, day)) for body in ketaki.PLANETS},
             # Not at Kathmandu sunrise; see surya.RAHU_OFFSET.
             "rahu": arc(surya.rahu(surya.ujjain_mean_sunrise(day))),
         },
@@ -426,6 +552,27 @@ def _jd(iso: str) -> float:
     return surya.julian_day(datetime.fromisoformat(iso))
 
 
+RAIL_ORDER = ["sun", "mars", "mercury", "jupiter", "venus", "saturn", "rahu"]
+
+
+def sign_entries(rows: list[dict]) -> list[dict]:
+    """The राशि प्रवेश box: each sign entry on the page, planet by planet in the
+    order सू मं बु बृ शु श रा, then by date (2083 p4: "१सू.२, २८मं.१, ३१बु.२,
+    ३०शु.३"). Rahu's entry carries Ketu's sign."""
+    found = []
+    for row in rows:
+        for entry in row["sun_padas"]:
+            if entry.get("enters") in SIGNS:
+                found.append({"body": "sun", "gate": row["gate"], "at": entry["at"], "sign": SIGNS.index(entry["enters"])})
+        for entry in row["planet_events"]:
+            if entry.get("enters") in SIGNS:
+                item = {"body": entry["body"], "gate": row["gate"], "at": entry["at"], "sign": SIGNS.index(entry["enters"])}
+                if entry["body"] == "rahu":
+                    item["ketu_sign"] = (item["sign"] + 6) % 12
+                found.append(item)
+    return sorted(found, key=lambda e: (RAIL_ORDER.index(e["body"]), e["at"]))
+
+
 def header(rows: list[dict], months: list[Lunation], new_years: dict, bs_year: int,
            config: dict) -> dict:
     """The strip above a fortnight's rows.
@@ -479,6 +626,7 @@ def header(rows: list[dict], months: list[Lunation], new_years: dict, bs_year: i
                        or editorial.papakshani(rows)),
         # {body: [(गते it changes on, or None at the start; navamsha 1-12)]}
         "papamsha": editorial.papamsha(rows),
+        "sign_entries": sign_entries(rows),
     }
 
 
@@ -509,6 +657,8 @@ def year(bs_year: int, config: dict | None = None) -> list[dict]:
     for month, (begin, end) in enumerate(zip(starts, starts[1:])):
         for gate in range((end - begin).days):
             rows.append(day_row(begin + timedelta(days=gate), month, gate + 1))
+
+    _add_stations(rows)
 
     pages, current = [], [rows[0]]
     for row in rows[1:]:

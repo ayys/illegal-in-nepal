@@ -38,9 +38,9 @@ def residuals(source: str) -> dict[str, list[tuple[str, float]]]:
     for row in rows:
         if row["source"] != source:
             continue
-        jd = surya.sunrise(date.fromisoformat(row["date"]))
+        day = date.fromisoformat(row["date"])
         out.setdefault(row["body"], []).append(
-            (row["date"], seconds(degrees(row["longitude"]), ketaki.geocentric(row["body"], jd))))
+            (row["date"], seconds(degrees(row["longitude"]), ketaki.at_sunrise(row["body"], day))))
     return out
 
 
@@ -101,7 +101,7 @@ class BookTest(unittest.TestCase):
 class InterpolationTest(unittest.TestCase):
     def test_longitude_matches_sunrise_values(self):
         day = date(2027, 1, 10)
-        rise, after = surya.sunrise(day), surya.sunrise(date(2027, 1, 11))
+        rise, after = ketaki.sunrise(day), ketaki.sunrise(date(2027, 1, 11))
         for body in ketaki.PLANETS:
             with self.subTest(body=body):
                 self.assertAlmostEqual(seconds(ketaki.longitude(body, rise), ketaki.geocentric(body, rise)), 0, delta=0.01)

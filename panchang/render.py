@@ -50,7 +50,8 @@ th {{ font-weight: 700; }}
 .rail-box {{ position: absolute; left: 892pt; top: 27pt; width: 112pt; height: 250pt;
              border: 0.6pt solid #000; font-size: 7.4pt; }}
 .rail-box .title {{ background: #000; color: #fff; text-align: center; padding: 1pt; }}
-.rail-box div.line {{ border-bottom: 0.4pt solid #000; padding: 1.2pt 3pt; white-space: nowrap; }}
+.rail-box div.line {{ border-bottom: 0.4pt solid #000; padding: 1.2pt 3pt; white-space: normal; }}
+.rail-box div.special {{ background: #ddd; }}
 .rail-box div.pending {{ color: #666; font-weight: 500; padding: 3pt; white-space: normal; }}
 .title-text {{ position: absolute; font-size: 13pt; font-weight: 700; }}
 .lagna {{ left: 22pt; top: 300pt; width: 330pt; font-size: 7pt; }}
@@ -162,16 +163,58 @@ def day_table(rows: list[dict], notes: dict) -> str:
     return f'<table class="days"><tr>{head}</tr>{"".join(body)}</table>'
 
 
+STATION_NAMES = {"mars": "मङ्गल", "mercury": "बुध", "jupiter": "गुरु", "venus": "शुक्र", "saturn": "शनि"}
+RAIL_NAMES = {"mars": "मंगल", "mercury": "बुध", "jupiter": "गुरु", "venus": "शुक्र", "saturn": "शनि"}
+SHORT_NAMES = {"sun": "सू", "mars": "मं", "mercury": "बु", "jupiter": "बृ", "venus": "शु", "saturn": "श", "rahu": "रा"}
+
+
+def rail_text(gate: int, entry: dict) -> str:
+    """One ग्रहचार line, worded as the book words it (2083 pp2-21)."""
+    again = "पुनः" if entry.get("again") else ""
+    enters = entry.get("enters")
+    if entry["body"] in ("mercury", "venus"):
+        if entry.get("abhijit") == "out":
+            where = "अभिजितत्याग"
+        elif entry.get("abhijit") == "in":
+            where = "अभिजितमा"
+        elif entry.get("nakshatra") and enters:
+            where = f"{again}{entry['nakshatra']} {enters}मा"
+        elif entry.get("nakshatra"):
+            where = f"{again}{entry['nakshatra']}मा"
+        else:
+            where = f"{again}{enters}मा"
+        return f"{deva(gate)} {where} {RAIL_NAMES[entry['body']]} {clock(entry['clock'])}"
+    where = f"{again}{entry['nakshatra']} {deva(entry['pada'])} {enters + 'मा' if enters else 'मा'}"
+    if entry["body"] == "rahu":
+        ketu = entry["ketu"]
+        ketu_where = f"{ketu['enters']}मा" if ketu.get("enters") else "मा"
+        return (f"{deva(gate)} {where} राहु {ketu['nakshatra']} {deva(ketu['pada'])} {ketu_where} केतु "
+                f"{clock(entry['clock'])}")
+    return f"{deva(gate)} {where} {RAIL_NAMES[entry['body']]} {clock(entry['clock'])}"
+
+
 def rail(rows: list[dict]) -> str:
     lines = []
     for row in rows:
         for entry in row["sun_padas"]:
+            if entry.get("leaves"):
+                lines.append(f'<div class="line">{deva(row["gate"])} अभिजितत्याग सूर्य '
+                             f'{clock(entry["clock"])}</div>')
+                continue
             enters = entry.get("enters")
             where = f"{enters}मा" if enters else "मा"
             lines.append(
                 f'<div class="line">{deva(row["gate"])} {entry["nakshatra"]} '
                 f'{deva(entry["pada"])} {where} सूर्य {clock(entry["clock"])}</div>')
-    lines.append('<div class="pending">मंगलादि ग्रहचार र उदयास्त: गणना बाँकी</div>')
+    planets = sorted(((panchanga.RAIL_ORDER.index(e["body"]), e["at"], row["gate"], e)
+                      for row in rows for e in row["planet_events"] if "station" not in e), key=lambda x: x[:2])
+    lines += [f'<div class="line">{rail_text(gate, e)}</div>' for _, _, gate, e in planets]
+    # वक्री/मार्गी, shaded at the foot as in the book (2083 p18 "२० मार्गी शनि ६:४३").
+    stations = sorted(((e["at"], row["gate"], e) for row in rows for e in row["planet_events"] if "station" in e),
+                      key=lambda x: x[0])
+    lines += [f'<div class="line special">{deva(gate)} {e["station"]} {STATION_NAMES[e["body"]]} '
+              f'{clock(e["clock"])}</div>' for _, gate, e in stations]
+    lines.append('<div class="pending">उदयास्त: गणना बाँकी</div>')
     return (
         '<div class="rail-box"><div class="title">गते ग्रहचार/उदयास्त (बजे)</div>'
         + "".join(lines) + "</div>")
@@ -216,19 +259,21 @@ def graha_table(rows: list[dict]) -> str:
     return f'<table class="graha"><tr>{head}</tr>{"".join(body)}</table>'
 
 
-def rashi_pravesh(rows: list[dict]) -> str:
-    entries = [
-        f"{deva(row['gate'])}सू.{deva(panchanga.SIGNS.index(entry['enters']) + 1)}"
-        for row in rows for entry in row["sun_padas"]
-        if entry.get("enters") in panchanga.SIGNS
-    ]
-    return ", ".join(entries)
+def rashi_pravesh(entries: list[dict]) -> str:
+    """"१सू.२, २८मं.१": गते, planet, sign entered (मेष = 1)."""
+    out = []
+    for e in entries:
+        text = f"{deva(e['gate'])}{SHORT_NAMES[e['body']]}.{deva(e['sign'] + 1)}"
+        if e["body"] == "rahu":
+            text += f"के.{deva(e['ketu_sign'] + 1)}"
+        out.append(text)
+    return ", ".join(out)
 
 
 def page_html(page: dict, notes: dict | None = None, papamsha: str = "") -> str:
     rows = page["rows"]
     notes = notes or {}
-    entries = rashi_pravesh(rows)
+    entries = rashi_pravesh(page["header"]["sign_entries"])
     pravesh = (
         f'<div class="box" style="left:690pt;top:280pt">राशि प्रवेश: {entries}</div>'
         if entries else "")

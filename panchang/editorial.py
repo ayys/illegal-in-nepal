@@ -317,7 +317,9 @@ def navamsha(longitude: float) -> int:
 
 def _malefics_at_sunrise(day: date) -> dict[str, float]:
     found = malefics(surya.sunrise(day))
-    # The book's Rahu is fixed to Ujjain mean sunrise (see surya.RAHU_OFFSET).
+    # Mars and Saturn as the day's स्पष्ट ग्रह (ketaki.at_sunrise), and the
+    # book's Rahu is fixed to Ujjain mean sunrise (see surya.RAHU_OFFSET).
+    found["mars"], found["saturn"] = ketaki.at_sunrise("mars", day), ketaki.at_sunrise("saturn", day)
     rahu = surya.rahu(surya.ujjain_mean_sunrise(day))
     found["rahu"], found["ketu"] = rahu, surya.norm(rahu + 180)
     return found

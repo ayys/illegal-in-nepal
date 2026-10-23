@@ -21,11 +21,11 @@ The method, step by step:
    Saturn: planet ∓ फल.
 
 Five conventions are not in the text and were found from the books' स्पष्ट
-ग्रह tables (docs/CALIBRATION.md, "Ketaki planets"): the planets at true
-Kathmandu sunrise but the Sun of step 4 at mean sunrise; the Sun's row read
-from perigee; Saturn's optional short-period terms (p159) left out; Mars's
-distance by the cosine of verse 8, unrounded; Mercury's by the table of
-verses 11-13.
+ग्रह tables (docs/CALIBRATION.md, "Ketaki planets"): the planets at
+Kathmandu sunrise without refraction but the Sun of step 4 at mean sunrise;
+the Sun's row read from perigee; Saturn's optional short-period terms (p159)
+left out; Mars's distance by the cosine of verse 8, unrounded; Mercury's by
+the table of verses 11-13.
 
 The tables are Ketkar's verses, decoded (भूतसंख्या, digits right to left);
 where the commentary's digit list differs, the verse is used.
@@ -131,6 +131,19 @@ def apogee(body: str, jd: float) -> float:
     return surya.norm(APOGEE_AT_EPOCH[body] + APOGEE_PER_CYCLE[body] / 3600 / CYCLE * (jd - EPOCH))
 
 
+def sunrise(day: date) -> float:
+    """The moment the books' स्पष्ट ग्रह are for: Kathmandu sunrise without
+    refraction (the Sun's centre on the horizon), 2.7-2.8 minutes after the
+    refracted sunrise the book prints. Against 1841 printed values this
+    beats the refracted sunrise for every planet (Mercury 90%: 43″ → 37″)."""
+    return surya.sunrise(day, surya.GEOMETRIC)
+
+
+def at_sunrise(body: str, day: date) -> float:
+    """The स्पष्ट ग्रह of `day`."""
+    return geocentric(body, sunrise(day))
+
+
 def mean_sunrise(jd: float) -> float:
     """06:00 Kathmandu mean time on the civil day of `jd`."""
     day = surya.from_julian_day(jd).date()
@@ -198,10 +211,9 @@ def heliocentric(body: str, jd: float) -> tuple[float, float, float]:
 
 
 def geocentric(body: str, jd: float) -> float:
-    """Sidereal longitude of `body` at sunrise `jd`, the स्पष्ट ग्रह column.
-
-    Only meaningful at a sunrise: the शीघ्र step uses that day's mean-sunrise
-    Sun. For other moments use `longitude`."""
+    """Sidereal longitude of `body` at `jd`, meant to be a sunrise (see
+    `sunrise`): the शीघ्र step uses that day's mean-sunrise Sun. For other
+    moments use `longitude`."""
     helio, phala, k = heliocentric(body, jd)
     sun = true_sun(jd)
     kendra = surya.norm(helio - sun)
@@ -225,11 +237,60 @@ def longitude(body: str, jd: float) -> float:
     either side, as a panchangakar reads the daily table. (geocentric() itself
     would freeze the Sun at mean sunrise and bend the planet within the day.)"""
     day = surya.from_julian_day(jd).date()
-    rise = surya.sunrise(day)
+    rise = sunrise(day)
     if jd < rise:
         day -= timedelta(days=1)
-        rise = surya.sunrise(day)
-    after = surya.sunrise(day + timedelta(days=1))
+        rise = sunrise(day)
+    after = sunrise(day + timedelta(days=1))
     a, b = geocentric(body, rise), geocentric(body, after)
     step = (b - a + 180) % 360 - 180
     return surya.norm(a + step * (jd - rise) / (after - rise))
+
+
+def continuous(body: str, jd: float) -> float:
+    """`body` at any moment by the tables themselves: the heliocentric planet
+    at `jd`, the Sun linear between the sunrises either side. Unlike
+    `longitude` this keeps the kinks where a केन्द्र crosses a 10° row, which
+    is where the tables turn a planet वक्री or मार्गी."""
+    day = surya.from_julian_day(jd).date()
+    rise = sunrise(day)
+    if jd < rise:
+        day -= timedelta(days=1)
+        rise = sunrise(day)
+    after = sunrise(day + timedelta(days=1))
+    s0, s1 = true_sun(rise), true_sun(after)
+    sun = surya.norm(s0 + ((s1 - s0 + 180) % 360 - 180) * (jd - rise) / (after - rise))
+    helio, phala, k = heliocentric(body, jd)
+    kendra = surya.norm(helio - sun)
+    value, sign = _row(SHIGHRA[body], kendra)
+    value /= 10
+    if body == "mars":
+        r = MEAN_DISTANCE["mars"] + MARS_ECCENTRIC * math.cos(math.radians(k + phala / 2))
+        karna = 100 + MEAN_DISTANCE["mars"] - _row(MARS_KARNANKA, kendra)[0]
+        value *= karna / (r + karna - MEAN_DISTANCE["mars"])
+    elif body == "mercury":
+        value *= _row(MERCURY_DISTANCE, k)[0] / MEAN_DISTANCE["mercury"]
+    if body in ("mercury", "venus"):
+        return surya.norm(sun + sign * value)
+    return surya.norm(helio - sign * value)
+
+
+def station(body: str, start: float, end: float) -> tuple[float, str] | None:
+    """The moment in [start, end) where `body` turns वक्री (retrograde) or
+    मार्गी (direct) by the tables, to five minutes then refined. 2083 p21
+    prints "१ वक्री मङ्गल २८:२२"; this gives 28:15."""
+    step = 5 / 1440
+    samples = []
+    t = start
+    while t <= end:
+        samples.append((t, continuous(body, t)))
+        t += step
+    motions = [((b - a + 180) % 360 - 180) for (_, a), (_, b) in zip(samples, samples[1:])]
+    # The net turn: first motion's sign to the last's, at the extreme value.
+    if motions[0] * motions[-1] >= 0:
+        return None
+    base = samples[0][1]
+    offsets = [((v - base + 180) % 360 - 180) for _, v in samples]
+    pick = max if motions[0] > 0 else min
+    i = offsets.index(pick(offsets))
+    return samples[i][0], "वक्री" if motions[0] > 0 else "मार्गी"

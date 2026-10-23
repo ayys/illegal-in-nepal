@@ -246,7 +246,7 @@ cells two independent passes read identically (research/planets/book-ocr/).
 
 | Convention | Alternative | Before → after |
 |---|---|---|
-| Planets at true Kathmandu sunrise | half an hour earlier or later | Mars median 46″ or 52″ → 30″ (before the other fixes) |
+| Planets at Kathmandu sunrise without refraction (2.7 min after the printed one) | the refracted sunrise | Mercury 90% 43″ → 37″; every planet improves (half an hour either way is far worse) |
 | Ketaki's Sun for the शीघ्र step at mean sunrise (06:00 Kathmandu mean time) | at true sunrise | Mars 131″ → 69″, Jupiter 42″ → 23″ |
 | The Sun's मन्दफल row read from perigee (reversed) | as printed | Mars 69″ → 15″, Venus 191″ → 45″, Saturn 12″ → 3″ |
 | Saturn without the two optional short-period terms (p159) | with them | Saturn 4.6′ → 6″ median |

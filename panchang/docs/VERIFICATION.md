@@ -4,7 +4,7 @@ All numbers are from `build_status.py` (which writes `status.html`) and the
 two test files. Re-run them after any change.
 
 ```
-python3 -m unittest test_surya test_panchanga test_editorial test_ketaki   # all tests
+python3 -m unittest test_surya test_panchanga test_editorial test_ketaki test_rail   # all tests
 /path/to/venv/bin/python build_status.py          # needs nepali-datetime and nepali
 ```
 
@@ -21,6 +21,8 @@ python3 -m unittest test_surya test_panchanga test_editorial test_ketaki   # all
 | Lagna starts | all within 1 minute | `LAGNA` (2083 p21) |
 | Sun, Moon, Rahu spashta | Sun within 4″, Rahu within 3″, Moon within 15″ (p21) | `SPASHTA`, `SUN_MOON` |
 | Mars to Saturn spashta (2082 and 2083, 1841 values) | median 1″ Saturn, 2″ Jupiter, 5″ Mars, 11″ Venus, 16″ Mercury; 90% within 3, 5, 15, 45, 41″ | `data/book_planets.csv`, `test_ketaki.py` |
+| Rail planet lines (84 on 11 pages) | every line found, same गते; 78 within 20 minutes, the rest within the planet's few-arc-second error (Mars at its station: 2½ h); stations within a day | `data/book_rail.csv`, `test_rail.py` |
+| राशि प्रवेश box (17 pages) | 14 exact; the other 3 are where the book's box disagrees with its own rail | `test_rail.py` |
 | बेलान्तर | within 2 seconds | `SPASHTA` |
 | Page count and layout | 26 pages, 365 days, headers on 6 pages | `HEADERS` |
 

@@ -19,7 +19,7 @@ your own implementation in another language.
 
 ```sh
 cd panchang
-python3 -m unittest test_surya test_panchanga test_editorial test_ketaki   # ~10 s, no dependencies
+python3 -m unittest test_surya test_panchanga test_editorial test_ketaki test_rail   # ~17 s, no dependencies
 ./generate.py 2083 --no-pdf                       # JSON for every fortnight → output/
 ./generate.py 2083 --page 21                      # one fortnight, JSON + PDF (needs weasyprint)
 ./generate.py 2083 --config 2083.json             # with festival notes, or overrides
@@ -55,7 +55,9 @@ panchanga.month_starts(2083)          # 13 dates: बैशाख 1 … चै�
 | `test_panchanga.py` | Book regression tests and calendar invariants |
 | `test_editorial.py` | Samvatsara, पापर्क्षाणि and पापांश against the books |
 | `test_ketaki.py` | Mars to Saturn against Ketaki's worked example and both books |
+| `test_rail.py` | The ग्रहचार rail and the राशि प्रवेश box against the 2083 book |
 | `data/book_planets.csv` | Mars to Saturn as printed, hand-read and OCR, with pages |
+| `data/book_rail.csv` | The rail's planet lines as printed, 2083 pp2-9, 18, 21, 22 |
 | `data/book_sankrantis.csv` | Sankranti moments read from old books, with PDF pages |
 | `data/month_starts.csv` | Month starts that settle disagreements between references, with sources |
 | `research/` | Working scripts and notes from reading the old books (`oldbooks/fetch_ocr.sh`, `oldbooks/crops.py`, `oldbooks/read/`); the PDFs and page images are git-ignored and re-downloadable |
@@ -132,7 +134,8 @@ by a primary source.
   `--config` JSON. Samvatsara, पापर्क्षाणि and पापांश are computed
   (`editorial.py`, [docs/EDITORIAL.md](docs/EDITORIAL.md)); a value in the
   config overrides them.
-- **Planets.** Planetary rise and set (उदयास्त), the planets' rail entries
-  and the kundali are placeholders. Mars to Saturn themselves are computed.
+- **Planets.** Heliacal rising and setting (उदयास्त) and the kundali are
+  placeholders. Mars to Saturn, their rail entries and stations, and the
+  राशि प्रवेश box are computed.
 
 See the component matrix in `status.html` for the full list.

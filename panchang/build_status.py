@@ -17,6 +17,7 @@ import surya
 import test_panchanga as book
 import test_editorial
 import test_ketaki
+import test_rail
 import test_surya
 
 OUT = Path(__file__).resolve().parent / "status.html"
@@ -162,7 +163,8 @@ def run_tests() -> tuple[bool, str, int]:
     loader = unittest.TestLoader()
     suite = unittest.TestSuite([loader.loadTestsFromModule(test_surya), loader.loadTestsFromModule(book),
                                   loader.loadTestsFromModule(test_editorial),
-                                  loader.loadTestsFromModule(test_ketaki)])
+                                  loader.loadTestsFromModule(test_ketaki),
+                                  loader.loadTestsFromModule(test_rail)])
     result = unittest.TextTestRunner(stream=buf, verbosity=2).run(suite)
     return result.wasSuccessful(), buf.getvalue(), result.testsRun
 
@@ -186,7 +188,8 @@ def components() -> list[dict]:
         {"area": "Dinamana (day length)", "status": "warn", "note": "Within 2 pala; rule not exact"},
         {"area": "Ghati-pala for tithi ends", "status": "warn", "note": "Mostly exact; 1 pala drift on some rows"},
         {"area": "Mars – Saturn spashta", "status": "ok", "note": "ketaki.py: median 1–16″ over 1841 book values (2082, 2083)"},
-        {"area": "Planet rise/set rail (non-Sun)", "status": "fail", "note": "Not implemented"},
+        {"area": "Planet rail: entries, stations, राशि प्रवेश", "status": "ok", "note": "84 rail lines on 11 pages all found; 14/17 boxes exact"},
+        {"area": "Heliacal rising/setting (उदयास्त)", "status": "fail", "note": "Not implemented"},
         {"area": "Kundali chart", "status": "fail", "note": "Placeholder box"},
         {"area": "Festival / vrat notes column", "status": "fail", "note": "Editorial; optional JSON config"},
         {"area": "Samvatsara, papakshani, papamsha", "status": "ok", "note": "editorial.py; papakshani 50/51 pages, papamsha Mars 81/82, Saturn 32/33"},

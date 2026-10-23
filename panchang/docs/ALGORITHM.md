@@ -270,10 +270,26 @@ longitude. Each weekday starts the count at a fixed nakshatra:
 
 The yoga is `(nakshatra28(Moon at sunrise) − start) mod 28`.
 
-**Sun's padas (the ग्रह-सञ्चार rail).** The book prints each moment the Sun
-enters a new nakshatra quarter (3°20′, about every 3.3 days). When the
-quarter starts a sign, it adds the sign; it marks अभिजित at pada 83
-(उत्तराषाढा quarter 4).
+**The ग्रहचार rail.** Clock times (NST, past 24 for the small hours) of:
+
+- the Sun entering each nakshatra pada (3°20′), with the sign when the
+  pada starts one, अभिजित at pada 83 (उत्तराषाढा 4), and leaving अभिजित
+  ("अभिजितत्याग सूर्य");
+- Mars, Jupiter, Saturn and Rahu entering each pada (Rahu with Ketu's);
+- Mercury and Venus entering each nakshatra and sign, and अभिजित्;
+- वक्री and मार्गी, shaded at the foot.
+
+Nakshatras are printed in full, the paired ones shortened (पू.फा.) and पुष्य
+as तिष्य. A planet re-entering a division in वक्री motion gets पुनः
+("२ पुनःपू.फा. १ मा मंगल"). The Sun's moments are exact; the planets' are
+linear between the स्पष्ट ग्रह of consecutive sunrises, as one reads the
+daily table. A station is the turning point by the tables themselves
+(`ketaki.station`): where a केन्द्र crosses a 10° row and the motion flips;
+flips a few days apart around one station are printed once, as the net
+turn. Heliacal rising and setting (उदय/अस्त) are not computed yet.
+
+**राशि प्रवेश.** The page's sign entries, planet by planet (सू मं बु बृ शु श
+रा), as "गते, planet, sign number": "१सू.२, २८मं.१, ३१बु.२, ३०शु.३".
 
 > Example, 2027-01-08 (book values in brackets):
 >
@@ -323,7 +339,8 @@ moment and that offset: [CALIBRATION.md](CALIBRATION.md#2-rahu-504-at-ujjain-mea
 The committee requires the planets to be computed by the केतकी ग्रहगणितम्
 (V. B. Ketkar, 1898), and `ketaki.py` follows it. It is a karana: an epoch,
 mean motions, and 10° tables read by linear interpolation. Its longitudes
-are sidereal in the Lahiri frame already. All at Kathmandu sunrise:
+are sidereal in the Lahiri frame already. All at Kathmandu sunrise without
+refraction (`ketaki.sunrise`, 2.7-2.8 minutes after the printed sunrise):
 
 1. **Mean longitude.** The क्षेपक at Shaka 1800 elapsed (1878-04-03, 06:00
    Ujjain mean time), plus the ध्रुवक for each whole 6940-day चक्र, plus the
@@ -487,7 +504,6 @@ index < 15 is शुक्ल). Pages are numbered from 2, as page 1 is the cove
 - **Festival and vrat notes.** These are editorial. `generate.py --config`
   takes them from JSON. Samvatsara, पापर्क्षाणि and पापांश are computed in
   `editorial.py`; see [EDITORIAL.md](EDITORIAL.md).
-- **Planets.** Planetary rise and set (उदयास्त), the planets' rail
-  entries and the kundali chart are not computed yet; the स्पष्ट ग्रह are
-  (section 9). They are left as placeholders in the
-  PDF.
+- **Planets.** Heliacal rising and setting (उदयास्त) and the kundali chart
+  are not computed yet; the स्पष्ट ग्रह, the rail's entries and stations,
+  and the राशि प्रवेश box are. The kundali is a placeholder in the PDF.
