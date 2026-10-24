@@ -45,29 +45,6 @@ class TimeScaleTest(unittest.TestCase):
         self.assertAlmostEqual(moment.second, 56, delta=1)
 
 
-class SineTableTest(unittest.TestCase):
-    def test_table_points(self):
-        for k, value in enumerate(surya.SINES, start=1):
-            with self.subTest(k=k):
-                self.assertEqual(surya._jya(3.75 * k), value)
-
-    def test_symmetry(self):
-        for x in (10, 47.3, 89.9):
-            self.assertAlmostEqual(surya._jya(180 - x), surya._jya(x))
-            self.assertAlmostEqual(surya._jya(180 + x), -surya._jya(x))
-            self.assertAlmostEqual(surya._jya(-x), -surya._jya(x))
-
-    def test_close_to_true_sine(self):
-        worst = max(abs(surya._jya(x / 100) - surya.RADIUS * math.sin(math.radians(x / 100)))
-                    for x in range(0, 9001))
-        self.assertLess(worst, 2)
-
-    def test_inverse(self):
-        for x in range(0, 9001, 7):
-            self.assertAlmostEqual(surya._inverse_jya(surya._jya(x / 100)), x / 100, places=9)
-        self.assertEqual(surya._inverse_jya(surya.RADIUS * 2), 90.0)
-
-
 class MotionTest(unittest.TestCase):
     def test_sun_apogee_near_77_degrees(self):
         self.assertAlmostEqual(surya.sun_apogee(2461000.0), 77.3, delta=0.1)

@@ -61,18 +61,16 @@ def sun_accuracy(rows: dict) -> dict:
     return {"exact": exact, "within1": within1, "total": total}
 
 
-def dinamana_accuracy(rows: dict) -> dict:
-    exact = within2 = 0
-    for offset, pala in enumerate(book.DINAMANA):
-        day = date(2027, 1, 8 + offset)
-        ghati, got = rows[day.isoformat()]["dinamana"]
-        assert ghati == 26
-        diff = abs(got - pala)
-        if diff == 0:
-            exact += 1
-        if diff <= 2:
-            within2 += 1
-    return {"exact": exact, "within2": within2, "total": len(book.DINAMANA)}
+def dinamana_accuracy(pages: list[dict]) -> dict:
+    exact = within1 = total = 0
+    for page, printed in book.DINAMANA.items():
+        for row, value in zip(pages[page - 2]["rows"], printed.split()):
+            ghati, pala = map(int, value.split(":"))
+            diff = abs(row["dinamana"][0] * 60 + row["dinamana"][1] - (ghati * 60 + pala))
+            exact += diff == 0
+            within1 += diff <= 1
+            total += 1
+    return {"exact": exact, "within1": within1, "total": total}
 
 
 FORTNIGHTS = [
@@ -82,7 +80,7 @@ FORTNIGHTS = [
     ("2083 कार्तिक", lambda d: d.month in (10, 11), book.BOOK),
     ("2083 पौष/माघ", lambda d: d.year == 2027, book.BOOK),
 ]
-APOGEE_SHIFTS = [x / 100 for x in range(-180, -159, 2)]
+APOGEE_SHIFTS = [x / 100 for x in range(-176, -165)]
 
 
 def apogee_fits() -> list[dict]:
@@ -185,8 +183,8 @@ def components() -> list[dict]:
         {"area": "Belantar (equation of time)", "status": "ok", "note": "±2 s at noon"},
         {"area": "Lagna start table", "status": "ok", "note": "±1 min (Jan fortnight)"},
         {"area": "Sun pada rail (nakshatra / rashi entries)", "status": "ok", "note": "5 events on page 21"},
-        {"area": "Dinamana (day length)", "status": "warn", "note": "Within 2 pala; rule not exact"},
-        {"area": "Ghati-pala for tithi ends", "status": "warn", "note": "Mostly exact; 1 pala drift on some rows"},
+        {"area": "Dinamana (day length)", "status": "ok", "note": "Own routine (surya.dinamana): 79/79 exact, 2083 pp2–21"},
+        {"area": "Tithi / nakshatra / yoga end minutes", "status": "ok", "note": "226/228 exact in 2082 and 2083; the other 2 are 4 s past a half-minute"},
         {"area": "Mars – Saturn spashta", "status": "ok", "note": "ketaki.py: median 1–16″ over 1841 book values (2082, 2083)"},
         {"area": "Planet rail: entries, stations, राशि प्रवेश", "status": "ok", "note": "179 rail lines (pp2-27) found on their गते; 18/22 boxes exact"},
         {"area": "Heliacal rising/setting (उदयास्त)", "status": "warn", "note": "Classic arcs: 7/17 book events to the hour, 10 off by days"},
@@ -220,12 +218,12 @@ def constants_sections() -> list[tuple[str, list[tuple[str, str, str]]]]:
         ]),
         ("Manda (true Sun & Moon)", [
             ("RADIUS", "3438", "SS jyā table"),
-            ("SINES", "24 SS values, 3°45′ steps", "Linear interpolation in _jya()"),
+            ("Sines", "math.sin / asin", "Exact, not the SS 24-row table (2083 Sun entries 16/16 vs 3/16)"),
             ("Sun manda circumference", "14° → 13°40′", "Even/odd at kendra; eq. subtracted"),
             ("Moon manda circumference", "32° → 31°40′", "Even/odd at kendra"),
         ]),
         ("Fitted to 2082 + 2083 books", [
-            ("MOON_APOGEE_CORRECTION", "−1.7°", "Added to mean Moon apogee — tithi/nak times; constant Apr 2025–Jan 2027"),
+            ("MOON_APOGEE_CORRECTION", "−1.71°", "Added to mean Moon apogee — tithi/nak times; constant Apr 2025–Jan 2027"),
             ("RAHU_OFFSET", "−50.4″", "After Lahiri, Rahu taken at Ujjain mean sunrise (fixed daily moment)"),
             ("(not in surya.py)", "ceil sunrise / floor sunset", "Printed clock minutes"),
         ]),
@@ -240,7 +238,7 @@ def constants_sections() -> list[tuple[str, list[tuple[str, str, str]]]]:
         ]),
         ("Display & rounding", [
             ("Ghati/pala from sunrise", "(jd − sunrise) × 1440 × 2.5", "1 ghati = 24 min ⇒ 2.5 pala/min"),
-            ("दिनमान", "floor(2 × half_day × 2.5) palas", "Half-day from same rise geometry"),
+            ("दिनमान", "round(2 × half_day × 2.5) palas", "Own routine: Sun at 06:00 KMT + Lahiri + 22′, horizon −30′"),
         ]),
         ("Panchāṅga divisions (panchanga.py)", [
             ("TITHI_WIDTH", "12°", "30 tithis per cycle"),
@@ -432,14 +430,14 @@ def html_report(data: dict) -> str:
     <div class="card"><h2>Year</h2><div class="metric">{data['pages']}<small>fortnight pages · {data['days']} civil days</small></div></div>
     <div class="card"><h2>Limb ends</h2><div class="metric">{data['limb']['exact']}/{data['limb']['total']}<small>exact minute match (calibration set)</small></div></div>
     <div class="card"><h2>Sun times</h2><div class="metric">{data['sun']['exact']}/{data['sun']['total']}<small>printed sunrise/sunset exact</small></div></div>
-    <div class="card"><h2>Dinamana</h2><div class="metric">{data['dinamana']['within2']}/{data['dinamana']['total']}<small>within 2 pala (Jan 8–22)</small></div></div>
+    <div class="card"><h2>Dinamana</h2><div class="metric">{data['dinamana']['exact']}/{data['dinamana']['total']}<small>exact to the pala (Apr–Jan)</small></div></div>
   </section>
   </details>
 
   <details class="card" open>
     <summary>Computation pipeline</summary>
     <div class="pipeline">
-      <div class="pipe"><b>Surya Siddhanta</b>Sun & Moon longitudes, tithi/nak/yoga/karana boundaries, Moon apogee −1.7°</div>
+      <div class="pipe"><b>Surya Siddhanta</b>Sun & Moon longitudes, tithi/nak/yoga/karana boundaries, Moon apogee −1.71°, exact sines</div>
       <div class="pipe"><b>Lahiri frame</b>Sunrise, sunset, lagna, belantar, Rahu; modern obliquity; refraction at disc centre</div>
       <div class="pipe"><b>Ketaki</b>Mars–Saturn spashta (ketaki.py); the rail, उदयास्त and the kundali</div>
       <div class="pipe"><b>Editorial JSON</b>Festival notes — optional config</div>
@@ -468,7 +466,7 @@ def html_report(data: dict) -> str:
   <details class="card" open>
     <summary>Cross-year check (2082 book)</summary>
     <p>Exact-minute tithi/nakshatra/yoga matches per fortnight for each Moon apogee correction.
-       Best values span −1.74° to −1.70° with no trend from Apr 2025 to Jan 2027, so −1.7° is a constant.</p>
+       Every fortnight from Apr 2025 to Jan 2027 picks −1.71° on its own, so it is a constant.</p>
     <table class="scan"><tr><th>Fortnight</th>{apogee_head}<th>Best</th></tr>{apogee_rows}</table>
     <p style="margin-top:1rem">Rahu residual (computed − book). At local sunrise it swings with the season;
        at a fixed daily moment (Ujjain mean sunrise) it stays within a few arcseconds across both books.</p>
@@ -529,7 +527,7 @@ def main() -> None:
         "days": len(rows),
         "limb": limb_accuracy(rows),
         "sun": sun_accuracy(rows),
-        "dinamana": dinamana_accuracy({d.isoformat(): r for d, r in rows.items()}),
+        "dinamana": dinamana_accuracy(pages),
         "components": components(),
         "apogee": apogee_fits(),
         "rahu": rahu_residuals(),

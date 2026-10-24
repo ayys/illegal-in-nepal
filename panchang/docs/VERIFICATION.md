@@ -12,10 +12,11 @@ python3 -m unittest test_surya test_panchanga test_editorial test_ketaki test_ra
 
 | What | Match | Data |
 |---|---|---|
-| Tithi, nakshatra and yoga ends (5 fortnights) | 116/139 to the exact minute, 139/139 within 1 minute | `BOOK` (2083 pp2–3, 16, 21) |
+| Tithi, nakshatra and yoga ends (3 fortnights) | 137/139 to the exact minute, 139/139 within 1 minute; with 2082, 226/228 | `BOOK` (2083 pp2–3, 16, 21), `BOOK_2082` |
 | Number of ends per day (stacked ends, अहोरात्र) | 0 count mismatches | the same |
 | Sunrise and sunset clock | 61/66 exact, 66/66 within 1 minute | `SUN` (2083 pp2, 20, 21) |
-| दिनमान | 7/15 exact, 15/15 within 2 pala | `DINAMANA` (2083 p21) |
+| दिनमान | 79/79 exact | `DINAMANA` (2083 pp2, 5, 8, 11, 14, 21) |
+| The Sun's pada and sign entries | 21/21 to the minute | `SUN_PADAS` (2083 pp2, 11, 17, 21, 25) |
 | Karana names and ends | all | `KARANAS` (2083 pp2, 21) |
 | आनन्दादि | 15/15 | `ANANDADI` (2083 p21) |
 | Lagna starts | all within 1 minute | `LAGNA` (2083 p21) |
@@ -32,9 +33,10 @@ python3 -m unittest test_surya test_panchanga test_editorial test_ketaki test_ra
 The 2082 book (pp3, 20) matches to the same tolerances with the same
 constants.
 
-The minute-level misses are consistent with rounding in the book's own
-worksheets. No constant was found that removes them without breaking
-others.
+The two minute-level misses fall 4 s past a half-minute. The residuals
+of all 228 ends have an rms of 0.28 min, which is what rounding to the
+minute alone gives (0.29), so nothing systematic is left in the Sun or the
+Moon.
 
 ## Month starts against the published BS tables
 
@@ -117,7 +119,6 @@ compared.
 **`test_surya.py`** covers the astronomy primitives:
 
 - the time scale and the Kali epoch;
-- the sine table, its symmetry and its inverse;
 - the mean and true motions, and the bounds of the equation of centre;
 - the Lahiri rate;
 - that sankrantis, tithis and new moons are found in the right numbers and

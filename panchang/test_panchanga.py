@@ -151,8 +151,26 @@ SUN_MOON = {
     date(2027, 1, 13): ("8:28:6:25", "10:27:1:33"), date(2027, 1, 14): ("8:29:7:47", "11:9:54:24"),
 }
 # ग्रह-सञ्चार: the Sun entering a nakshatra quarter (and sign / अभिजित्),
-# 2083 book page 21.
+# 2083 book pages 2, 11, 17, 21 and 25.
 SUN_PADAS = [
+    # pp2, 11, 17 and 25 tell the SS's sine table from exact sines: the table
+    # puts 13 of these 16 a minute late (surya._manda).
+    (date(2026, 4, 14), "अश्विनी", 1, "मेष", "12:4"),
+    (date(2026, 4, 17), "अश्विनी", 2, None, "21:53"),
+    (date(2026, 8, 14), "अश्लेषा", 4, None, "11:59"),
+    (date(2026, 8, 17), "मघा", 1, "सिंह", "23:28"),
+    (date(2026, 8, 21), "मघा", 2, None, "10:48"),
+    (date(2026, 8, 24), "मघा", 3, None, "22:0"),
+    (date(2026, 8, 28), "मघा", 4, None, "9:3"),
+    (date(2026, 11, 10), "विशाखा", 2, None, "17:33"),
+    (date(2026, 11, 13), "विशाखा", 3, None, "24:50"),
+    (date(2026, 11, 17), "विशाखा", 4, "वृश्चिक", "7:59"),
+    (date(2026, 11, 20), "अनुराधा", 1, None, "15:1"),
+    (date(2026, 11, 23), "अनुराधा", 2, None, "21:56"),
+    (date(2027, 3, 11), "पू.भा.", 3, None, "25:42"),
+    (date(2027, 3, 15), "पू.भा.", 4, "मीन", "9:48"),
+    (date(2027, 3, 18), "उ.भा.", 1, None, "18:4"),
+    (date(2027, 3, 21), "उ.भा.", 2, None, "26:30"),
     (date(2027, 1, 8), "पू.षा.", 4, None, "15:0"),
     (date(2027, 1, 11), "उ.षा.", 1, None, "21:11"),
     (date(2027, 1, 14), "उ.षा.", 2, "मकर", "27:23"),
@@ -190,8 +208,15 @@ SPASHTA_2082 = {
     date(2026, 1, 8): ("8:23:15:19", "4:21:30:5", "10:17:33:43", "+6:51"),
     date(2026, 1, 9): ("8:24:16:43", "5:4:27:45", "10:17:30:32", "+7:17"),
 }
-# दिनमान in pala beyond 26 ghati, पौष २४ (Jan 8) to माघ ८ (Jan 22), 2083 book page 21.
-DINAMANA = [4, 6, 7, 9, 11, 13, 15, 18, 20, 22, 25, 27, 30, 32, 35]
+# दिनमान as printed, घटी।पला for each row of a 2083 page, in order.
+DINAMANA = {
+    2: "31:52 31:56 31:59 32:3",
+    5: "33:44 33:47 33:50 33:52 33:55 33:57 34:0 34:2 34:4 34:6 34:9 34:11 34:13 34:14 34:16",
+    8: "34:32 34:32 34:31 34:30 34:29 34:28 34:26 34:25 34:24 34:22 34:21 34:19 34:17 34:16 34:14",
+    11: "32:51 32:48 32:44 32:41 32:37 32:34 32:30 32:26 32:23 32:19 32:15 32:11 32:8 32:4 32:0 31:56",
+    14: "29:56 29:52 29:48 29:44 29:40 29:36 29:31 29:27 29:23 29:19 29:15 29:11 29:7 29:3",
+    21: "26:4 26:6 26:7 26:9 26:11 26:13 26:15 26:18 26:20 26:22 26:25 26:27 26:30 26:32 26:35",
+}
 TOLERANCE_MINUTES = 1
 
 
@@ -231,6 +256,19 @@ class BookTest(unittest.TestCase):
                 with self.subTest(day=day, limb=limb):
                     self.assertTimes(f"{day} {limb}", computed(row[limb]["ends"]), expected(value))
 
+    def test_exact_minutes(self):
+        # Within a minute is the floor; to the minute is the model. 226 of the
+        # 228 ends in both books are exact, the other two 4 s past a half-minute.
+        exact = 0
+        for book in (BOOK, BOOK_2082):
+            for day, ends in book.items():
+                if not isinstance(day, date):
+                    continue
+                row = self.rows.get(day) or panchanga.day_row(day, 0, 1)
+                for limb, value in zip(("tithi", "nakshatra", "yoga"), ends):
+                    exact += sum(g == w for g, w in zip(computed(row[limb]["ends"]), expected(value)))
+        self.assertGreaterEqual(exact, 226)
+
     def test_karana(self):
         for day, (abbr, ends) in KARANAS.items():
             with self.subTest(day=day):
@@ -255,12 +293,12 @@ class BookTest(unittest.TestCase):
         self.assertGreaterEqual(exact, 60)
 
     def test_dinamana(self):
-        for offset, pala in enumerate(DINAMANA):
-            day = date(2027, 1, 8 + offset)
-            with self.subTest(day=day):
-                ghati, got = self.rows[day]["dinamana"]
-                self.assertEqual(ghati, 26)
-                self.assertLessEqual(abs(got - pala), 2)
+        for page, printed in DINAMANA.items():
+            rows = self.pages[page - 2]["rows"]
+            self.assertEqual(len(rows), len(printed.split()))
+            for row, value in zip(rows, printed.split()):
+                with self.subTest(day=row["date"]):
+                    self.assertEqual(row["dinamana"], [int(x) for x in value.split(":")])
 
     def test_headers(self):
         for page, (month, paksha, ns, ns_month, gregorian, ritu) in HEADERS.items():

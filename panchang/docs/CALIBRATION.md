@@ -1,43 +1,49 @@
 # Calibration: the fitted constants and their evidence
 
 Almost everything in the generator is textbook Surya Siddhanta (SS) plus
-textbook spherical astronomy. Three things are not. They were measured from
+textbook spherical astronomy. A few things are not. They were measured from
 the printed books, and this page shows how, so that you can check them or
 re-fit them.
 
 | Constant | Where | Value | Fitted from |
 |---|---|---|---|
-| `MOON_APOGEE_CORRECTION` | `surya.py` | −1.7° | Tithi, nakshatra and yoga end times in 5 fortnights of the 2082 and 2083 books |
+| `MOON_APOGEE_CORRECTION` | `surya.py` | −1.71° | Tithi, nakshatra and yoga end times in 5 fortnights of the 2082 and 2083 books |
 | `RAHU_OFFSET` and the Ujjain-sunrise moment | `surya.py` | −50.4″ | राहु in the स्पष्ट ग्रह tables of the 2082 and 2083 books |
 | `SANKRANTI_ERAS` | `panchanga.py` | per era | Sankranti ghati in the 1986–2076 books |
 | `REFRACTION_FROM` | `panchanga.py` | BS 2064 | दिनमान printed in the 2058–2066 books |
+| `DINAMANA_SHIFT`, `DINAMANA_HORIZON` | `surya.py` | 22′, −30′ | The दिनमान column of the 2083 book, April to January (section 6) |
 | How the books apply Ketaki | `ketaki.py` | five conventions | Mars–Saturn in the 2082 and 2083 स्पष्ट ग्रह tables (section 5) |
 
 All figures below come from running the code in this directory. Regenerate
 them with `build_status.py` (constants 1 and 2) or the snippets given.
 
-## 1. Moon's apogee: −1.7°
+## 1. Moon's apogee: −1.71°
 
 **Symptom.** With the textbook SS Moon, the printed end times of tithi,
 nakshatra and yoga are consistently off by several minutes, in a way that
 depends on the Moon's anomaly. A shift of the apogee is the one-parameter
 change that removes it.
 
-**Method.** For each transcribed fortnight, scan the correction from −1.80°
-to −1.60° in 0.02° steps. Count the ends that match the printed minute
+**Method.** For each transcribed fortnight, scan the correction from −1.76°
+to −1.66° in 0.01° steps. Count the ends that match the printed minute
 exactly (`build_status.apogee_fits()`):
 
-| Fortnight (book page) | −1.80 | −1.74 | −1.72 | **−1.70** | −1.68 | −1.60 | Best |
-|---|---|---|---|---|---|---|---|
-| 2082 वैशाख शुक्ल (2082 p3) | 22/44 | 34/44 | 37/44 | **40/44** | 34/44 | 16/44 | −1.70 |
-| 2082 माघ कृष्ण (2082 p20) | 23/45 | 38/45 | 38/45 | 35/45 | 30/45 | 9/45 | −1.74 |
-| 2083 वैशाख (2083 pp2–3) | 21/51 | 40/51 | 44/51 | 40/51 | 40/51 | 25/51 | −1.72 |
-| 2083 कार्तिक (2083 p16) | 16/45 | 31/45 | 36/45 | 39/45 | 39/45 | 17/45 | −1.70 |
-| 2083 पौष/माघ (2083 p21) | 13/43 | 30/43 | 32/43 | 37/43 | 35/43 | 14/43 | −1.70 |
+| Fortnight (book page) | −1.74 | −1.73 | −1.72 | **−1.71** | −1.70 | −1.69 | −1.68 | Best |
+|---|---|---|---|---|---|---|---|---|
+| 2082 वैशाख शुक्ल (2082 p3) | 34/44 | 36/44 | 40/44 | **44/44** | 42/44 | 40/44 | 36/44 | −1.71 |
+| 2082 माघ कृष्ण (2082 p20) | 42/45 | 43/45 | 44/45 | **45/45** | 41/45 | 38/45 | 34/45 | −1.71 |
+| 2083 वैशाख (2083 pp2–3) | 43/51 | 46/51 | 49/51 | **50/51** | 48/51 | 46/51 | 43/51 | −1.71 |
+| 2083 कार्तिक (2083 p16) | 38/45 | 41/45 | 43/45 | **44/45** | 42/45 | 40/45 | 39/45 | −1.71 |
+| 2083 पौष/माघ (2083 p21) | 32/43 | 34/43 | 40/43 | **43/43** | 42/43 | 38/43 | 37/43 | −1.71 |
 
-**Reading.** The best value sits between −1.74° and −1.70° in every
-fortnight from April 2025 to January 2027, with no trend, so it is a
-constant. Every remaining end is within one minute.
+**Reading.** Every fortnight from April 2025 to January 2027 picks −1.71°
+on its own, so it is a constant. Two ends of 228 miss, each by 4 seconds
+past a half-minute.
+
+**Exact sines.** Until the sine question was settled (section 7), the
+fortnights scattered from −1.74° to −1.70° and only 191 ends matched: the
+SS's interpolated sine table leaves a 9″·sin(anomaly) error in the Moon,
+which no apogee shift can absorb.
 
 ## 2. Rahu: −50.4″ at Ujjain mean sunrise
 
@@ -152,6 +158,15 @@ sunrise, in ghati (sign 0 = Mesha):
 (A selection; the 2031–2044, 2061 and 2066–2073 books repeat their
 neighbours to within 2 pala. `research/oldbooks/` has the reading scripts.)
 
+These offsets were measured against the SS Sun computed with the SS's
+interpolated sine table. The generator now uses exact sines (section 7),
+which moves each sankranti by a fixed amount per sign, in ghati: Mesha
+−0.057, Vrishabha −0.010, Mithuna −0.014, Karka +0.006, Simha +0.036,
+Kanya +0.026, Tula +0.027, Vrischika +0.035, Dhanu +0.016, Makara −0.001,
+Kumbha +0.003, Mina −0.034. The era tuples in `panchanga.py` have this
+added, to three decimals, so every month start from 1970 to 2100 is the same
+as before.
+
 The 1986, 1987 and 2016 books are from the British Library's Endangered
 Archives Programme (EAP1485-1-3-127, EAP1485-1-6-123 and EAP1485-1-3-45). The
 1986 book prints its तुला sankranti as "४।" with no pala (p15), so that sign
@@ -168,8 +183,9 @@ What the readings show:
   Makara +1.22.
 - **2045–2059.** The 2060–2062 shape minus 0.43 ghati (fitted, −0.431).
 - **2060–2062.** A small per-sign shape, mean 0, up to ±0.19.
-- **2063 on.** Plain SS to within about a pala, except Mesha (−0.06) and
-  Mina (−0.03), which lean early in every book from 2063 to 2076.
+- **2063 on.** Plain SS with exact sines, to within about a pala (rms
+  0.83 pala over 53 readings). The Mesha (−0.06) and Mina (−0.03) that
+  "lean early" in the table above are the table-sine error itself.
 
 ### 3.3 The eras
 
@@ -180,7 +196,7 @@ What the readings show:
 | 2017 | 2028–2044 table | 2028, 2031–2044 books | month tables (any of 2017–2027 fits equally) |
 | 2045 | shape − 0.43 | 2045–2059 books | 2044 and 2045 books |
 | 2060 | shape | 2060–2062 books | 2059 and 2060 books |
-| 2063 | Mesha −0.06, Mina −0.03 | 2063–2076 books | 2062 and 2063 books |
+| 2063 | none | 2063–2076 books | 2062 and 2063 books |
 
 The two pre-2045 boundaries fall in years with no book read (1988–2015,
 2017–2027). They are placed where the published month tables are best
@@ -286,3 +302,48 @@ verse decided: Venus शीघ्रफल 140° is "द्विषट्सा
 is 0, 32, 65, 97, 125, 153, 178, 199, 217, 229, 236, 236, 228, 211, 185, 149,
 105, 54, 0. The full investigation is in research/planets/NOTES.md.
 
+## 6. दिनमान
+
+**Symptom.** The दिनमान column is not twice our sunrise half-day arc. Read
+on 79 rows of the 2083 book (pp2, 5, 8, 11, 14, 21), book minus that runs
++0.4 pala in April, −0.7 in May, −2 in July, −3.2 in August to October and
+−1 in January, with a scatter of 1.1 pala about the mean.
+
+**Decomposition.** Written as a declination error plus a constant, the
+residual is −1.6 pala (a horizon) and +8.9′·cos λ, with no semi-annual
+term. A declination error of that form is the tropical Sun sitting
+Δλ = 8.9′ / sin ε ≈ 22′ further along.
+
+**Fit.** `surya.dinamana`: the SS true Sun at 06:00 Kathmandu mean time,
+plus Lahiri plus 22′, horizon −30′, rounded to the pala. All 79 exact
+(mean error +0.02 pala, scatter 0.30, which is the rounding).
+
+| Variant | Exact (of 79) |
+|---|---|
+| 2 × sunrise half-day, −34′, truncated (before) | 21 |
+| Modern (Meeus) Sun, best horizon | 50 |
+| Ketaki's स्पष्ट रवि at mean sunrise, best horizon | 52 |
+| SS + 22′ at sunrise, −30′, rounded | 71 |
+| SS + 22′ at 06:00 Kathmandu mean time, −30′, rounded | **79** |
+
+**Not shared.** The sunrise and sunset columns keep the plain frame. With
+the shift they get 145 of 186 minutes instead of 154 (93 days, the same 5
+pages plus `SUN`). The बेलान्तर keeps it too: with the shift it is 5 s off
+the book, without it under 1 s. Where the 22′ comes from is open. The
+month-start rule still uses `2 × half_day` with each book's horizon, since
+the eras were read against it.
+
+## 7. Exact sines
+
+The SS tabulates 24 sines and reads between them linearly. That shrinks the
+equation of centre by up to 0.05% (h²/8 for 3.75° steps), which is 4″ of
+Sun and 9″ of Moon. Three independent sets of book data reject the table:
+
+| Data | Table | Exact |
+|---|---|---|
+| The Sun's pada and sign entries, 2083 pp2, 11, 17, 25 (16) | 3 to the minute | **16** |
+| Tithi, nakshatra and yoga ends, 2082 and 2083 (228; apogee refitted) | 191 | **226** |
+| Sun at sunrise, स्पष्ट ग्रह (30 days) | rms 1.7″, worst 3.7″ | **rms 0.9″, worst 1.8″** |
+
+The 2063–2076 sankrantis agree (section 3.2). `surya._manda` uses
+`math.sin` and `math.asin`.

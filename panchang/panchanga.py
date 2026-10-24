@@ -371,8 +371,7 @@ def day_row(day: date, bs_month: int, gate: int) -> dict:
 
     moon = surya.true_moon(rise)
     sign_changes = surya.crossings(surya.true_moon, SIGN_WIDTH, rise, next_rise)
-    # दिनमान in pala, truncated.
-    day_length = math.floor(surya.day_length(day) * 2.5)
+    day_length = surya.dinamana(day)
     sun_padas = []
     # The Sun enters a new nakshatra pada every ~3.3 days; the book prints the
     # moment, and the sign when the pada starts one.
@@ -457,7 +456,7 @@ def _wave(base: float, swing: float = 0.0, peak: float = 0.0) -> tuple[float, ..
 
 # The 2045-2062 books share one per-sign shape, fitted to all their readings;
 # the 2045-2059 books print it 0.43 ghati earlier.
-SHAPE_2045 = (-0.01, -0.15, 0.04, 0.10, 0.04, 0.19, 0.01, -0.04, -0.01, -0.11, -0.07, 0.00)
+SHAPE_2045 = (0.047, -0.140, 0.054, 0.094, 0.004, 0.164, -0.017, -0.075, -0.026, -0.109, -0.073, 0.034)
 
 # Where each era's printed sankrantis sit relative to ours, in ghati after the
 # book's own sunrise (see book_horizon), per sign from Mesha. Each era applies
@@ -472,17 +471,17 @@ SHAPE_2045 = (-0.01, -0.15, 0.04, 0.10, 0.04, 0.19, 0.01, -0.04, -0.01, -0.11, -
 # tables. Book readings, with page numbers and sources, are in
 # data/book_sankrantis.csv; most books are at
 #   https://archive.org/download/2081_20240828/{year}.pdf
-# From 2063 the printed sankrantis are plain SS to within about a pala,
-# except Mesha and Mina, which every book from 2063 to 2076 prints 3-4 and
-# about 2 pala early (2066 book p25: मीनेऽर्कः 44।52, exactly on the night
-# midpoint, so चैत starts 2010-03-14).
+# From 2063 the printed sankrantis are plain SS, with exact sines in the
+# manda correction (surya._manda), to within about a pala (2066 book p25:
+# मीनेऽर्कः 44।52, exactly on the night midpoint, so चैत starts 2010-03-14).
+# The earlier eras' offsets are measured against the same Sun.
 SANKRANTI_ERAS = [
-    (1975, (-0.77, -0.97, -0.55, -0.10, -0.02, -0.40, -0.66, -0.79, -0.51, -0.13, -0.06, -0.35)),
-    (2005, (-0.67, -0.80, -0.40, -0.82, 0.58, 0.44, -0.12, -0.43, 0.02, 0.22, 0.12, -0.24)),
-    (2017, (-0.46, -2.36, -1.94, -2.82, -1.84, -1.14, -0.84, 0.40, 0.61, 1.22, 0.19, -0.09)),
+    (1975, (-0.713, -0.960, -0.536, -0.106, -0.056, -0.426, -0.687, -0.826, -0.526, -0.129, -0.063, -0.316)),
+    (2005, (-0.613, -0.790, -0.386, -0.826, 0.544, 0.414, -0.147, -0.465, 0.004, 0.221, 0.117, -0.206)),
+    (2017, (-0.403, -2.350, -1.926, -2.826, -1.876, -1.166, -0.867, 0.365, 0.594, 1.221, 0.187, -0.056)),
     (2045, tuple(s - 0.43 for s in SHAPE_2045)),
     (2060, SHAPE_2045),
-    (2063, (-0.06, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -0.03)),
+    (2063, (0,) * 12),
 ]
 
 

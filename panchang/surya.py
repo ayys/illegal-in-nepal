@@ -56,11 +56,11 @@ KALI_JD = 588465.5 - UJJAIN_LONGITUDE / 360
 # except the apogees. The Moon's apogee starts a quarter turn ahead.
 KALI_MOON_APOGEE = 90.0
 
-# The printed end times only fit with the Moon's apogee 1.7° behind the
-# textbook value. Fortnights from Apr 2025 to Jan 2027 (books 2082 and 2083)
-# each fit best between −1.74° and −1.70°, with no trend.
+# The printed end times only fit with the Moon's apogee 1.71° behind the
+# textbook value: 226 of 228 tithi, nakshatra and yoga ends in the 2082 and
+# 2083 books to the minute (1.70°: 215, 1.72°: 216).
 # Evidence: docs/CALIBRATION.md, "Moon's apogee".
-MOON_APOGEE_CORRECTION = -1.7
+MOON_APOGEE_CORRECTION = -1.71
 
 # Refraction only, for the centre of the disc. The book's sunrise is the
 # centre on the refracted horizon, with no semidiameter and no dip.
@@ -69,6 +69,14 @@ MOON_APOGEE_CORRECTION = -1.7
 # half a pala and is ~14 pala shorter than ours (2062 book p5, 14 May 2005).
 HORIZON = -34 / 60
 GEOMETRIC = 0.0
+# The दिनमान column is not sunset minus sunrise. The books compute it on its
+# own: from the Sun's declination at 06:00 Kathmandu mean time, with the SS
+# Sun put 22′ further along than Lahiri's frame and a −30′ horizon, rounded
+# to the pala. This reproduces all 79 values read from the 2083 book (pp2, 5,
+# 8, 11, 14, 21: April to January); with the sunrise model the seasonal
+# swing of the errors is 4 pala and only 21 match.
+DINAMANA_SHIFT = 22 / 60
+DINAMANA_HORIZON = -30 / 60
 # The book's राहु follows a fixed daily moment, not local sunrise: at sunrise
 # the residual swings ~10″ between April and January. At Ujjain mean sunrise
 # it sits this far behind the Lahiri mean node in both 2082 and 2083.
@@ -76,17 +84,6 @@ GEOMETRIC = 0.0
 RAHU_OFFSET = -50.4 / 3600
 # Mean solar days per sidereal rotation; the lagna advances 360° in this.
 SIDEREAL_DAY = 0.99726957
-
-# SS chapter 2: 24 tabulated sines (jya) at 3.75° steps, radius 3438
-# (the number of arc-minutes in a radian). Interpolated linearly between rows.
-# This table, not math.sin, is what the manda correction uses; it differs from
-# 3438·sin by up to 1.7 units.
-RADIUS = 3438
-SINES = [
-    225, 449, 671, 890, 1105, 1315, 1520, 1719, 1910, 2093, 2267, 2431,
-    2585, 2728, 2859, 2978, 3084, 3177, 3256, 3321, 3372, 3409, 3431, 3438,
-]
-
 
 def norm(angle: float) -> float:
     return angle % 360.0
@@ -131,46 +128,22 @@ def sun_apogee(jd: float) -> float:
     return SUN_APOGEE_AT_KALI + (jd - KALI_JD) * SUN_APOGEE_KALPA_REVOLUTIONS * 360 / KALPA_DAYS
 
 
-def _jya(degrees: float) -> float:
-    """Table sine (radius 3438) with linear interpolation, as in the siddhanta."""
-    sign = 1
-    degrees = norm(degrees)
-    if degrees >= 180:
-        degrees -= 180
-        sign = -1
-    if degrees > 90:
-        degrees = 180 - degrees
-    steps = degrees / 3.75
-    i = int(steps)
-    low = SINES[i - 1] if i else 0
-    high = SINES[min(i, 23)]
-    return sign * (low + (high - low) * (steps - i))
-
-
-def _inverse_jya(value: float) -> float:
-    sign = 1 if value >= 0 else -1
-    value = abs(value)
-    previous = 0
-    for i, sine in enumerate(SINES):
-        if value <= sine:
-            return sign * 3.75 * (i + (value - previous) / (sine - previous))
-        previous = sine
-    return sign * 90.0
-
-
 def _manda(mean_longitude: float, apogee: float, even: float, odd: float) -> float:
     """SS chapter 2: the equation of centre.
 
     The epicycle's circumference (in degrees, on a 360° deferent) shrinks from
     `even` at the apsides to `odd` at quadrature: Sun 14° → 13°40′, Moon
     32° → 31°40′. The correction is arcsin(circumference/360 · sin(anomaly)),
-    using the table sine both ways, and it is subtracted: a body is slowest,
-    and behind its mean place, after passing the apogee.
+    and it is subtracted: a body is slowest, and behind its mean place, after
+    passing the apogee.
+
+    The books take exact sines here, not the SS's 24-row table: the table's
+    linear interpolation shrinks the equation by up to 0.05%, which is 9″ of
+    Moon, and the books' Sun and Moon fit the exact sine twice as well.
     """
-    anomaly = norm(mean_longitude - apogee)
-    sine = _jya(anomaly)
-    circumference = even - (even - odd) * abs(sine) / RADIUS
-    return norm(mean_longitude - _inverse_jya(circumference / 360 * sine))
+    sine = math.sin(math.radians(mean_longitude - apogee))
+    circumference = even - (even - odd) * abs(sine)
+    return norm(mean_longitude - math.degrees(math.asin(circumference / 360 * sine)))
 
 
 def mean_sun(jd: float) -> float:
@@ -278,6 +251,17 @@ def _sun_event(day: date, rising: bool, horizon: float = HORIZON) -> float:
 def day_length(day: date, horizon: float = HORIZON) -> float:
     """दिनमान in minutes: twice the half-day arc at sunrise."""
     return 2 * _half_day(sunrise(day, horizon), horizon)
+
+
+def dinamana(day: date) -> int:
+    """The दिनमान column, in pala (see DINAMANA_SHIFT)."""
+    jd = local_julian_day(day, 6 + NST.utcoffset(None).total_seconds() / 3600 - LONGITUDE / 15)
+    lat = math.radians(LATITUDE)
+    declination = _declination(norm(true_sun(jd) + lahiri(jd) + DINAMANA_SHIFT), obliquity(jd))
+    cos_hour = (
+        math.sin(math.radians(DINAMANA_HORIZON)) - math.sin(lat) * math.sin(declination)
+    ) / (math.cos(lat) * math.cos(declination))
+    return round(2 * math.degrees(math.acos(cos_hour)) * 4 * 2.5)
 
 
 def sunrise(day: date, horizon: float = HORIZON) -> float:

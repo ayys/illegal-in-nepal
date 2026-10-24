@@ -97,38 +97,31 @@ longitude is 0°, except the apogees:
   arc-seconds. The apogee then advances at the same kalpa rate; it is
   77.295° in 2027.
 
-**Calibration.** The Moon's apogee needs a fixed **−1.7°** added to the
+**Calibration.** The Moon's apogee needs a fixed **−1.71°** added to the
 textbook value. This is the only change to the SS Moon; see
 [CALIBRATION.md](CALIBRATION.md#1-moons-apogee-17).
 
 > Example (2027-01-08 sunrise):
 > mean Sun 262.77766°, Sun's apogee 77.29537°;
-> mean Moon 265.83522°, Moon's apogee 264.42824°, corrected 262.72824°.
+> mean Moon 265.83522°, Moon's apogee 264.42824°, corrected 262.71824°.
 
 ## 4. True Sun and Moon: the manda correction
 
-**The sine table.** The SS (chapter 2) tabulates 24 sines at 3°45′ steps on
-a radius of 3438 (the number of arc-minutes in a radian):
-
-```
-225 449 671 890 1105 1315 1520 1719 1910 2093 2267 2431
-2585 2728 2859 2978 3084 3177 3256 3321 3372 3409 3431 3438
-```
-
-- `jya(x)` interpolates linearly in this table, with the usual quadrant
-  symmetry.
-- `inverse_jya` interpolates the other way.
-- Use the table, not `sin`. It differs from 3438·sin by up to 1.7 units,
-  which is enough to move printed minutes.
+**Sines.** The SS (chapter 2) tabulates 24 sines at 3°45′ steps and reads
+between them linearly. The books don't: with the table, 13 of 16 Sun
+entries on the 2083 book's rail come out a minute late and the Moon's ends
+miss 37 of 228 minutes. With exact sines, all 16 and 226 of 228 are right.
+Linear interpolation shrinks the correction by up to 0.05%, which is 9″ of
+Moon and 4″ of Sun.
 
 **Manda (equation of centre).** For a body with mean longitude `M` and
 apogee `A`:
 
 ```
 anomaly   = M − A
-s         = jya(anomaly)
-c         = even − (even − odd) × |s| / 3438        # epicycle circumference, degrees
-true      = M − inverse_jya(c / 360 × s)
+s         = sin(anomaly)
+c         = even − (even − odd) × |s|               # epicycle circumference, degrees
+true      = M − asin(c / 360 × s)
 ```
 
 The epicycle circumference shrinks from `even` at the apsides to `odd` at
@@ -152,9 +145,9 @@ Sun (S) and Moon (M):
 | Sankranti | Sun S | 30° |
 | Sun's pada | Sun S | 3°20′ |
 
-> Example: true Sun 262.99007° (book: 8।22।59।25 = 262.99028°);
-> true Moon 265.55920° (book: 8।25।33।40 = 265.56111°);
-> elongation 2.569°, so tithi 1 (शुक्ल प्रतिपदा);
+> Example: true Sun 262.99005° (book: 8।22।59।25 = 262.99028°);
+> true Moon 265.55845° (book: 8।25।33।40 = 265.56111°);
+> elongation 2.568°, so tithi 1 (शुक्ल प्रतिपदा);
 > M + S = 168.549°, so yoga 12 (व्याघात).
 
 ## 5. The Lahiri frame: sunrise, sunset, दिनमान, बेलान्तर
@@ -202,15 +195,29 @@ sunrise = noon − half_day,   sunset = noon + half_day
 Iterate this six times, each time evaluating δ and EoT at the current
 estimate of the event, starting from 06:00 or 18:00.
 
-**दिनमान.** It is `2 × half_day` at the moment of sunrise, converted to pala
-and truncated. Note that this is *not* sunset − sunrise; the two differ by
-up to about 15 seconds, because δ changes between sunrise and sunset.
+**दिनमान.** The column is computed on its own, not from the sunrise above.
+Take the true Sun at 06:00 Kathmandu mean time (06:03:44 NST), add Lahiri
+*and 22′*, and use `h₀ = −30′`:
+
+```
+λ' = true_sun + lahiri + 22′          # at 06:00 Kathmandu mean time
+दिनमान (pala) = round(2 × H(δ(λ'), −30′) × 4 × 2.5)
+```
+
+This reproduces all 79 values read from the 2083 book, April to January.
+Twice the sunrise half-day arc runs 1–4 pala long, with a seasonal swing
+(+0.4 in April, −3.3 in October): a declination error of +9′·cos λ, i.e.
+the Sun 22′ further along. The sunrise and sunset columns don't share it:
+they fit the plain frame (154 of 186 minutes exact, against 145 with the
+shift), and so does the बेलान्तर (±1 s, against 5 s). Where the 22′
+comes from is open. The month-start rule (section 10.2) keeps
+`2 × half_day` with each book's own horizon.
 
 **Printed clock.** Sunrise is rounded up to the minute and sunset rounded
 down.
 
 > Example: Lahiri 24.23456°, ε 23.43578°. Sunrise 06:57:20 → printed 6:58;
-> sunset 17:23:44 → 17:23. दिनमान 626.05 min = 26 ghati 5 pala (book 26।05).
+> sunset 17:23:44 → 17:23. दिनमान 26 ghati 3.99 pala → 26।04 (book 26।04).
 > EoT +6.725 min = +6:43 (book +6:44).
 
 ## 6. Finding end times
@@ -413,16 +420,17 @@ The sankranti is the moment the SS true Sun enters the month's sign:
 
 The book did not always print the plain SS sankranti. Each era of the
 calendar committee has a per-sign offset in ghati, added to our SS moment
-before deciding the day (`SANKRANTI_ERAS` in `panchanga.py`):
+before deciding the day (`SANKRANTI_ERAS` in `panchanga.py`). Since 2063
+the books print plain SS:
 
 | From BS | Offset (ghati) | Where it comes from |
 |---|---|---|
-| 1975 | per sign: −0.77 −0.97 −0.55 −0.10 −0.02 −0.40 −0.66 −0.79 −0.51 −0.13 −0.06 −0.35 | 1986 and 1987 books |
-| 2005 | per sign: −0.67 −0.80 −0.40 −0.82 +0.58 +0.44 −0.12 −0.43 +0.02 +0.22 +0.12 −0.24 | 2016 book |
-| 2017 | per sign: −0.46 −2.36 −1.94 −2.82 −1.84 −1.14 −0.84 +0.40 +0.61 +1.22 +0.19 −0.09 | 2028 and 2031–2044 books |
+| 1975 | per sign: −0.713 −0.960 −0.536 −0.106 −0.056 −0.426 −0.687 −0.826 −0.526 −0.129 −0.063 −0.316 | 1986 and 1987 books |
+| 2005 | per sign: −0.613 −0.790 −0.386 −0.826 +0.544 +0.414 −0.147 −0.465 +0.004 +0.221 +0.117 −0.206 | 2016 book |
+| 2017 | per sign: −0.403 −2.350 −1.926 −2.826 −1.876 −1.166 −0.867 +0.365 +0.594 +1.221 +0.187 −0.056 | 2028 and 2031–2044 books |
 | 2045 | `SHAPE_2045` − 0.43 | 2045–2059 books |
-| 2060 | `SHAPE_2045`: −0.01 −0.15 +0.04 +0.10 +0.04 +0.19 +0.01 −0.04 −0.01 −0.11 −0.07 0 | 2060–2062 books |
-| 2063 | Mesha −0.06, Mina −0.03, else 0 | 2063–2076 books |
+| 2060 | `SHAPE_2045`: +0.047 −0.140 +0.054 +0.094 +0.004 +0.164 −0.017 −0.075 −0.026 −0.109 −0.073 +0.034 | 2060–2062 books |
+| 2063 | 0 | 2063–2076 books |
 
 Each era lasts until the next. Years before 1975 use the 1975 era, and
 generating them prints a warning. The offsets are measured from the

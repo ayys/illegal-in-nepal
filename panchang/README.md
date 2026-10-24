@@ -19,7 +19,7 @@ your own implementation in another language.
 
 ```sh
 cd panchang
-python3 -m unittest test_surya test_panchanga test_editorial test_ketaki test_rail   # ~17 s, no dependencies
+python3 -m unittest test_surya test_panchanga test_editorial test_ketaki test_rail   # ~15 s, no dependencies
 ./generate.py 2083 --no-pdf                       # JSON for every fortnight → output/
 ./generate.py 2083 --page 21                      # one fortnight, JSON + PDF (needs weasyprint)
 ./generate.py 2083 --config 2083.json             # with festival notes, or overrides
@@ -44,7 +44,7 @@ panchanga.month_starts(2083)          # 13 dates: बैशाख 1 … चै�
 
 | File | What it does |
 |---|---|
-| `surya.py` | Astronomy: SS mean and true Sun and Moon, the sine table, sunrise, sunset, दिनमान, equation of time, lagna, Rahu, and a generic "when does this angle cross a multiple of N" solver |
+| `surya.py` | Astronomy: SS mean and true Sun and Moon, sunrise, sunset, दिनमान, equation of time, lagna, Rahu, and a generic "when does this angle cross a multiple of N" solver |
 | `panchanga.py` | Calendar: day rows (tithi, nakshatra, yoga, karana, आनन्दादि, …), solar month starts (the sankranti day rule and eras), lunar months, adhik masa, page headers, the year layout |
 | `ketaki.py` | Mars to Saturn by the केतकी ग्रहगणितम्, with the books' conventions |
 | `editorial.py` | Samvatsara (Jovian, from SS mean Jupiter), पापर्क्षाणि and पापांश |
@@ -67,7 +67,7 @@ panchanga.month_starts(2083)          # 13 dates: बैशाख 1 … चै�
 | Doc | Read it for |
 |---|---|
 | [docs/ALGORITHM.md](docs/ALGORITHM.md) | Every column, step by step, with formulas and a worked example for one day |
-| [docs/CALIBRATION.md](docs/CALIBRATION.md) | The fitted things (Moon apogee −1.7°, Rahu offset, sankranti eras, each book's sunrise convention) and the evidence for each |
+| [docs/CALIBRATION.md](docs/CALIBRATION.md) | The fitted things (Moon apogee −1.71°, Rahu offset, sankranti eras, each book's sunrise convention, the दिनमान routine, exact sines) and the evidence for each |
 | [docs/VERIFICATION.md](docs/VERIFICATION.md) | Match rates, the known errors in the reference tables, open cases |
 | [docs/EDITORIAL.md](docs/EDITORIAL.md) | Samvatsara, पापर्क्षाणि and पापांश: what they are, the rules, the evidence |
 | [docs/SOURCES.md](docs/SOURCES.md) | Every book and page used, with URLs |
@@ -75,8 +75,9 @@ panchanga.month_starts(2083)          # 13 dates: बैशाख 1 … चै�
 ## The model in one paragraph
 
 - **Positions.** Mean longitudes come from the SS revolution numbers counted
-  from the Kali epoch. One manda correction with the SS sine table gives the
-  true Sun and Moon. The Moon's apogee is shifted by −1.7°.
+  from the Kali epoch. One manda correction, with exact sines rather than
+  the SS's 24-row table, gives the true Sun and Moon. The Moon's apogee is
+  shifted by −1.71°.
 - **Limbs.** Tithi, nakshatra, yoga and karana are 12°, 13°20′, 13°20′ and
   6° divisions of Moon − Sun, Moon, and Moon + Sun. Their ends are found by
   Newton's method and printed in ghati and pala after Kathmandu sunrise.
