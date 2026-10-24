@@ -351,6 +351,21 @@ the book, without it under 1 s. Where the 22′ comes from is open. The
 month-start rule still uses `2 × half_day` with each book's horizon, since
 the eras were read against it.
 
+**The घ.प. columns share it.** The books count ghati from apparent noon less
+half of this दिनमान, not from the printed sunrise (`surya.ghati_origin`).
+Of the 79 घ.प. cells on 2083 pp2 and 21:
+
+| Counted from | Exact |
+|---|---|
+| the printed sunrise (before) | 33 |
+| the printed sunrise rounded to its minute | 30 |
+| noon (EoT at 06:00) − दिनमान/2 | 59 |
+| noon (EoT at noon) − दिनमान/2, unrounded | **71** |
+
+The other eight are within a pala, but for 2027-01-17's second yoga end
+(ours 57।59.5, on a rounding edge; 2 off) and that day's second tithi end,
+a misprint: "५६।२६" beside its own clock २९:३६, which is ५६।३५.
+
 ## 7. Exact sines
 
 The SS tabulates 24 sines and reads between them linearly. That shrinks the

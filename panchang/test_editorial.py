@@ -220,6 +220,17 @@ class TestPapamsha(unittest.TestCase):
     def ours(self, year, page):
         return editorial.papamsha_text(editorial.papamsha(self.pages[year][page]))
 
+    def test_read_from_the_spashta_column(self):
+        # The box is read off the स्पष्ट ग्रह table on the same page: the Sun,
+        # Mars, Saturn and Rahu it uses are the row's values (Rahu at Ujjain
+        # mean sunrise, Mars and Saturn at the geometric sunrise).
+        for row in (r for rows in self.pages[2083].values() for r in rows):
+            day = date.fromisoformat(row["date"])
+            found = editorial._malefics_at_sunrise(day)
+            for body in ("sun", "mars", "saturn", "rahu"):
+                with self.subTest(day=day, body=body):
+                    self.assertEqual(panchanga.arc(found[body]), row["spashta"][body])
+
     def test_navamsha(self):
         # अश्विनी 2 is वृष; उत्तरभाद्रपदा 3 is तुला (2083 p2: Mars "२मं.७").
         self.assertEqual(editorial.navamsha(5.0), 2)

@@ -13,6 +13,7 @@ See docs/SOURCES.md for the full list.
 """
 
 import csv
+import json
 import unittest
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -116,7 +117,7 @@ SUN = {
 # month, Gregorian span, ritu.
 HEADERS = {
     2: ("वैशाख", "कृष्ण", 1146, "चौलागा", "अप्रिल 2026", ["वसन्त"]),
-    4: ("शुद्ध ज्येष्ठ", "कृष्ण", 1146, "बछलागा", "मे 2026", ["वसन्त", "ग्रीष्म"]),
+    4: ("शुद्ध ज्येष्ठ", "कृष्ण", 1146, "वछलागा", "मे 2026", ["वसन्त", "ग्रीष्म"]),
     5: ("अधिक ज्येष्ठ", "शुक्ल", 1146, "अनलाथ्वः", "मे 2026", ["ग्रीष्म"]),
     6: ("अधिक ज्येष्ठ", "कृष्ण", 1146, "अनलागा", "जुन 2026", ["ग्रीष्म"]),
     7: ("शुद्ध ज्येष्ठ", "शुक्ल", 1146, "तछलाथ्वः", "जुन 2026", ["ग्रीष्म"]),
@@ -218,6 +219,32 @@ DINAMANA = {
     21: "26:4 26:6 26:7 26:9 26:11 26:13 26:15 26:18 26:20 26:22 26:25 26:27 26:30 26:32 26:35",
 }
 TOLERANCE_MINUTES = 1
+# The घ.प. columns as printed, घटी:पला, in the order tithi, nakshatra, yoga,
+# karana; "" is अहोरात्र, two values a stacked cell. 2083 pp2 and 21.
+GHATI = {
+    date(2026, 4, 14): ("39:33", "19:43", "19:27", "10:12"),
+    date(2026, 4, 15): ("37:25", "19:41", "15:21", "8:39"),
+    date(2026, 4, 16): ("34:13", "18:33", "10:23", "5:58"),
+    date(2026, 4, 17): ("30:5", "16:28", "4:37 58:8", "2:16 57:42"),
+    date(2027, 1, 8): ("51:23", "5:31", "22:0", "18:42"),
+    date(2027, 1, 9): ("56:21", "11:56", "23:8", "23:56"),
+    date(2027, 1, 10): ("", "17:48", "23:48", "28:32"),
+    date(2027, 1, 11): ("0:31", "22:50", "23:48", "32:13"),
+    date(2027, 1, 12): ("3:38", "26:47", "22:56", "34:44"),
+    date(2027, 1, 13): ("5:31", "29:32", "21:8", "35:59"),
+    date(2027, 1, 14): ("6:7", "31:1", "18:19", "35:56"),
+    date(2027, 1, 15): ("5:26", "31:18", "14:32", "34:37"),
+    date(2027, 1, 16): ("3:32", "30:27", "9:50", "32:10"),
+    date(2027, 1, 17): ("0:33 56:26", "28:36", "4:17 57:58", "28:41"),
+    date(2027, 1, 18): ("51:56", "25:55", "51:6", "24:22"),
+    date(2027, 1, 19): ("46:39", "22:35", "43:45", "19:21"),
+    date(2027, 1, 20): ("40:58", "18:45", "36:4", "13:51"),
+    date(2027, 1, 21): ("35:5", "14:39", "28:12", "8:3"),
+    date(2027, 1, 22): ("29:13", "10:29", "20:19", "2:8 56:20"),
+}
+# A misprint: "५६।२६" beside its own clock २९:३६, which is ५६।३५ after that
+# day's sunrise (2083 p21, पौष शुक्ल ९).
+GHATI_MISPRINTS = {(date(2027, 1, 17), "tithi", 1)}
 
 
 def minutes(clock: str) -> int:
@@ -268,6 +295,28 @@ class BookTest(unittest.TestCase):
                 for limb, value in zip(("tithi", "nakshatra", "yoga"), ends):
                     exact += sum(g == w for g, w in zip(computed(row[limb]["ends"]), expected(value)))
         self.assertGreaterEqual(exact, 226)
+
+    def test_ghati_pala(self):
+        # Counted from surya.ghati_origin: 71 of the 79 to the pala, 78 within
+        # one, and 2027-01-17's second yoga end two off (ours 57।59.5, on a
+        # rounding edge). From the printed sunrise only 33 match.
+        exact = within = 0
+        for day, columns in GHATI.items():
+            row = self.rows[day]
+            for limb, printed in zip(("tithi", "nakshatra", "yoga", "karana"), columns):
+                want = [int(g) * 60 + int(p) for g, p in (v.split(":") for v in printed.split())]
+                ends = row[limb]["ends"]
+                self.assertEqual(len(ends), len(want), f"{day} {limb}")
+                for k, (end, value) in enumerate(zip(ends, want)):
+                    if (day, limb, k) in GHATI_MISPRINTS:
+                        continue
+                    with self.subTest(day=day, limb=limb, k=k):
+                        got = end["ghati"] * 60 + end["pala"]
+                        self.assertLessEqual(abs(got - value), 2)
+                        exact += got == value
+                        within += abs(got - value) <= 1
+        self.assertGreaterEqual(exact, 71)
+        self.assertGreaterEqual(within, 78)
 
     def test_karana(self):
         for day, (abbr, ends) in KARANAS.items():
@@ -326,7 +375,8 @@ class BookTest(unittest.TestCase):
     def assertSpashta(self, rows, table, moon_tolerance):
         for day, (sun, moon, rahu, belantar) in table.items():
             spashta = rows[day]["spashta"]
-            for body, want, tolerance in (("sun", sun, 4), ("moon", moon, moon_tolerance), ("rahu", rahu, 3)):
+            # Sun within 2″ (exact sines; the table is up to 3.7″ off).
+            for body, want, tolerance in (("sun", sun, 2), ("moon", moon, moon_tolerance), ("rahu", rahu, 3)):
                 with self.subTest(day=day, body=body):
                     self.assertArc(f"{day} {body}", spashta[body], want, tolerance)
             sign, mins, secs = belantar[0], *belantar[1:].split(":")
@@ -352,7 +402,7 @@ class BookTest(unittest.TestCase):
         for day, (sun, moon) in SUN_MOON.items():
             spashta = self.rows[day]["spashta"]
             with self.subTest(day=day):
-                self.assertArc(f"{day} sun", spashta["sun"], sun, 5)
+                self.assertArc(f"{day} sun", spashta["sun"], sun, 2)
                 self.assertArc(f"{day} moon", spashta["moon"], moon, 35)
 
     def test_sun_padas(self):
@@ -362,7 +412,8 @@ class BookTest(unittest.TestCase):
                 self.assertEqual(
                     (entry["nakshatra"], entry["pada"], entry.get("enters")),
                     (nakshatra, pada, enters))
-                self.assertTimes(str(day), computed([entry]), expected(clock))
+                # To the minute: the SS sine table puts 13 of these a minute late.
+                self.assertEqual(computed([entry]), expected(clock))
 
     def test_month_starts(self):
         starts = panchanga.month_starts(2083)
@@ -429,6 +480,21 @@ class MonthStartTest(unittest.TestCase):
                 printed = int(row["ghati"]) * 60 + int(row["pala"])
                 self.assertLessEqual(abs(pala - printed), sankranti_tolerance(bs_year))
 
+    def test_era_offsets_are_the_books_mean(self):
+        # Each era's per-sign offset is the mean of its books' readings, so
+        # the mean residual per (era, sign) stays near zero: within 1 pala for
+        # the fitted eras, 1.5 for the plain-SS one from 2063 (not fitted).
+        starts = [era[0] for era in panchanga.SANKRANTI_ERAS]
+        residuals = {}
+        for row in read_csv("book_sankrantis.csv"):
+            bs_year, sign = int(row["bs_year"]), int(row["sign"])
+            era = max([y for y in starts if y <= bs_year] or starts[:1])
+            _, pala = sankranti_after_sunrise(bs_year, sign)
+            residuals.setdefault((era, sign), []).append(pala - (int(row["ghati"]) * 60 + int(row["pala"])))
+        for (era, sign), values in residuals.items():
+            with self.subTest(era=era, sign=sign, n=len(values)):
+                self.assertLessEqual(abs(sum(values) / len(values)), 1.5 if era >= 2063 else 1.0)
+
     def test_documented_month_starts(self):
         # data/month_starts.csv: first days attested by a book page, by
         # drikpanchang.com, or by both library tables agreeing.
@@ -436,6 +502,18 @@ class MonthStartTest(unittest.TestCase):
             bs_year, month = int(row["bs_year"]), int(row["month"])
             with self.subTest(bs_year=bs_year, month=month, source=row["source"]):
                 self.assertEqual(panchanga.month_starts(bs_year)[month - 1].isoformat(), row["first_day"])
+
+    def test_month_starts_snapshot(self):
+        # Every month start from 1970 to 2100, as generated when the sankranti
+        # eras were last checked against all the books and tables. A change
+        # here must be deliberate: re-check data/book_sankrantis.csv and the
+        # library tables (build_status.py), then regenerate the file with
+        #   python3 -c "import panchanga, json; print(json.dumps({y: [d.isoformat() for d in panchanga.month_starts(y)] for y in range(1970, 2101)}))" > data/month_starts_snapshot.json
+        with open(DATA / "month_starts_snapshot.json") as f:
+            snapshot = json.load(f)
+        for year, starts in snapshot.items():
+            with self.subTest(bs_year=year):
+                self.assertEqual([d.isoformat() for d in panchanga.month_starts(int(year))], starts)
 
     def test_year_chains_into_the_next(self):
         # The 13th start (next वैशाख 1) must equal the next year's first, even
@@ -534,7 +612,8 @@ class DayRowTest(unittest.TestCase):
                     with self.subTest(day=day, limb=limb):
                         jd = surya.julian_day(datetime.fromisoformat(end["at"]))
                         self.assertTrue(rise - 1e-6 <= jd < next_rise)
-                        self.assertEqual(end["ghati"] * 60 + end["pala"], round((jd - rise) * 3600))
+                        self.assertEqual(end["ghati"] * 60 + end["pala"],
+                                         round((jd - surya.ghati_origin(day)) * 3600))
 
     def test_lagna_order(self):
         lagnas = panchanga.day_row(date(2027, 1, 8), 8, 24)["lagna"]
@@ -546,6 +625,14 @@ class DayRowTest(unittest.TestCase):
 
 
 class YearLayoutTest(unittest.TestCase):
+    def test_row_paksha_is_the_pages(self):
+        # Each page holds one paksha, and its rows' tithis say the same.
+        for page in panchanga.year(2083):
+            for row in page["rows"]:
+                with self.subTest(date=row["date"]):
+                    self.assertEqual(row["tithi"]["paksha"], page["header"]["paksha"])
+
+
     @classmethod
     def setUpClass(cls):
         cls.pages = panchanga.year(2083)

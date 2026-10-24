@@ -114,17 +114,24 @@ def limb_cells(limb: dict, label: str) -> str:
 
 
 def header_line(header: dict) -> str:
+    """The strip as printed, e.g. 2083 p2: "श्रीशाके १९४८ वि.सं. २०८३
+    वैशाखकृष्णपक्षः ने.सं. ११४६ (चौलागा), ई.सं. अप्रिल २०२६, उत्तरायणं
+    वसन्तर्तुः, रौद्रनामसंवत्सरः, पापर्क्षाणि-श.उभा.अश्वि."; with two ayanas,
+    2082 p8: "उत्तरायणं ग्रीष्मः + दक्षिणायनं वर्षर्तुः"."""
     pairs = header["ayana_ritu"]
     if len({a for a, _ in pairs}) == 1:
         ritus = [r for _, r in pairs]
         season = f"{pairs[0][0]}ं " + " + ".join(ritus[:-1] + [RITU_WITH_SUFFIX[ritus[-1]]])
     else:
-        parts = [f"{a} {r}" for a, r in pairs[:-1]]
-        parts.append(f"{pairs[-1][0]} {RITU_WITH_SUFFIX[pairs[-1][1]]}")
+        parts = [f"{a}ं {r}ः" for a, r in pairs[:-1]]
+        parts.append(f"{pairs[-1][0]}ं {RITU_WITH_SUFFIX[pairs[-1][1]]}")
         season = " + ".join(parts)
+    # The आश्विन fortnights carry their names: "आश्विनकृष्ण (पितृ) पक्षः",
+    # "आश्विनशुक्ल (दुर्गा) पक्षः" (2082 pp12-13, 2083 pp14-15).
+    named = {"कृष्ण": " (पितृ) ", "शुक्ल": " (दुर्गा) "}[header["paksha"]] if header["lunar_month"] == "आश्विन" else ""
     pieces = [
         f"श्रीशाके {deva(header['shaka'])} वि.सं. {deva(header['vikram_samvat'])} "
-        f"{header['lunar_month']}{header['paksha']}पक्षः",
+        f"{header['lunar_month']}{header['paksha']}{named}पक्षः "
         f"ने.सं. {deva(header['nepal_samvat'])} ({header['nepal_samvat_month']})",
         f"ई.सं. {deva(header['gregorian'])}",
         season,

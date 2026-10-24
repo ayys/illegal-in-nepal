@@ -101,8 +101,9 @@ LUNAR_MONTHS = [
     "चैत्र", "वैशाख", "ज्येष्ठ", "आषाढ", "श्रावण", "भाद्र",
     "आश्विन", "कार्तिक", "मार्गशीर्ष", "पौष", "माघ", "फाल्गुन",
 ]
+# As both books spell them (2082 and 2083 headers): वछला, गुंला, ञँला.
 NEPAL_SAMBAT_MONTHS = [
-    "चौला", "बछला", "तछला", "दिल्ला", "गुँला", "ञला",
+    "चौला", "वछला", "तछला", "दिल्ला", "गुंला", "ञँला",
     "कौला", "कछला", "थिंल्ला", "पोहेला", "सिल्ला", "चिल्ला",
 ]
 NEPAL_SAMBAT_LEAP_MONTH = "अनला"
@@ -110,7 +111,7 @@ NEPAL_SAMBAT_LEAP_MONTH = "अनला"
 KARTIK = 7
 GREGORIAN_MONTHS = [
     "जनवरी", "फेब्रुअरी", "मार्च", "अप्रिल", "मे", "जुन",
-    "जुलाई", "अगस्ट", "सेप्टेम्बर", "अक्टोबर", "नोभेम्बर", "डिसेम्बर",
+    "जुलाई", "अगस्त", "सेप्टेम्बर", "अक्टोबर", "नोभेम्बर", "डिसेम्बर",
 ]
 # Two solar months per ritu, starting with वसन्त for Mina and Mesha.
 RITUS = ["वसन्त", "ग्रीष्म", "वर्षा", "शरद्", "हेमन्त", "शिशिर"]
@@ -173,10 +174,11 @@ def _clock(jd: float, day: date, rounding=round) -> list[int]:
     return [minutes // 60, minutes % 60]
 
 
-def _ending(index: int, name: tuple[str, str] | None, jd: float, rise: float, day: date) -> dict:
-    """An end time in the book's two forms: घटी।पला after sunrise (2.5 pala a
-    minute, rounded to the nearest pala) and a clock time."""
-    palas = round((jd - rise) * 1440 * 2.5)
+def _ending(index: int, name: tuple[str, str] | None, jd: float, day: date) -> dict:
+    """An end time in the book's two forms: घटी।पला from the day's start
+    (surya.ghati_origin; 2.5 pala a minute, rounded to the nearest pala) and a
+    clock time."""
+    palas = round((jd - surya.ghati_origin(day)) * 1440 * 2.5)
     ending = {
         "index": index,
         "at": surya.from_julian_day(jd).isoformat(timespec="seconds"),
@@ -197,7 +199,7 @@ def _limb(angle, width, names, day, rise, next_rise):
     return {
         "index": start,
         **({"name": names[start][0], "abbr": names[start][1]} if names else {}),
-        "ends": [_ending(i, names[i] if names else None, jd, rise, day) for i, jd in found],
+        "ends": [_ending(i, names[i] if names else None, jd, day) for i, jd in found],
     }
 
 
@@ -262,7 +264,7 @@ def planet_events(day: date, gate: int) -> list[dict]:
                 jd = _refine(body, x, jd, rise, after)
             # The division entered starts at x going forward, ends at x going back.
             inside = surya.norm(x + (1e-7 if step > 0 else -1e-7))
-            entry = _ending(0, None, jd, surya.sunrise(day), day)
+            entry = _ending(0, None, jd, day)
             entry.pop("index")
             entry.update(body=body, again=step < 0 and body != "rahu")
             on_sign = abs(x / SIGN_WIDTH - round(x / SIGN_WIDTH)) < 1e-9
@@ -312,13 +314,15 @@ def heliacal_events(day: date) -> list[dict]:
         motion = (b - a + 180) % 360 - 180
         arc = HELIACAL_ARCS[body][0 if motion >= 0 else 1]
         e0, e1 = (a - sun0 + 180) % 360 - 180, (b - sun1 + 180) % 360 - 180
-        if e0 * e1 <= 0 and abs(e0) + abs(e1) < 90:
-            continue  # a conjunction, not a visibility change
+        if e0 * e1 <= 0:
+            # A conjunction, or the ±180° wrap at opposition (Mars on
+            # 2027-02-19): not a visibility change either way.
+            continue
         for side, sign in (("पूर्व", -1), ("पश्चिम", 1)):
             f0, f1 = sign * e0 - arc, sign * e1 - arc
             if f0 * f1 < 0 and sign * e0 > 0:
                 jd = rise + f0 / (f0 - f1) * (after - rise)
-                entry = _ending(0, None, jd, surya.sunrise(day), day)
+                entry = _ending(0, None, jd, day)
                 entry.pop("index")
                 entry.update(body=body, heliacal="उदय" if f1 > f0 else "अस्त", side=side)
                 found.append(entry)
@@ -361,7 +365,7 @@ def _add_stations(rows: list[dict]) -> None:
             if jd < surya.sunrise(day):
                 day -= timedelta(days=1)
             if day in by_day:
-                entry = _ending(0, None, jd, surya.sunrise(day), day)
+                entry = _ending(0, None, jd, day)
                 entry.pop("index")
                 entry.update(body=body, station=kind)
                 by_day[day]["planet_events"].append(entry)
@@ -386,7 +390,7 @@ def day_row(day: date, bs_month: int, gate: int) -> dict:
         if half % 2 == 0
     ]
     karanas = {
-        "ends": [_ending(h, karana(h), jd, rise, day) for h, jd in halves],
+        "ends": [_ending(h, karana(h), jd, day) for h, jd in halves],
     }
     if halves:
         karanas["name"], karanas["abbr"] = karana(halves[0][0])
@@ -399,7 +403,7 @@ def day_row(day: date, bs_month: int, gate: int) -> dict:
     # moment, and the sign when the pada starts one.
     for index, jd in surya.crossings(surya.true_sun, PADA_WIDTH, rise, next_rise):
         pada = (index + 1) % 108
-        entry = _ending(pada, None, jd, rise, day)
+        entry = _ending(pada, None, jd, day)
         entry["nakshatra"] = RAIL_NAKSHATRAS[pada // 4]
         entry["pada"] = pada % 4 + 1
         if pada % 9 == 0:
@@ -411,7 +415,7 @@ def day_row(day: date, bs_month: int, gate: int) -> dict:
     # p22: "११ अभिजितत्याग सूर्य १९:१२").
     if surya.true_sun(rise) < ABHIJIT[1] <= surya.true_sun(next_rise):
         jd = surya._solve(surya.true_sun, ABHIJIT[1], rise)
-        entry = _ending(0, None, jd, rise, day)
+        entry = _ending(0, None, jd, day)
         entry.pop("index")
         entry["leaves"] = "अभिजित"
         sun_padas.append(entry)
@@ -430,7 +434,7 @@ def day_row(day: date, bs_month: int, gate: int) -> dict:
         "moon_sign": {
             "index": int(moon // SIGN_WIDTH),
             "name": SIGNS[int(moon // SIGN_WIDTH)],
-            "ends": [_ending(i, (SIGNS[i], SIGNS[i]), jd, rise, day) for i, jd in sign_changes],
+            "ends": [_ending(i, (SIGNS[i], SIGNS[i]), jd, day) for i, jd in sign_changes],
         },
         "dinamana": [day_length // 60, day_length % 60],
         "sunrise": surya.from_julian_day(rise).isoformat(timespec="seconds"),

@@ -18,6 +18,8 @@ import test_panchanga as book
 import test_editorial
 import test_ketaki
 import test_rail
+import test_render
+import test_snapshot
 import test_surya
 
 OUT = Path(__file__).resolve().parent / "status.html"
@@ -162,7 +164,9 @@ def run_tests() -> tuple[bool, str, int]:
     suite = unittest.TestSuite([loader.loadTestsFromModule(test_surya), loader.loadTestsFromModule(book),
                                   loader.loadTestsFromModule(test_editorial),
                                   loader.loadTestsFromModule(test_ketaki),
-                                  loader.loadTestsFromModule(test_rail)])
+                                  loader.loadTestsFromModule(test_rail),
+                                  loader.loadTestsFromModule(test_render),
+                                  loader.loadTestsFromModule(test_snapshot)])
     result = unittest.TextTestRunner(stream=buf, verbosity=2).run(suite)
     return result.wasSuccessful(), buf.getvalue(), result.testsRun
 

@@ -95,6 +95,20 @@ class BookTest(unittest.TestCase):
 
 
 class InterpolationTest(unittest.TestCase):
+    def test_table_longitude_matches_rows(self):
+        # At the printed sunrise it is the स्पष्ट ग्रह row itself.
+        for day in (date(2025, 7, 21), date(2026, 10, 24), date(2027, 1, 10)):
+            for body in ketaki.PLANETS:
+                with self.subTest(day=day, body=body):
+                    self.assertAlmostEqual(
+                        seconds(ketaki.table_longitude(body, surya.sunrise(day)), ketaki.at_sunrise(body, day)), 0, delta=0.01)
+
+    def test_sun_equation(self):
+        # 115.2′ sin k + 1.2′ sin 2k, not the whole-कला table: at k = 45° the
+        # two differ by 1.2′.
+        self.assertEqual(ketaki.SUN_EQUATION, (115.2, 1.2))
+        self.assertEqual(ketaki.MANDA["mercury"][3], 96)
+
     def test_longitude_matches_sunrise_values(self):
         day = date(2027, 1, 10)
         rise, after = ketaki.sunrise(day), ketaki.sunrise(date(2027, 1, 11))

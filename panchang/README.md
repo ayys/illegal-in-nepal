@@ -19,7 +19,8 @@ your own implementation in another language.
 
 ```sh
 cd panchang
-python3 -m unittest test_surya test_panchanga test_editorial test_ketaki test_rail   # ~15 s, no dependencies
+python3 -m unittest test_surya test_panchanga test_editorial test_ketaki test_rail test_render test_snapshot   # ~20 s, no dependencies
+./mutation_check.py                               # break each rule on purpose; every one must fail a test (~10 min)
 ./generate.py 2083 --no-pdf                       # JSON for every fortnight → output/
 ./generate.py 2083 --page 21                      # one fortnight, JSON + PDF (needs weasyprint)
 ./generate.py 2083 --config 2083.json             # with festival notes, or overrides
@@ -55,11 +56,15 @@ panchanga.month_starts(2083)          # 13 dates: बैशाख 1 … चै�
 | `test_panchanga.py` | Book regression tests and calendar invariants |
 | `test_editorial.py` | Samvatsara, पापर्क्षाणि and पापांश against the books |
 | `test_ketaki.py` | Mars to Saturn against Ketaki's worked example and both books |
-| `test_rail.py` | The ग्रहचार rail, the राशि प्रवेश and status boxes, and the kundali against the 2083 book |
+| `test_rail.py` | The ग्रहचार rail, stations, उदय/अस्त, the राशि प्रवेश and status boxes, and the kundali against the 2083 book |
+| `test_render.py` | The typeset text against the print: headers, 19 day rows cell by cell, the graha row, rail lines, the kundali's houses |
+| `test_snapshot.py` | All of 2083 as printed text, and Mars to Saturn 1970-2100, against `data/snapshot_*.txt` (`--update` after a deliberate change) |
+| `mutation_check.py` | Breaks each constant, table entry and rule (≈160) in a scratch copy and checks that a test fails |
 | `data/book_planets.csv` | Mars to Saturn as printed, hand-read and OCR, with pages |
 | `data/book_rail.csv` | The rail's planet lines as printed, 2083 pp2-9, 18, 21, 22 |
 | `data/book_sankrantis.csv` | Sankranti moments read from old books, with PDF pages |
 | `data/month_starts.csv` | Month starts that settle disagreements between references, with sources |
+| `data/month_starts_snapshot.json`, `data/snapshot_*.txt` | Regression snapshots: every month start 1970-2100, the 2083 book as text, Mars to Saturn 1970-2100 |
 | `research/` | Working scripts and notes from reading the old books (`oldbooks/fetch_ocr.sh`, `oldbooks/crops.py`, `oldbooks/read/`); the PDFs and page images are git-ignored and re-downloadable |
 
 ## Documentation
@@ -80,7 +85,8 @@ panchanga.month_starts(2083)          # 13 dates: बैशाख 1 … चै�
   shifted by −1.71°.
 - **Limbs.** Tithi, nakshatra, yoga and karana are 12°, 13°20′, 13°20′ and
   6° divisions of Moon − Sun, Moon, and Moon + Sun. Their ends are found by
-  Newton's method and printed in ghati and pala after Kathmandu sunrise.
+  Newton's method and printed in ghati and pala from the day's start
+  (apparent noon less half the दिनमान) and as clock times.
 - **Sunrise.** The SS true Sun plus the Lahiri ayanamsha, with the modern
   obliquity and a −34′ horizon.
 - **Month starts.** A BS month starts on the civil day its sankranti belongs

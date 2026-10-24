@@ -115,6 +115,10 @@ class SunriseTest(unittest.TestCase):
         self.assertLess(max(map(abs, values)), 17.5)
         self.assertGreater(max(values) - min(values), 30)
 
+    def test_sidereal_day(self):
+        # Mean solar days per sidereal rotation (1 / 1.00273790935).
+        self.assertAlmostEqual(surya.SIDEREAL_DAY, 1 / 1.00273790935, places=8)
+
     def test_lagna_starts(self):
         day = date(2027, 1, 8)
         starts = surya.lagna_starts(day)

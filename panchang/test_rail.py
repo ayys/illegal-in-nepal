@@ -32,15 +32,21 @@ MINUTES = {"rahu": 25}
 # against Ketaki's 37.3′, 26′ ahead by 09-13, then jumps back on 09-16: a
 # daily motion carried forward and corrected. Its rail lines there inherit it.
 BOOK_ANOMALIES = {(12, "mars", "पुनर्वसु|2"), (13, "mars", "पुनर्वसु|3")}
-# उदय/अस्त the arcs don't reproduce (ours − book, days): Jupiter p9 −1, p10
-# +5; Mercury p9 −1 (at its station, elongation 13.0°), p11 −5, p13 −1, p19
-# −3, p21 +8, p24 −2; Venus p15 +5, p16 +2.
-# The book's Mercury arcs around one superior conjunction are 14° (pp3, 5),
-# around others 9.4°/14.75° (pp11, 13) and 12.5°/8.9° (pp19, 21).
-HELIACAL_OPEN = {(9, "jupiter"), (10, "jupiter"), (9, "mercury"), (11, "mercury"), (13, "mercury"), (19, "mercury"),
-                 (21, "mercury"), (24, "mercury"), (15, "venus"), (16, "venus")}
+# उदय/अस्त the arcs don't reproduce: ours − book, in days. The book's Mercury
+# arcs around one superior conjunction are 14° (pp3, 5), around others
+# 9.4°/14.75° (pp11, 13) and 12.5°/8.9° (pp19, 21). Pinned so a change to
+# HELIACAL_ARCS shows.
+HELIACAL_OPEN = {(9, "jupiter"): -1.10, (10, "jupiter"): 4.99, (9, "mercury"): -1.03, (11, "mercury"): -5.00,
+                 (13, "mercury"): -1.00, (19, "mercury"): -3.01, (21, "mercury"): 8.01, (24, "mercury"): -1.98,
+                 (15, "venus"): 4.67, (16, "venus"): 1.53}
+# वक्री/मार्गी: ours − book, minutes. The tables' turn (ketaki.station) lands
+# on the book's minute only for Mars on p21; elsewhere it is 2-14 hours off,
+# and neither the kinked nor the daily-motion turn does better. Open.
+STATIONS = {(7, "mercury"): -391, (9, "mercury"): 322, (10, "saturn"): 371, (14, "venus"): 554,
+            (15, "mercury"): 277, (17, "venus"): -341, (17, "mercury"): 506, (18, "saturn"): -865,
+            (19, "jupiter"): -313, (21, "mars"): 8, (23, "mercury"): -115, (24, "mercury"): 624,
+            (26, "mars"): -124}
 
-# The book's own राशि प्रवेश boxes, 2083.
 BOXES = {
     2: "१सू.१", 3: "१७बु.१, ६शु.२", 4: "१सू.२, २८मं.१, ३१बु.२, ३०शु.३", 5: "१५बु.३",
     6: "१सू.३, १८बृ.४, २४शु.४", 8: "२०बु.३, १९शु.५", 9: "१सू.४", 10: "१८मं.३, २०बु.४, १५शु.६",
@@ -150,6 +156,69 @@ class RailTest(unittest.TestCase):
                 speed = self.speed(line["body"], date.fromisoformat(row["date"]))
                 allowed = max(MINUTES.get(line["body"], 2), POSITION / speed)
                 self.assertLessEqual(abs(ours - (hours * 60 + minutes)), allowed)
+
+    def offset(self, line: dict) -> tuple[float, dict]:
+        """(ours − book in minutes, our entry) for a station or उदय/अस्त line."""
+        page, gate = int(line["page"]), int(line["gate"])
+        row = next(r for r in self.pages[page]["rows"] if r["gate"] == gate)
+        hours, minutes = map(int, line["clock"].split(":"))
+        printed = datetime.fromisoformat(f"{row['date']}T00:00:00+05:45") + timedelta(hours=hours, minutes=minutes)
+        ours = [e for p in self.pages.values() for r in p["rows"] for e in r["planet_events"]
+                if e["body"] == line["body"] and describe(e) == (line["kind"], line["detail"])]
+        gaps = [((datetime.fromisoformat(e["at"]) - printed).total_seconds() / 60, e) for e in ours]
+        return min(gaps, key=lambda g: abs(g[0]))
+
+    def test_stations(self):
+        printed = [l for l in self.lines if l["kind"] == "station"]
+        self.assertEqual(len(printed), len(STATIONS))
+        matched = []
+        for line in printed:
+            with self.subTest(page=line["page"], body=line["body"]):
+                gap, entry = self.offset(line)
+                self.assertLessEqual(abs(gap - STATIONS[int(line["page"]), line["body"]]), 15)
+                matched.append(id(entry))
+        # And no turn the book doesn't print.
+        ours = [id(e) for p in self.pages.values() for r in p["rows"] for e in r["planet_events"] if "station" in e]
+        self.assertEqual(sorted(ours), sorted(matched))
+
+    def test_heliacal_offsets(self):
+        matched = []
+        for line in (l for l in self.lines if l["kind"] == "heliacal"):
+            key = (int(line["page"]), line["body"])
+            with self.subTest(page=key[0], body=key[1]):
+                gap, entry = self.offset(line)
+                expected = HELIACAL_OPEN.get(key, 0) * 1440
+                self.assertLessEqual(abs(gap - expected), 60)
+                matched.append(id(entry))
+        # And none the book doesn't print (Mars at its 2027-02-19 opposition
+        # once came out as an अस्त, from the ±180° wrap).
+        ours = [id(e) for p in self.pages.values() for r in p["rows"] for e in r["planet_events"] if "heliacal" in e]
+        self.assertEqual(sorted(ours), sorted(matched))
+
+    def test_heliacal_arcs(self):
+        # The कालांश of SS 9.6-9.9: Jupiter 11°, Saturn 15°, Mars 17°, Venus
+        # 10° direct and 8° retrograde, Mercury 14° and 12°.
+        self.assertEqual(panchanga.HELIACAL_ARCS,
+                         {"mars": (17, 17), "mercury": (14, 12), "jupiter": (11, 11), "venus": (10, 8), "saturn": (15, 15)})
+
+    def test_rail_minutes(self):
+        # Mars to Saturn timed by ketaki.table_longitude: 138 of 164 lines
+        # within a minute, 75 exact. Linear between geometric sunrises, 17.
+        within = exact = 0
+        for line in self.lines:
+            page = int(line["page"])
+            if line["body"] == "rahu" or line["kind"] in ("station", "heliacal") \
+                    or (page, line["body"], line["detail"]) in BOOK_ANOMALIES:
+                continue
+            [(row, entry)] = [(row, e) for row in self.pages[page]["rows"] for e in row["planet_events"]
+                              if e["body"] == line["body"] and describe(e) == (line["kind"], line["detail"])
+                              and bool(e.get("again")) == (line["again"] == "1")]
+            hours, minutes = map(int, line["clock"].split(":"))
+            gap = abs(entry["clock"][0] * 60 + entry["clock"][1] - (hours * 60 + minutes))
+            within += gap <= 1
+            exact += gap == 0
+        self.assertGreaterEqual(within, 138)
+        self.assertGreaterEqual(exact, 75)
 
     def test_boxes(self):
         for page, printed in BOXES.items():

@@ -4,7 +4,8 @@ All numbers are from `build_status.py` (which writes `status.html`) and the
 two test files. Re-run them after any change.
 
 ```
-python3 -m unittest test_surya test_panchanga test_editorial test_ketaki test_rail   # all tests
+python3 -m unittest test_surya test_panchanga test_editorial test_ketaki test_rail test_render test_snapshot   # all tests
+python3 mutation_check.py                          # every rule must fail a test when broken
 /path/to/venv/bin/python build_status.py          # needs nepali-datetime and nepali
 ```
 
@@ -22,9 +23,11 @@ python3 -m unittest test_surya test_panchanga test_editorial test_ketaki test_ra
 | Lagna starts | all within 1 minute | `LAGNA` (2083 p21) |
 | Sun, Moon, Rahu spashta | Sun within 4″, Rahu within 3″, Moon within 15″ (p21) | `SPASHTA`, `SUN_MOON` |
 | Mars to Saturn spashta (2082 and 2083, 1841 values) | median 0.2″ Saturn, 0.3″ Jupiter, 0.9″ Mars, 1.4″ Venus, 1.8″ Mercury; 90% within 0.5, 0.6, 1.7, 5.8, 4.5″; every hand-read value within 4″ | `data/book_planets.csv`, `test_ketaki.py` |
-| Rail planet lines, 2083 pp2-27 (179) | every line found on the same गते; Mars to Saturn 138/164 within a minute, 75 exact, all within 30″ of position; Rahu 4-20 min late; stations within a day | `data/book_rail.csv`, `test_rail.py` |
+| Rail planet lines, 2083 pp2-27 (179) | every line found on the same गते; Mars to Saturn 138/164 within a minute, 75 exact, all within 30″ of position; Rahu 4-20 min late |
+| वक्री/मार्गी (13) | exactly the book's 13, none extra; Mars p21 within 8 min, the rest 2-14 hours off (open, each pinned) | `data/book_rail.csv`, `test_rail.py` |
 | राशि प्रवेश box (22 pages) | 18 exact; the other 4 are where the book's box disagrees with its own rail | `test_rail.py` |
-| उदय/अस्त (17) | 7 within an hour; 10 one to eight days off (open) | `test_rail.py` |
+| उदय/अस्त (17) | exactly the book's 17, none extra; 7 within an hour, 10 one to eight days off (open, each pinned) | `test_rail.py` |
+| Printed text, 2083 pp2, 21 and two पुष्य rows, 11 headers | every cell but 12 (each listed: 1 pala or minute, or 2 at a rounding edge, one misprint, one end the book files a day early) | `test_render.py` |
 | Planet status box (pp2, 27) | both exact | `test_rail.py` |
 | Kundali (21 charts) | 18 exact; on pp16, 17, 24 the book draws a planet at a fortnight end | `test_rail.py` |
 | बेलान्तर | within 2 seconds | `SPASHTA` |
@@ -116,44 +119,85 @@ compared.
 
 ## What the tests cover
 
-**`test_surya.py`** covers the astronomy primitives:
+The tests compare with print wherever the books print something: every
+value in them is transcribed from a page, not copied from our output. Two
+snapshots then cover what the transcriptions don't reach. `mutation_check.py`
+checks the result: it breaks each constant, table entry and rule (about
+160 of them) in a scratch copy, and each must fail a book test, or at least
+a snapshot.
 
-- the time scale and the Kali epoch;
-- the mean and true motions, and the bounds of the equation of centre;
-- the Lahiri rate;
-- that sankrantis, tithis and new moons are found in the right numbers and
-  order;
-- sunrise order, seasonal day lengths, the range of the equation of time,
-  and the lagna table.
+Last run: 160 mutations. 154 fail a book test. Four fail only a snapshot:
+the Saturn मन्दफल and Jupiter शीघ्रफल rows the 2082-83 books never reach,
+Venus's apogee motion (under 0.1″ in two years), and the rail's linear
+fallback near a station. Two survive, as expected:
 
-**`test_panchanga.py`** has three groups:
+- a `<=` that differs from `<` only at float equality;
+- the spelling of a Mars उदय/अस्त line, of which there is none in 2082-83.
 
-- **Book values** (`BookTest`): every transcribed number from the 2082
-  and 2083 books, as listed above.
+**`test_surya.py`**: the astronomy primitives.
+
+- The time scale, the Kali epoch, the sidereal day.
+- Mean and true motions, the bounds of the equation of centre, the Lahiri
+  rate.
+- That sankrantis, tithis and new moons come in the right numbers and order.
+- Sunrise order, seasonal day lengths, the range of the equation of time,
+  the lagna table.
+
+**`test_panchanga.py`**: the calendar.
+
+- **Book values** (`BookTest`):
+  - limb ends, 226 of 228 to the minute;
+  - every घ.प. cell of 2083 pp2 and 21 (71 of 79 exact, all within 2);
+  - karana, आनन्दादि, sunrise and sunset;
+  - दिनमान on six pages, all 79 exact;
+  - lagna, स्पष्ट ग्रह and बेलान्तर;
+  - the Sun's 21 entries to the minute;
+  - page headers.
 - **Month starts** (`MonthStartTest`):
-  - every sankranti reading in `data/book_sankrantis.csv`, within the
-    tolerances in [CALIBRATION.md](CALIBRATION.md#33-tolerances-used-in-the-tests);
-  - every documented month in `data/month_starts.csv`;
-  - that each year's last date is the next year's first, for 1970–2099;
-  - month and year lengths, and Mesha sankranti dates;
-  - the era lookup;
-  - the Karka, Makara and night-midpoint rules at their exact boundaries.
-- **Structure** (`DayRowTest`, `YearLayoutTest`):
-  - karana and 28-nakshatra numbering, the arc format, tithi numbering;
-  - that ends fall inside their day and lagnas are in order;
-  - that every day appears once, गते restarts each month, there is one
-    paksha per page, and pages are numbered from 2.
+  - every sankranti reading within 4 pala;
+  - each era's offset as the mean of its books, within 1 pala;
+  - every documented month;
+  - the snapshot of all 1572 month starts from 1970 to 2100;
+  - year chaining, lengths, the Karka, Makara and night-midpoint rules.
+- **Structure**: karana and 28-nakshatra numbering, ends inside their day
+  with ghati from `surya.ghati_origin`, one paksha per page (in the rows
+  too), every day once.
 
-**`test_ketaki.py`** covers Mars to Saturn:
+**`test_ketaki.py`**: Mars to Saturn.
 
-- Ketaki's own worked example (Shaka 1815 चैत्र शुक्ल १५): mean longitudes
-  to 1″, heliocentric longitudes to 20″, the कर्ष, the Shaka year;
-- every hand-read value in `data/book_planets.csv`, per planet (Saturn 2″,
-  Jupiter 6″, Mars and Venus 20″, Mercury 70″, 3′ on four days at its July
-  2025 station);
-- the OCR values as a whole: median and 90th percentile per planet;
-- that `ketaki.longitude` equals the sunrise value at sunrise and is linear
-  between sunrises.
+- Ketaki's worked example.
+- Every hand-read value within 4″.
+- The OCR values' median and 90th percentile per planet.
+- That `table_longitude` reproduces the rows.
+- The Sun's equation and Mercury's 96.
 
-**`test_editorial.py`** covers samvatsara, पापर्क्षाणि and पापांश; see
+**`test_rail.py`**: the ग्रहचार rail.
+
+- Every planet line on its गते, within 30″ of position (Rahu 25 minutes).
+- At least 138 of 164 within a minute.
+- Exactly the book's 13 stations, each at its documented offset (open but
+  pinned).
+- Every उदय/अस्त within an hour, or at its documented offset.
+- The राशि प्रवेश, status and kundali boxes.
+
+**`test_render.py`**: the printed text.
+
+- Eleven headers from both books, compared ignoring the print's own
+  inconsistencies (spacing, थ्व/थ्वः, a bare ritu before "+").
+- The 19 day rows of 2083 pp2 and 21, cell by cell. Nine cells are one unit
+  apart and listed; the one misprint is listed.
+- The graha row of Jan 8, the बेलान्तर format, the rail's special lines.
+- The kundali's house layout against p20, Ketu in the राशि प्रवेश box.
+
+**`test_editorial.py`**: samvatsara, पापर्क्षाणि and पापांश; see
 [EDITORIAL.md](EDITORIAL.md).
+
+**`test_snapshot.py`**: two snapshots.
+
+- All of 2083 as printed text (headers, rows, rail, graha and lagna tables,
+  boxes).
+- Mars to Saturn every 11 days from 1970 to 2100, which reaches every row of
+  the Ketaki tables.
+
+A deliberate change regenerates them (`python3 test_snapshot.py --update`),
+and the diff shows what moved.

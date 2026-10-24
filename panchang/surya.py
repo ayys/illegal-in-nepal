@@ -253,15 +253,28 @@ def day_length(day: date, horizon: float = HORIZON) -> float:
     return 2 * _half_day(sunrise(day, horizon), horizon)
 
 
-def dinamana(day: date) -> int:
-    """The दिनमान column, in pala (see DINAMANA_SHIFT)."""
+def _dinamana_pala(day: date) -> float:
     jd = local_julian_day(day, 6 + NST.utcoffset(None).total_seconds() / 3600 - LONGITUDE / 15)
     lat = math.radians(LATITUDE)
     declination = _declination(norm(true_sun(jd) + lahiri(jd) + DINAMANA_SHIFT), obliquity(jd))
     cos_hour = (
         math.sin(math.radians(DINAMANA_HORIZON)) - math.sin(lat) * math.sin(declination)
     ) / (math.cos(lat) * math.cos(declination))
-    return round(2 * math.degrees(math.acos(cos_hour)) * 4 * 2.5)
+    return 2 * math.degrees(math.acos(cos_hour)) * 4 * 2.5
+
+
+def dinamana(day: date) -> int:
+    """The दिनमान column, in pala (see DINAMANA_SHIFT)."""
+    return round(_dinamana_pala(day))
+
+
+def ghati_origin(day: date) -> float:
+    """The moment the घटी।पला columns count from: apparent noon less half the
+    दिनमान, not the printed sunrise. 71 of 80 ends on 2083 pp2 and 21 match
+    to the pala this way (from the printed sunrise, 33); the rest are within
+    one, but for a misprint (2027-01-17 "५६।२६" beside its own २९:३६)."""
+    noon = 12 * 60 + _equation_of_time(local_julian_day(day, 12)) + (86.25 - LONGITUDE) * 4
+    return local_julian_day(day, noon / 60) - _dinamana_pala(day) / 2.5 / 2 / 1440
 
 
 def sunrise(day: date, horizon: float = HORIZON) -> float:

@@ -43,8 +43,12 @@ gives the same intermediate numbers, it will give the same book.
 - **Civil day.** A row of the book is the day from one sunrise at Kathmandu
   to the next. Everything "on" a day is what is current at its sunrise, plus
   whatever ends before the next sunrise.
-- **घटी।पला.** End times are printed as ghati and pala *after that day's
-  sunrise*: `palas = round((jd_end − jd_sunrise) × 1440 × 2.5)`.
+- **घटी।पला.** End times are printed as ghati and pala after that day's
+  start. The start is not the printed sunrise: it is apparent noon less half
+  the दिनमान (section 5), `palas = round((jd_end − (noon − दिनमान/2)) × 1440 ×
+  2.5)`. From the printed sunrise only 33 of the 79 cells read from 2083
+  pp2 and 21 match. From this start 71 do, and the rest are within a pala,
+  but for a misprint and one end at a rounding edge (`surya.ghati_origin`).
 - **Clock times.** They are printed as hours and minutes after the civil
   date's midnight (NST). Times after midnight continue past 24, so 27:31 is
   3:31 the next morning. End times are rounded to the nearest minute;
@@ -299,7 +303,8 @@ turn.
 arc: Mars 17°, Mercury 14° (12° in वक्री motion), Jupiter 11°, Venus 10°
 (8°), Saturn 15°, the Surya Siddhanta's कालांश. East of the arc on the
 morning side is पूर्व, on the evening side पश्चिम; a growing elongation is
-उदय. The book follows these to the hour for 7 of its 17 events and misses
+उदय. A sign change of the elongation is a conjunction or the ±180° wrap at
+opposition, and neither is a crossing. The book follows these to the hour for 7 of its 17 events and misses
 the others by one to eight days with no single rule (Ketaki's own पल
 criterion, p290-292, fits only 4); see VERIFICATION.md.
 
@@ -525,8 +530,15 @@ index < 15 is शुक्ल). Pages are numbered from 2, as page 1 is the cove
   the start of शुक्ल चैत्र (the first non-adhik चैत्र new moon after बैशाख 1).
 - **Nepal Sambat.**
   - The year is `BS − 937`, plus 1 after the start of शुक्ल कार्तिक.
-  - Months run चौला … चिल्ला, with अनला for an adhik month. The suffix is
-    थ्वः for शुक्ल and गा for कृष्ण.
+  - Months run चौला, वछला, तछला, दिल्ला, गुंला, ञँला, कौला, कछला, थिंल्ला,
+    पोहेला, सिल्ला, चिल्ला, spelt as both books print them, with अनला for
+    an adhik month. The suffix is थ्वः for शुक्ल and गा for कृष्ण (the print
+    has both थ्व and थ्वः).
+- **The आश्विन fortnights** are named: "आश्विनकृष्ण (पितृ) पक्षः",
+  "आश्विनशुक्ल (दुर्गा) पक्षः" (2082 pp12-13, 2083 pp14-15).
+- **The strip** reads "श्रीशाके … वि.सं. … वैशाखकृष्णपक्षः ने.सं. … (चौलागा),
+  ई.सं. …, उत्तरायणं वसन्तर्तुः, रौद्रनामसंवत्सरः, पापर्क्षाणि- …", with no comma
+  after पक्षः. With two ayanas: "उत्तरायणं ग्रीष्मः + दक्षिणायनं वर्षर्तुः".
 - **Gregorian span.**
   - One month: "जनवरी 2027".
   - Two months in the same year: "जनवरी + फेब्रुअरी 2027".
