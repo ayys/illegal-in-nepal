@@ -115,15 +115,17 @@ PAPAMSHA_2082 = {
     21: "सू.११, ७सू.१२, १०सू.१, १३सू.२, १६सू.३, मं.१०, ६मं.११, १०मं.१२, १४मं.१, १८मं.२, "
         "शं.४, ७शं.५, रा.१२के.६, १०रा.११के.५",
 }
-# Pages whose whole box we reproduce. The others differ only in the two
+# Pages whose whole box we reproduce. The others differ only in the
 # entries of PAPAMSHA_DIFFERENT, or in an entry after the page's last day
 # (2083 p27 "१सू.१", बैशाख 1 of the next year).
-PAPAMSHA_EXACT = ({(2083, p) for p in (2, 3, 4, 6, 7, *range(9, 13), *range(14, 26))}
+PAPAMSHA_EXACT = ({(2083, p) for p in (2, 3, 4, 6, 7, 9, 10, 11, *range(14, 26))}
                   | {(2082, p) for p in (2, 20, 21)})
 # The book dates these a day or more before its own स्पष्ट ग्रह cross the
 # navamsha: Mars is still 13.8′ short at sunrise of गते 28 (2083 p13), and
-# Saturn needs 2.4 more days after गते 23 (2083 p26).
-PAPAMSHA_DIFFERENT = {(2083, 13, "२७मं.३"), (2083, 26, "२४शं.११")}
+# Saturn needs 2.4 more days after गते 23 (2083 p26). On p12 the book's own
+# Mars is the one that runs 26′ fast over pp12-13 (test_rail.BOOK_ANOMALIES):
+# it crosses 83°20′ by गते 23's sunrise, Ketaki's only 0.7″ after it.
+PAPAMSHA_DIFFERENT = {(2083, 12, "२२मं.२"), (2083, 13, "२७मं.३"), (2083, 26, "२४शं.११")}
 
 DIGITS = "०१२३४५६७८९"
 
@@ -240,7 +242,7 @@ class TestPapamsha(unittest.TestCase):
 
     def test_mars_and_saturn(self):
         # Mars and Saturn are the Ketaki स्पष्ट ग्रह (ketaki.py), as in the
-        # book: every printed entry matches but the two in PAPAMSHA_DIFFERENT.
+        # book: every printed entry matches but those in PAPAMSHA_DIFFERENT.
         for year, printed in [(2083, PAPAMSHA), (2082, PAPAMSHA_2082)]:
             for page, text in printed.items():
                 ours = entries(self.ours(year, page))

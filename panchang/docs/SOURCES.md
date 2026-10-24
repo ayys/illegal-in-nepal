@@ -46,7 +46,8 @@ Every fortnight page prints a स्पष्ट ग्रह row for every day.
 nearly every page), each with its book and PDF page:
 
 - **hand:** all five planets on 2083 p21 (Jan 8-12, 2027), and Mercury on
-  2082 pp6-8 (Jun 12 – Jul 24, 2025);
+  2082 pp6-8 (Jun 12 – Jul 24, 2025) and p12 (Sep 10, 2025, where the OCR
+  read ७ as १);
 - **ocr:** cells two independent OCR passes read identically (the PDFs have
   no text layer; research/planets/book-ocr/ has the scripts), less 20 more
   than 15′ off, gross misreads of a sign or degree digit.

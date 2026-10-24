@@ -12,7 +12,7 @@ re-fit them.
 | `SANKRANTI_ERAS` | `panchanga.py` | per era | Sankranti ghati in the 1986–2076 books |
 | `REFRACTION_FROM` | `panchanga.py` | BS 2064 | दिनमान printed in the 2058–2066 books |
 | `DINAMANA_SHIFT`, `DINAMANA_HORIZON` | `surya.py` | 22′, −30′ | The दिनमान column of the 2083 book, April to January (section 6) |
-| How the books apply Ketaki | `ketaki.py` | five conventions | Mars–Saturn in the 2082 and 2083 स्पष्ट ग्रह tables (section 5) |
+| How the books apply Ketaki | `ketaki.py` | five conventions, `SUN_EQUATION` 115.2′, 1.2′ | Mars–Saturn in the 2082 and 2083 स्पष्ट ग्रह tables (section 5) |
 
 All figures below come from running the code in this directory. Regenerate
 them with `build_status.py` (constants 1 and 2) or the snippets given.
@@ -250,12 +250,13 @@ centre: with refraction only from 2064, without it before (section 3.1).
 neither the Surya Siddhanta (off by 1–8°) nor a modern ephemeris (off by
 5–50′, with odd jumps in the daily motion). The committee's notices name
 the केतकी ग्रहगणितम्, and implemented as written it lands within about a
-minute. Five conventions take it the rest of the way. None is a fitted
-number; each is a discrete choice, and each was found with the others
-fixed.
+minute. Five conventions take it the rest of the way. Four are discrete
+choices; the fifth, the Sun's equation, has two fitted coefficients, which
+come out as Kepler's terms for the Earth's eccentricity. Each was found
+with the others fixed.
 
-**Data.** `data/book_planets.csv`: 1841 values from both books, 68 read by
-hand (all five planets on 2083 p21, Mercury on 2082 pp6-8), the rest OCR
+**Data.** `data/book_planets.csv`: 1841 values from both books, 69 read by
+hand (all five planets on 2083 p21, Mercury on 2082 pp6-8 and 12), the rest OCR
 cells two independent passes read identically (research/planets/book-ocr/).
 
 **The conventions**, with the 90th-percentile error before and after:
@@ -264,17 +265,34 @@ cells two independent passes read identically (research/planets/book-ocr/).
 |---|---|---|
 | Planets at Kathmandu sunrise without refraction (2.7 min after the printed one) | the refracted sunrise | Mercury 90% 43″ → 37″; every planet improves (half an hour either way is far worse) |
 | Ketaki's Sun for the शीघ्र step at mean sunrise (06:00 Kathmandu mean time) | at true sunrise | Mars 131″ → 69″, Jupiter 42″ → 23″ |
-| The Sun's मन्दफल row read from perigee (reversed) | as printed | Mars 69″ → 15″, Venus 191″ → 45″, Saturn 12″ → 3″ |
+| The Sun's मन्दफल as `115.2′ sin k + 1.2′ sin 2k` | the table as printed; the table read from perigee | 90%: Mars 54″ / 12″ → 1.7″, Venus 191″ / 37″ → 5.8″, Mercury 146″ / 37″ → 4.5″ |
 | Saturn without the two optional short-period terms (p159) | with them | Saturn 4.6′ → 6″ median |
 | Mercury's distance from the table of verses 11-13; Mars's from the cosine of verse 8, unrounded | the cosine for both; the table for both | Mercury 229″ → 17″ median; Mars 63″ → 5″ median |
 
-The reversed Sun row is the only surprising one. The row is nearly
-symmetric, so reading it backwards changes only its e² asymmetry, by ±1-2′
-at 45° and 135°; but Mercury, Venus and Mars, each placed through the Sun,
-all agreed on that pattern before it was found. A likely reason: Ketaki
-works with the Earth ("सूर्यः स्थिरः भूर्भ्रमति"), and its रवि-उच्च 2:18:41 is
-the Earth's perihelion; taken as the Earth's उच्च, the row is read from the
-wrong end. Ketaki's own worked example uses the row as printed.
+The Sun's equation is the surprising one. Ketaki tabulates it in whole
+कला at 10° steps (p95). For a while the best fit was that table read
+backwards from perigee, which flips its e² asymmetry (±1-2′ at 45° and
+135°) and cut every planet's error several times over. It was still a
+table: Mercury and Venus kept a −13″ to −18″·sin k residual, the signature
+of an amplitude error. Fitting `A sin k + B sin 2k` directly gives
+A = 115.2′, B = +1.2′: Kepler's 2e and 5e²/4 for e = 0.01676, the Earth's
+eccentricity around 1900, with the e² term of the reversed reading. The
+books' software evidently evaluates the curve, not the table. Ketaki's own
+worked example uses the table as printed.
+
+| Sun's equation | Mercury | Venus | Mars | Jupiter | Saturn |
+|---|---|---|---|---|---|
+| table as printed (median / 90%) | 84 / 146″ | 65 / 191″ | 27 / 54″ | 11 / 22″ | 7 / 12″ |
+| table read from perigee | 15 / 37″ | 11 / 37″ | 5 / 12″ | 2 / 4″ | 0.8 / 2.9″ |
+| `115.2′ sin k + 1.2′ sin 2k` | **1.8 / 4.5″** | **1.4 / 5.8″** | **0.9 / 1.7″** | **0.3 / 0.6″** | **0.2 / 0.5″** |
+| exact Kepler, e = 0.01676 | 3.0 / 9.5″ | 2.3 / 4.6″ | 1.3 / 1.9″ | 0.3 / 0.8″ | 0.2 / 0.5″ |
+
+**Mercury's table.** With the Sun right, every Mercury value more than 30″
+off had its मन्दकेन्द्र within 10° of 30° or 330°, at any शीघ्र केन्द्र: the
+signature of one wrong entry. The 30° entry is 96, not 97. The commentary
+lists 96 (p157), and the verse's word is ऽङ्गनिधयः (अङ्ग 6, निधि 9), which
+had been read as ऽग्निनिधयः. With 96, Mercury values more than 30″ off go
+from 28 to 0. This also explains the "up to 3′ at the July 2025 station".
 
 Mercury's distance was found from the book's own irregular daily motion
 (2082 p7: steps of 1°09′52″ four days running, then 57′46″, 46′20″, 41′55″,
@@ -286,15 +304,15 @@ whole-number table, interpolated.
 
 | Planet | median | 90% | hand-read |
 |---|---|---|---|
-| Saturn | 1 | 3 | ≤1 |
-| Jupiter | 2 | 5 | ≤5 |
-| Mars | 5 | 15 | ≤16 |
-| Venus | 11 | 45 | ≤17 |
-| Mercury | 16 | 41 | median 24; up to 3′ at the July 2025 station |
+| Saturn | 0.2 | 0.5 | ≤1 |
+| Jupiter | 0.3 | 0.6 | ≤1 |
+| Mars | 0.9 | 1.7 | ≤2 |
+| Venus | 1.4 | 5.8 | ≤1 |
+| Mercury | 1.8 | 4.5 | ≤4 (49 values, including the July 2025 station) |
 
-The books print whole arc-seconds, so Saturn and Jupiter are exact. What is
-left in the others is smooth, under a minute, and largest where a केन्द्र
-crosses a table row a fraction of a day from the book's crossing.
+The books print whole arc-seconds, so most of this is rounding. Two
+"misses" were the data: a hand-read ३४ taken for ३८ (2025-07-22) and an OCR
+७ taken for १ (2025-09-10), both now corrected in `book_planets.csv`.
 
 The tables are Ketkar's verses decoded (भूतसंख्या, digits right to left).
 Where the commentary's digit list or a low-resolution reading differed, the

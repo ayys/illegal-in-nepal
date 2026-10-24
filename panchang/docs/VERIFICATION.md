@@ -21,8 +21,8 @@ python3 -m unittest test_surya test_panchanga test_editorial test_ketaki test_ra
 | आनन्दादि | 15/15 | `ANANDADI` (2083 p21) |
 | Lagna starts | all within 1 minute | `LAGNA` (2083 p21) |
 | Sun, Moon, Rahu spashta | Sun within 4″, Rahu within 3″, Moon within 15″ (p21) | `SPASHTA`, `SUN_MOON` |
-| Mars to Saturn spashta (2082 and 2083, 1841 values) | median 1″ Saturn, 2″ Jupiter, 5″ Mars, 11″ Venus, 16″ Mercury; 90% within 3, 5, 15, 45, 41″ | `data/book_planets.csv`, `test_ketaki.py` |
-| Rail planet lines, 2083 pp2-27 (179) | every line found on the same गते, within 120″ of position at the planet's speed (Mercury 60 min); stations within a day | `data/book_rail.csv`, `test_rail.py` |
+| Mars to Saturn spashta (2082 and 2083, 1841 values) | median 0.2″ Saturn, 0.3″ Jupiter, 0.9″ Mars, 1.4″ Venus, 1.8″ Mercury; 90% within 0.5, 0.6, 1.7, 5.8, 4.5″; every hand-read value within 4″ | `data/book_planets.csv`, `test_ketaki.py` |
+| Rail planet lines, 2083 pp2-27 (179) | every line found on the same गते; Mars to Saturn 138/164 within a minute, 75 exact, all within 30″ of position; Rahu 4-20 min late; stations within a day | `data/book_rail.csv`, `test_rail.py` |
 | राशि प्रवेश box (22 pages) | 18 exact; the other 4 are where the book's box disagrees with its own rail | `test_rail.py` |
 | उदय/अस्त (17) | 7 within an hour; 10 one to eight days off (open) | `test_rail.py` |
 | Planet status box (pp2, 27) | both exact | `test_rail.py` |

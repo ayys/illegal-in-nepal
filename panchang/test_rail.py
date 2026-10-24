@@ -21,12 +21,13 @@ DATA = Path(__file__).resolve().parent / "data" / "book_rail.csv"
 # The rail's times follow the स्पष्ट ग्रह values, so a planet off by a few
 # arc-seconds is off by (arc-seconds / its speed) in time: Mars near its
 # January 2027 station moves 3′ a day. Allowed: POSITION arc-seconds at the
-# planet's speed that day, and at least MINUTES. Near stations the tables'
-# kinks leave Ketaki up to ~2′ from the book (Mars on 2027-02-03, 2083 p22,
-# is 141 minutes at 12′ a day); Mercury has a few arc-minute misses of its
-# own (docs/CALIBRATION.md section 5).
-POSITION = 120
-MINUTES = {"mercury": 60}
+# planet's speed that day, and at least MINUTES (2 for Mars to Saturn: the
+# book rounds its own way, 138 of 164 lines are within one minute). Venus
+# near inferior conjunction (2083 pp15-17) and Saturn on 2027-04-07 are
+# 25-30″ out; Rahu runs 4-20 minutes late, growing through the year (its
+# node rate differs from the book's by ~2″ a year).
+POSITION = 30
+MINUTES = {"rahu": 25}
 # The book's own Mars runs 40.2′ a day from 2026-09-05 to 09-13 (2083 pp12-13)
 # against Ketaki's 37.3′, 26′ ahead by 09-13, then jumps back on 09-16: a
 # daily motion carried forward and corrected. Its rail lines there inherit it.
@@ -147,7 +148,7 @@ class RailTest(unittest.TestCase):
                 hours, minutes = map(int, line["clock"].split(":"))
                 ours = entry["clock"][0] * 60 + entry["clock"][1]
                 speed = self.speed(line["body"], date.fromisoformat(row["date"]))
-                allowed = max(MINUTES.get(line["body"], 20), POSITION / speed)
+                allowed = max(MINUTES.get(line["body"], 2), POSITION / speed)
                 self.assertLessEqual(abs(ours - (hours * 60 + minutes)), allowed)
 
     def test_boxes(self):

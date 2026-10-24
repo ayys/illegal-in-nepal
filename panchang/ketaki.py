@@ -23,7 +23,7 @@ The method, step by step:
 Five conventions are not in the text and were found from the books' स्पष्ट
 ग्रह tables (docs/CALIBRATION.md, "Ketaki planets"): the planets at
 Kathmandu sunrise without refraction but the Sun of step 4 at mean sunrise;
-the Sun's row read from perigee; Saturn's optional short-period terms (p159)
+the Sun's मन्दफल by a two-term formula instead of its table; Saturn's optional short-period terms (p159)
 left out; Mars's distance by the cosine of verse 8, unrounded; Mercury's by
 the table of verses 11-13.
 
@@ -80,11 +80,21 @@ APOGEE_PER_CYCLE = {"sun": 225, "mars": 321, "mercury": 117, "jupiter": 126, "ve
 
 # मन्दफल at 0°, 10°, … 180° of the मन्दकेन्द्र: the Sun in कला (p95), the
 # planets in असु (0.1°, p156-158). Beyond 180° the row is read backwards with
-# the sign reversed.
+# the sign reversed. Mercury's 30° entry is 96 ("ऽङ्गनिधयः", and the
+# commentary's list, p157); read as 97 it put the books' Mercury up to 3′ off
+# whenever the मन्दकेन्द्र passed 30° or 330°.
 SUN_MANDA = [0, 20, 39, 57, 73, 87, 99, 108, 113, 115, 114, 109, 101, 89, 75, 59, 40, 20, 0]
+# What the books use instead of SUN_MANDA, in कला: 115.2 sin k + 1.2 sin 2k
+# of the मन्दकेन्द्र k. These are the first two terms of Kepler's equation of
+# centre, 2e and 5e²/4, for e = 0.01676, the Earth's eccentricity when
+# Ketaki was written. The table is the same curve rounded to whole कला at 10°
+# steps and read the other way round; read as printed it is 1-2′ off, which
+# is why reading it backwards from perigee looked right. Fitted to the 1841
+# book values (docs/CALIBRATION.md, "Ketaki planets").
+SUN_EQUATION = (115.2, 1.2)
 MANDA = {
     "mars": [0, 17, 33, 48, 63, 76, 87, 96, 103, 106, 107, 104, 98, 88, 75, 59, 41, 21, 0],
-    "mercury": [0, 32, 65, 97, 125, 153, 178, 199, 217, 229, 236, 236, 228, 211, 185, 149, 105, 54, 0],
+    "mercury": [0, 32, 65, 96, 125, 153, 178, 199, 217, 229, 236, 236, 228, 211, 185, 149, 105, 54, 0],
     "jupiter": [0, 9, 18, 26, 34, 41, 46, 51, 54, 55, 55, 53, 49, 44, 37, 29, 20, 10, 0],
     "venus": [0, 1, 3, 4, 5, 6, 7, 7, 8, 8, 8, 7, 7, 6, 6, 5, 3, 1, 0],
     "saturn": [0, 10, 21, 30, 39, 47, 54, 59, 63, 64, 64, 62, 58, 52, 45, 34, 24, 12, 0],
@@ -150,19 +160,21 @@ def mean_sunrise(jd: float) -> float:
     return surya.local_julian_day(day, 6 + 5.75 - surya.LONGITUDE / 15)
 
 
+def _sun(moment: float) -> float:
+    k = math.radians(mean("sun", moment) - apogee("sun", moment))
+    first, second = SUN_EQUATION
+    return surya.norm(mean("sun", moment) - (first * math.sin(k) + second * math.sin(2 * k)) / 60)
+
+
 def true_sun(jd: float) -> float:
     """Ketaki's स्पष्ट रवि, as the books use it in the शीघ्र step.
 
-    Two departures from the text: it is taken at the day's mean sunrise, not
-    at `jd`, and the Sun's row is read from perigee, i.e. backwards. A likely
-    reason for the second: Ketaki works with the Earth ("सूर्यः स्थिरः
-    भूर्भ्रमति"), and its रवि-उच्च 2:18:41 is the Earth's perihelion. The row is
-    nearly symmetric, so this only flips its e² asymmetry (±1-2′).
+    Two departures from the text. It is taken at the day's mean sunrise, not
+    at `jd`. And the मन्दफल is not the 10° table of whole कला (p95) but the
+    smooth SUN_EQUATION, which takes the books' Mercury from a 15″ to a 2″
+    median error and every planet below its table residual.
     """
-    moment = mean_sunrise(jd)
-    k = surya.norm(mean("sun", moment) - apogee("sun", moment))
-    value, sign = _row(SUN_MANDA[::-1], k)
-    return surya.norm(mean("sun", moment) - sign * value / 60)
+    return _sun(mean_sunrise(jd))
 
 
 @lru_cache(maxsize=None)
@@ -213,9 +225,14 @@ def heliocentric(body: str, jd: float) -> tuple[float, float, float]:
 def geocentric(body: str, jd: float) -> float:
     """Sidereal longitude of `body` at `jd`, meant to be a sunrise (see
     `sunrise`): the शीघ्र step uses that day's mean-sunrise Sun. For other
-    moments use `longitude`."""
+    moments use `table_longitude` or `longitude`."""
+    return _shighra(body, jd, true_sun(jd))
+
+
+def _shighra(body: str, jd: float, sun: float) -> float:
+    """The heliocentric planet at `jd` seen from the Earth, with the Sun at
+    `sun`."""
     helio, phala, k = heliocentric(body, jd)
-    sun = true_sun(jd)
     kendra = surya.norm(helio - sun)
     value, sign = _row(SHIGHRA[body], kendra)
     value /= 10
@@ -230,6 +247,23 @@ def geocentric(body: str, jd: float) -> float:
     if body in ("mercury", "venus"):
         return surya.norm(sun + sign * value)
     return surya.norm(helio - sign * value)
+
+
+def table_longitude(body: str, jd: float) -> float:
+    """`body` at any moment as the books time the rail's entries: the day
+    runs from the printed (refracted) sunrise, the स्पष्ट ग्रह row is its value
+    there, and in between the formulas run on, the planet from the geometric
+    sunrise and the Sun from the mean sunrise. So it keeps the tables' kinks.
+    Timed this way, 134 of the 154 Mars to Saturn rail lines in the 2083 book
+    are within a minute; linear between geometric sunrises, 17 (2-3 minutes
+    late)."""
+    day = surya.from_julian_day(jd).date()
+    printed = surya.sunrise(day)
+    if jd < printed:
+        day -= timedelta(days=1)
+        printed = surya.sunrise(day)
+    rise = sunrise(day)
+    return _shighra(body, jd + rise - printed, _sun(mean_sunrise(rise) + jd - printed))
 
 
 def longitude(body: str, jd: float) -> float:
@@ -260,19 +294,7 @@ def continuous(body: str, jd: float) -> float:
     after = sunrise(day + timedelta(days=1))
     s0, s1 = true_sun(rise), true_sun(after)
     sun = surya.norm(s0 + ((s1 - s0 + 180) % 360 - 180) * (jd - rise) / (after - rise))
-    helio, phala, k = heliocentric(body, jd)
-    kendra = surya.norm(helio - sun)
-    value, sign = _row(SHIGHRA[body], kendra)
-    value /= 10
-    if body == "mars":
-        r = MEAN_DISTANCE["mars"] + MARS_ECCENTRIC * math.cos(math.radians(k + phala / 2))
-        karna = 100 + MEAN_DISTANCE["mars"] - _row(MARS_KARNANKA, kendra)[0]
-        value *= karna / (r + karna - MEAN_DISTANCE["mars"])
-    elif body == "mercury":
-        value *= _row(MERCURY_DISTANCE, k)[0] / MEAN_DISTANCE["mercury"]
-    if body in ("mercury", "venus"):
-        return surya.norm(sun + sign * value)
-    return surya.norm(helio - sign * value)
+    return _shighra(body, jd, sun)
 
 
 def station(body: str, start: float, end: float) -> tuple[float, str] | None:

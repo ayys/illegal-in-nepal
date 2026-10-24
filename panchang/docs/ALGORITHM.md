@@ -380,24 +380,32 @@ refraction (`ketaki.sunrise`, 2.7-2.8 minutes after the printed sunrise):
    `शीघ्रकर्ण / (r + शीघ्रकर्ण − 152)`, where `शीघ्रकर्ण = 252 − table` and
    `r = 152 + 14 cos(मन्दकेन्द्र + मन्दफल/2)`; Mercury by `r / 39`, with r
    read from Ketaki's distance table (47 … 31).
-5. **The Sun of step 4** is Ketaki's Sun at the day's mean sunrise (06:00
-   Kathmandu mean time), with its मन्दफल row read from perigee.
+5. **The Sun of step 4** is Ketaki's mean Sun at the day's mean sunrise
+   (06:00 Kathmandu mean time), less `115.2′ sin k + 1.2′ sin 2k` for its
+   मन्दकेन्द्र k: the first two terms of Kepler's equation of centre
+   (e = 0.01676) in place of Ketaki's whole-minute table.
 
 Points 4-5 and the choice of r are the books' conventions, found from
 their tables: [CALIBRATION.md](CALIBRATION.md#5-ketaki-planets).
 
 > Example, 8 January 2027 (2083 p21). Mars: 7 चक्र and 5756 days after the
 > epoch, mean 3।13।3।36, apogee 4।12।22।53, मन्दकेन्द्र 330.7°, मन्दफल
-> +4.70°, heliocentric 3।17।45।29; Sun 8।23।14।36, शीघ्र केन्द्र 204.5°;
-> geocentric 4।16।26।31 (book 4।16।26।41). Mercury 8।27।14।46 (book …47),
-> Jupiter 4।1।59।25 (…27), Venus 7।7।9।43 (…35), Saturn 11।14।16।50 (…50).
+> +4.70°, heliocentric 3।17।45।33; Sun 8।23।14।28, शीघ्र केन्द्र 204.5°;
+> geocentric 4।16।26।41. Mercury 8।27।14।47, Jupiter 4।1।59।27, Venus
+> 7।7।9।35, Saturn 11।14।16।50. All five are the book's to the second.
 
 Because the tables are interpolated linearly, a planet's daily motion
 changes abruptly each time a केन्द्र crosses a 10° row. That is why the
 book's Mars "turns retrograde" overnight on 2027-01-15/16 (from +3′ a day
 to −12′), five days after the real planet: the शीघ्र केन्द्र crosses 200°.
-For moments other than sunrise, `ketaki.longitude` interpolates between
-the sunrises, as a reader of the daily table would.
+**Moments between sunrises.** The rail's entry times follow
+`ketaki.table_longitude`: the day runs from the printed (refracted)
+sunrise, where the value is the स्पष्ट ग्रह row, and the formulas run on
+from there, the planet from the geometric sunrise and the Sun from the mean
+sunrise. It keeps the tables' kinks. Timed so, 138 of 164 rail lines in the
+2083 book are within a minute and 75 exact. Linear between geometric
+sunrises, only 17 were within a minute, nearly all 2-3 minutes late.
+`ketaki.longitude` (linear) is still what the editorial boxes use.
 
 ### The kundali
 

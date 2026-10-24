@@ -13,7 +13,7 @@ from other publishers, for example the 2076 book is हिमाल पञ्च
 |---|---|---|---|
 | Samvatsara | Header strip, every page: "रौद्रनामसंवत्सरः" | Yes | 20/20 years, every header page of 2082 and 2083 |
 | पापर्क्षाणि | End of the header strip: "पापर्क्षाणि- अश्वि.भ.म.पूफा.उफा.ह.स्वा." | Yes | 50/51 pages (2082 and 2083) |
-| पापांश | Box under the kundali: "सू.१, ४सू.२, मं.६, २मं.७, शं.७, ४शं.८, रा.१०के.४" | Yes | Sun 123/124 entries, Rahu/Ketu 29/29, Mars 81/82, Saturn 32/33; whole box on 24 pages |
+| पापांश | Box under the kundali: "सू.१, ४सू.२, मं.६, २मं.७, शं.७, ४शं.८, रा.१०के.४" | Yes | Sun 123/124 entries, Rahu/Ketu 29/29, Mars 80/82, Saturn 32/33; whole box on 23 pages |
 
 Nothing in these three fields is editorial. Mars and Saturn come from the
 Ketaki tables, as in the book (see [Mars and Saturn](#mars-and-saturn)).
@@ -162,9 +162,9 @@ then "gate + label + new value" for every change:
 - Sun, all entries. The one miss is "१सू.१" on 2083 p27, which is
   बैशाख 1 of the next year, after our page ends.
 - Rahu/Ketu, all entries.
-- Mars 81 of 82 entries, Saturn 32 of 33.
-- Whole box exact on 24 pages: 2083 pp2-4, 6, 7, 9-12, 14-25, and 2082
-  pp2, 20 and 21. The rest differ in the two entries above or the Sun's
+- Mars 80 of 82 entries, Saturn 32 of 33.
+- Whole box exact on 23 pages: 2083 pp2-4, 6, 7, 9-11, 14-25, and 2082
+  pp2, 20 and 21. The rest differ in the three entries below or the Sun's
   2083 p27 entry.
 
 ## Mars and Saturn
@@ -176,6 +176,8 @@ linearly between sunrises. With them:
 - पापर्क्षाणि: every page but one (2082 p4, where the book leaves out "२३").
   Before, with JPL elements, 2082 p10 also differed, because the book's Mars
   ran 0.5° ahead of the real planet.
-- पापांश: Mars 81 of 82 entries, Saturn 32 of 33, the whole box on 24
-  pages. The two misses (2083 p13 "२७मं.३", p26 "२४शं.११") are dated a day
-  or more before the book's own Mars and Saturn reach the navamsha.
+- पापांश: Mars 80 of 82 entries, Saturn 32 of 33, the whole box on 23
+  pages. Two misses (2083 p13 "२७मं.३", p26 "२४शं.११") are dated a day or
+  more before the book's own Mars and Saturn reach the navamsha. The third
+  (p12 "२२मं.२") is the book's Mars running 26′ fast over pp12-13: it
+  crosses 83°20′ by गते 23's sunrise, Ketaki's only 0.7″ after.

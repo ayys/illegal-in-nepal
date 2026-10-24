@@ -5,7 +5,7 @@ Kathmandu sunrise, each with its book and PDF page:
   2082  https://giwmscdnone.gov.np/media/pages/files/npnbs_2082_ussfian.pdf
   2083  https://giwmscdnone.gov.np/media/pages/files/FORMAT-2083-A_7f75xmb.pdf
 `hand` rows are read off the page: all five planets on 2083 p21, Mercury on
-2082 pp6-8. `ocr` rows are cells two independent OCR passes read the same
+2082 pp6-8 and 12. `ocr` rows are cells two independent OCR passes read the same
 (research/planets/book-ocr/), less 20 that are more than 15′ off, gross
 misreads of a sign or degree digit.
 """
@@ -74,22 +74,18 @@ class WorkedExampleTest(unittest.TestCase):
 
 
 class BookTest(unittest.TestCase):
-    # Hand-read values, arc-seconds. Mercury is looser: around its July 2025
-    # station a शीघ्र row crossing falls a fraction of a day apart from the
-    # book's (up to 3′ on 2025-07-20 to 07-24).
-    TOLERANCE = {"saturn": 2, "jupiter": 6, "mars": 20, "venus": 20, "mercury": 70}
-    MERCURY_STATION = {"2025-07-20", "2025-07-21", "2025-07-23", "2025-07-24"}
+    # Hand-read values, arc-seconds: the books print whole seconds.
+    TOLERANCE = 4
 
     def test_hand_read(self):
         for body, values in residuals("hand").items():
             for day, error in values:
-                limit = 180 if body == "mercury" and day in self.MERCURY_STATION else self.TOLERANCE[body]
                 with self.subTest(body=body, day=day):
-                    self.assertLessEqual(abs(error), limit)
+                    self.assertLessEqual(abs(error), self.TOLERANCE)
 
     def test_ocr(self):
         # (median, 90th percentile) bounds, arc-seconds, over two years.
-        bounds = {"saturn": (2, 5), "jupiter": (3, 8), "mars": (8, 20), "venus": (15, 60), "mercury": (20, 60)}
+        bounds = {"saturn": (1, 1), "jupiter": (1, 1), "mars": (1.5, 3), "venus": (2, 7), "mercury": (3, 6)}
         for body, values in residuals("ocr").items():
             errors = sorted(abs(e) for _, e in values)
             with self.subTest(body=body, n=len(errors)):

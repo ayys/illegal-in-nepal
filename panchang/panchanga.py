@@ -217,16 +217,36 @@ def _boundaries(body: str) -> list[float]:
     return [k * PADA_WIDTH for k in range(108)]
 
 
+def _refine(body: str, x: float, jd: float, rise: float, after: float) -> float:
+    """When between `rise` and `after` `body` reaches `x` by
+    ketaki.table_longitude, starting from the linear estimate `jd`; `jd`
+    itself if the search leaves the day (a planet near its station)."""
+    t = jd
+    for _ in range(20):
+        a = ketaki.table_longitude(body, t)
+        rate = ((ketaki.table_longitude(body, t + 1e-3) - a + 180) % 360 - 180) / 1e-3
+        if rate == 0:
+            return jd
+        step = ((a - x + 180) % 360 - 180) / rate
+        t -= step
+        if not rise <= t < after:
+            return jd
+        if abs(step) < 1e-7:
+            return t
+    return jd
+
+
 def planet_events(day: date, gate: int) -> list[dict]:
     """The ग्रहचार rail's entries for Mars to Saturn and Rahu on `day`.
 
-    Each planet's स्पष्ट ग्रह is taken as moving linearly from this sunrise to
-    the next, as a reader of the daily table would, and every boundary it
-    crosses is an entry: the new pada (or nakshatra), the sign when the
-    boundary starts one, and "again" when a planet in वक्री motion re-enters
-    a division it has left (printed पुनः; 2083 p21 "२ पुनःपू.फा. १ मा मंगल").
+    Every boundary the स्पष्ट ग्रह cross between this row and the next is an
+    entry: the new pada (or nakshatra), the sign when the boundary starts
+    one, and "again" when a planet in वक्री motion re-enters a division it has
+    left (printed पुनः; 2083 p21 "२ पुनःपू.फा. १ मा मंगल"). The day runs from
+    the printed sunrise; Mars to Saturn are timed by ketaki.table_longitude,
+    Rahu linearly.
     """
-    rise, after = ketaki.sunrise(day), ketaki.sunrise(day + timedelta(days=1))
+    rise, after = surya.sunrise(day), surya.sunrise(day + timedelta(days=1))
     events = []
     for body in ketaki.PLANETS + ["rahu"]:
         a, b = _planet_longitude(body, day), _planet_longitude(body, day + timedelta(days=1))
@@ -238,6 +258,8 @@ def planet_events(day: date, gate: int) -> list[dict]:
             if not 0 < ahead <= abs(step):
                 continue
             jd = rise + ahead / abs(step) * (after - rise)
+            if body != "rahu":
+                jd = _refine(body, x, jd, rise, after)
             # The division entered starts at x going forward, ends at x going back.
             inside = surya.norm(x + (1e-7 if step > 0 else -1e-7))
             entry = _ending(0, None, jd, surya.sunrise(day), day)
