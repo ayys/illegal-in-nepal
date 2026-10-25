@@ -21,9 +21,9 @@ python3 mutation_check.py                          # every rule must fail a test
 | Karana names and ends | all | `KARANAS` (2083 pp2, 21) |
 | आनन्दादि | 15/15 | `ANANDADI` (2083 p21) |
 | Lagna starts | all within 1 minute | `LAGNA` (2083 p21) |
-| Sun, Moon, Rahu spashta | Sun within 4″, Rahu within 3″, Moon within 15″ (p21) | `SPASHTA`, `SUN_MOON` |
+| Sun, Moon, Rahu spashta | Sun within 2″, Rahu within 1″ (and 325 of 359 OCR days to the second), Moon within 15″ (p21) | `SPASHTA`, `SUN_MOON`, `data/book_planets.csv` |
 | Mars to Saturn spashta (2082 and 2083, 1841 values) | median 0.2″ Saturn, 0.3″ Jupiter, 0.9″ Mars, 1.4″ Venus, 1.8″ Mercury; 90% within 0.5, 0.6, 1.7, 5.8, 4.5″; every hand-read value within 4″ | `data/book_planets.csv`, `test_ketaki.py` |
-| Rail planet lines, 2083 pp2-27 (179) | every line found on the same गते; Mars to Saturn 138/164 within a minute, 75 exact, all within 30″ of position; Rahu 4-20 min late |
+| Rail planet lines, 2083 pp2-27 (179) | every line found on the same गते; 144/164 within a minute, 78 exact (Rahu 6/6), all within 30″ of position |
 | वक्री/मार्गी (13) | exactly the book's 13, none extra; Mars p21 within 8 min, the rest 2-14 hours off (open, each pinned; some printed times contradict the book's own rows, [CALIBRATION.md §8](CALIBRATION.md#8-वक्रीमार्गी-times-open)) | `data/book_rail.csv`, `test_rail.py` |
 | राशि प्रवेश box (22 pages) | 18 exact; the other 4 are where the book's box disagrees with its own rail | `test_rail.py` |
 | उदय/अस्त (17) | exactly the book's 17, none extra; 7 within an hour, 10 one to eight days off, six of them at our clock time a whole number of days away (open, each pinned; [CALIBRATION.md §9](CALIBRATION.md#9-उदयअस्त-the-moment-matches-the-date-often-doesnt)) | `test_rail.py` |
@@ -126,7 +126,7 @@ checks the result: it breaks each constant, table entry and rule (about
 160 of them) in a scratch copy, and each must fail a book test, or at least
 a snapshot.
 
-Last run: 160 mutations. 154 fail a book test. Four fail only a snapshot:
+Last run: 164 mutations. 158 fail a book test. Four fail only a snapshot:
 the Saturn मन्दफल and Jupiter शीघ्रफल rows the 2082-83 books never reach,
 Venus's apogee motion (under 0.1″ in two years), and the rail's linear
 fallback near a station. Two survive, as expected:
@@ -173,8 +173,8 @@ fallback near a station. Two survive, as expected:
 
 **`test_rail.py`**: the ग्रहचार rail.
 
-- Every planet line on its गते, within 30″ of position (Rahu 25 minutes).
-- At least 138 of 164 within a minute.
+- Every planet line on its गते, within 30″ of position.
+- At least 144 of 164 within a minute.
 - Exactly the book's 13 stations, each at its documented offset (open but
   pinned).
 - Every उदय/अस्त within an hour, or at its documented offset.

@@ -349,14 +349,14 @@ that begins after sunrise to the last before the next sunrise.
 |---|---|
 | Sun | SS true Sun at Kathmandu sunrise |
 | Moon | SS true Moon at Kathmandu sunrise |
-| Rahu | Modern mean node (Meeus, ch. 22), minus Lahiri, plus −50.4″, at Ujjain mean sunrise |
+| Rahu | Ketaki's mean राहु at 06:00 Kathmandu mean time, plus 16.2″ |
 
-The modern mean node is
-`125.04452 − 1934.136261 T + 0.0020708 T² + T³/450000`. Ujjain mean
-sunrise is 06:00 local mean time at Ujjain, which is 06:41:56 NST. Why that
-moment and that offset: [CALIBRATION.md](CALIBRATION.md#2-rahu-504-at-ujjain-mean-sunrise).
+Ketaki's राहु (pp48, 51, 58) is its क्षेपक 9:27:37 at the epoch, plus
+11:22:13:58 for each 6940-day चक्र, less `A/19` degrees and `A/46` minutes
+for the A days since. Why that moment and that offset:
+[CALIBRATION.md](CALIBRATION.md#2-rahu-ketakis-mean-राहु-at-0600-kathmandu-mean-time).
 
-> Example: Rahu 9।28।13।11 (book 9।28।13।09).
+> Example: Rahu 9।28।13।9 (book 9।28।13।09).
 
 ### Mars to Saturn: the Ketaki tables
 

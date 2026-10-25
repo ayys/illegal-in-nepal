@@ -166,7 +166,7 @@ MALEFICS = ["sun", "mars", "saturn", "rahu", "ketu"]
 
 def malefics(jd: float) -> dict[str, float]:
     """Sidereal longitudes of the five malefics."""
-    rahu = surya.rahu(jd)
+    rahu = ketaki.rahu(jd)
     return {
         "sun": surya.true_sun(jd),
         "mars": planet("mars", jd),
@@ -318,9 +318,9 @@ def navamsha(longitude: float) -> int:
 def _malefics_at_sunrise(day: date) -> dict[str, float]:
     found = malefics(surya.sunrise(day))
     # Mars and Saturn as the day's स्पष्ट ग्रह (ketaki.at_sunrise), and the
-    # book's Rahu is fixed to Ujjain mean sunrise (see surya.RAHU_OFFSET).
+    # book's राहु is Ketaki's at 06:00 Kathmandu mean time (ketaki.rahu_of_day).
     found["mars"], found["saturn"] = ketaki.at_sunrise("mars", day), ketaki.at_sunrise("saturn", day)
-    rahu = surya.rahu(surya.ujjain_mean_sunrise(day))
+    rahu = ketaki.rahu_of_day(day)
     found["rahu"], found["ketu"] = rahu, surya.norm(rahu + 180)
     return found
 

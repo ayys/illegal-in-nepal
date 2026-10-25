@@ -61,6 +61,18 @@ APOGEE_AT_EPOCH = {
     "sun": _arc(2, 18, 41), "mars": _arc(4, 11, 41), "mercury": _arc(7, 23, 26),
     "jupiter": _arc(5, 20, 13), "venus": _arc(9, 17, 40), "saturn": _arc(8, 8, 27),
 }
+# p48 क्षेपक, p51 ध्रुवक and p58 daily motion of राहु, the mean node:
+# 9:27:37 at the epoch, 11:22:13:58 per चक्र, and A/19 degrees + A/46
+# minutes taken away for A days (it moves backwards). The worked example,
+# 5477 days, gives "राहोर्मध्यमा गतिः" 2:9:45:9.
+RAHU_AT_EPOCH = _arc(9, 27, 37)
+RAHU_PER_CYCLE = _arc(11, 22, 13, 58)
+# The books' राहु is Ketaki's at 06:00 Kathmandu mean time, 16.2″ further
+# on: 325 of the 363 printed values two OCR passes agree on (2082 and 2083)
+# to the second, the rest within one, with no drift (−0.16″ a year). The
+# Lahiri mean node of Meeus, used before, drifts 2.35″ a year against it.
+RAHU_OFFSET = 16.2 / 3600
+
 # p50-51 ध्रुवक: what each mean longitude gains in a चक्र beyond whole turns.
 PER_CYCLE = {
     "sun": _arc(0, 0, 7, 38), "mars": _arc(1, 6, 47, 20), "mercury": _arc(10, 20, 49, 50),
@@ -135,6 +147,17 @@ def mean(body: str, jd: float) -> float:
     चक्राणि भुक्तानि तेषां ग्रहा आनीय क्षेपकेषु योज्याः")."""
     cycles, days = divmod(jd - EPOCH, CYCLE)
     return surya.norm(MEAN_AT_EPOCH[body] + cycles * PER_CYCLE[body] + PER_DAY[body] * days)
+
+
+def rahu(jd: float) -> float:
+    """Ketaki's mean राहु at `jd`, with the books' RAHU_OFFSET."""
+    cycles, days = divmod(jd - EPOCH, CYCLE)
+    return surya.norm(RAHU_AT_EPOCH + cycles * RAHU_PER_CYCLE - (days / 19 + days / 46 / 60) + RAHU_OFFSET)
+
+
+def rahu_of_day(day: date) -> float:
+    """The स्पष्ट ग्रह table's राहु for `day`: at 06:00 Kathmandu mean time."""
+    return rahu(mean_sunrise(sunrise(day)))
 
 
 def apogee(body: str, jd: float) -> float:

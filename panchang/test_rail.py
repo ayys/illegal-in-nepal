@@ -24,10 +24,9 @@ DATA = Path(__file__).resolve().parent / "data" / "book_rail.csv"
 # planet's speed that day, and at least MINUTES (2 for Mars to Saturn: the
 # book rounds its own way, 138 of 164 lines are within one minute). Venus
 # near inferior conjunction (2083 pp15-17) and Saturn on 2027-04-07 are
-# 25-30″ out; Rahu runs 4-20 minutes late, growing through the year (its
-# node rate differs from the book's by ~2″ a year).
+# 25-30″ out.
 POSITION = 30
-MINUTES = {"rahu": 25}
+MINUTES = {}
 # The book's own Mars runs 40.2′ a day from 2026-09-05 to 09-13 (2083 pp12-13)
 # against Ketaki's 37.3′, 26′ ahead by 09-13, then jumps back on 09-16: a
 # daily motion carried forward and corrected. Its rail lines there inherit it.
@@ -202,12 +201,13 @@ class RailTest(unittest.TestCase):
                          {"mars": (17, 17), "mercury": (14, 12), "jupiter": (11, 11), "venus": (10, 8), "saturn": (15, 15)})
 
     def test_rail_minutes(self):
-        # Mars to Saturn timed by ketaki.table_longitude: 138 of 164 lines
-        # within a minute, 75 exact. Linear between geometric sunrises, 17.
+        # Mars to Saturn timed by ketaki.table_longitude, राहु linearly from
+        # the geometric sunrise: 144 of 164 lines within a minute, 78 exact.
+        # Linear between geometric sunrises for all, 17.
         within = exact = 0
         for line in self.lines:
             page = int(line["page"])
-            if line["body"] == "rahu" or line["kind"] in ("station", "heliacal") \
+            if line["kind"] in ("station", "heliacal") \
                     or (page, line["body"], line["detail"]) in BOOK_ANOMALIES:
                 continue
             [(row, entry)] = [(row, e) for row in self.pages[page]["rows"] for e in row["planet_events"]
@@ -217,8 +217,8 @@ class RailTest(unittest.TestCase):
             gap = abs(entry["clock"][0] * 60 + entry["clock"][1] - (hours * 60 + minutes))
             within += gap <= 1
             exact += gap == 0
-        self.assertGreaterEqual(within, 138)
-        self.assertGreaterEqual(exact, 75)
+        self.assertGreaterEqual(within, 144)
+        self.assertGreaterEqual(exact, 78)
 
     def test_boxes(self):
         for page, printed in BOXES.items():

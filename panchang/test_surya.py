@@ -38,12 +38,6 @@ class TimeScaleTest(unittest.TestCase):
         self.assertEqual(surya._mean(surya.KALI_JD, "sun"), 0.0)
         self.assertEqual(surya._mean(surya.KALI_JD, "moon"), 0.0)
 
-    def test_ujjain_mean_sunrise(self):
-        # 6:00 local mean time at Ujjain is 0:57:04 UTC, 6:42:04 NST.
-        moment = surya.from_julian_day(surya.ujjain_mean_sunrise(date(2026, 1, 1)))
-        self.assertEqual((moment.hour, moment.minute), (6, 41))
-        self.assertAlmostEqual(moment.second, 56, delta=1)
-
 
 class MotionTest(unittest.TestCase):
     def test_sun_apogee_near_77_degrees(self):
@@ -64,7 +58,6 @@ class MotionTest(unittest.TestCase):
             with self.subTest(jd=jd):
                 self.assertTrue(0.95 < wrap(surya.true_sun(jd + 1) - surya.true_sun(jd)) < 1.03)
                 self.assertTrue(11.5 < wrap(surya.true_moon(jd + 1) - surya.true_moon(jd)) < 15.5)
-                self.assertAlmostEqual(wrap(surya.rahu(jd + 1) - surya.rahu(jd)), -0.0530, delta=0.0005)
 
     def test_lahiri(self):
         self.assertAlmostEqual(surya.lahiri(J2000), 23.857092, places=6)

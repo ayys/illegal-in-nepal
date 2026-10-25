@@ -8,7 +8,7 @@ re-fit them.
 | Constant | Where | Value | Fitted from |
 |---|---|---|---|
 | `MOON_APOGEE_CORRECTION` | `surya.py` | −1.71° | Tithi, nakshatra and yoga end times in 5 fortnights of the 2082 and 2083 books |
-| `RAHU_OFFSET` and the Ujjain-sunrise moment | `surya.py` | −50.4″ | राहु in the स्पष्ट ग्रह tables of the 2082 and 2083 books |
+| `RAHU_OFFSET` and the moment | `ketaki.py` | +16.2″ | राहु in the स्पष्ट ग्रह tables of the 2082 and 2083 books, 359 days |
 | `SANKRANTI_ERAS` | `panchanga.py` | per era | Sankranti ghati in the 1986–2076 books |
 | `REFRACTION_FROM` | `panchanga.py` | BS 2064 | दिनमान printed in the 2058–2066 books |
 | `DINAMANA_SHIFT`, `DINAMANA_HORIZON` | `surya.py` | 22′, −30′ | The दिनमान column of the 2083 book, April to January (section 6) |
@@ -45,27 +45,34 @@ fortnights scattered from −1.74° to −1.70° and only 191 ends matched: the
 SS's interpolated sine table leaves a 9″·sin(anomaly) error in the Moon,
 which no apogee shift can absorb.
 
-## 2. Rahu: −50.4″ at Ujjain mean sunrise
+## 2. Rahu: Ketaki's mean राहु at 06:00 Kathmandu mean time
 
-**Symptom.** At Kathmandu sunrise, the residual of the Lahiri mean node
-against the book's राहु changes with the season: about −2.5″ to +8″ across
-the year. A constant offset cannot remove a seasonal swing, so the moment
-is wrong, not just the value.
+**Symptom.** Earlier this was the Lahiri mean node of Meeus at Ujjain mean
+sunrise, less a fitted 50.4″. That fit the 14 hand-read days to ±2.5″.
+But the राहु column of both books, read by OCR on 359 days (two passes
+agreeing, four misreads dropped), drifts against it: book − ours goes from
++2″ in April 2025 to −3″ in April 2027, −2.35″ a year. The rail showed the
+same: राहु's six pada entries in 2083 came 4 to 20 minutes late, growing
+through the year.
 
-**Fix.** Evaluate the node at a *fixed daily moment*, 06:00 local mean time
-at Ujjain (the SS's day start, 06:41:56 NST). There the residual is flat,
-and after an offset of −50.4″ it stays within ±2.5″ across all 14 tabulated
-days in both books (`build_status.rahu_residuals()`):
+**Fix.** Ketaki has its own राहु (pp48, 51, 58), and with it the drift is
+gone:
 
-| Evaluated at | Residual range (computed − book) |
-|---|---|
-| Kathmandu sunrise | −2.5″ … +8.0″ |
-| Ujjain mean sunrise (used) | −2.4″ … +2.5″ |
+| राहु | Mean (book − ours) | Drift | Scatter |
+|---|---|---|---|
+| Meeus − Lahiri at Ujjain mean sunrise − 50.4″ (before) | — | −2.35″/yr | 1.35″ |
+| Ketaki at Kathmandu sunrise | +15.7″ | +3.1″/yr | 4.7″ (seasonal) |
+| Ketaki at 06:00 Ujjain mean time | +21.4″ | +0.16″/yr | 0.31″ |
+| **Ketaki at 06:00 Kathmandu mean time** | **+16.2″** | **+0.16″/yr** | **0.31″** |
 
-The book prints whole arc-seconds, so ±2.5″ is close to its rounding.
+A mean time fits and a true sunrise doesn't, as for the Sun's शीघ्र step.
+Ujjain and Kathmandu mean time fit equally with different offsets; we take
+Kathmandu's, the moment the Sun already uses. With 16.2″ added, 325 of
+the 363 printed values match to the second, the rest within one. Timed
+linearly from the geometric sunrise, all six rail lines are within a minute.
 
-**Data.** The स्पष्ट ग्रह tables are on 2082 book pp3 and 20 and 2083 book
-p21; they are the `SPASHTA_2082` and `SPASHTA` dicts in `test_panchanga.py`.
+**Data.** `data/book_planets.csv`, body `rahu`; the 14 hand-read days in
+`SPASHTA_2082` and `SPASHTA` (`test_panchanga.py`).
 
 ## 3. Sankranti eras
 

@@ -45,9 +45,9 @@ panchanga.month_starts(2083)          # 13 dates: बैशाख 1 … चै�
 
 | File | What it does |
 |---|---|
-| `surya.py` | Astronomy: SS mean and true Sun and Moon, sunrise, sunset, दिनमान, equation of time, lagna, Rahu, and a generic "when does this angle cross a multiple of N" solver |
+| `surya.py` | Astronomy: SS mean and true Sun and Moon, sunrise, sunset, दिनमान, equation of time, lagna, and a generic "when does this angle cross a multiple of N" solver |
 | `panchanga.py` | Calendar: day rows (tithi, nakshatra, yoga, karana, आनन्दादि, …), solar month starts (the sankranti day rule and eras), lunar months, adhik masa, page headers, the year layout |
-| `ketaki.py` | Mars to Saturn by the केतकी ग्रहगणितम्, with the books' conventions |
+| `ketaki.py` | Mars to Saturn and राहु by the केतकी ग्रहगणितम्, with the books' conventions |
 | `editorial.py` | Samvatsara (Jovian, from SS mean Jupiter), पापर्क्षाणि and पापांश |
 | `render.py` | HTML/PDF typesetting in the book's page layout |
 | `generate.py` | Command line: year → JSON and PDF |
@@ -120,7 +120,7 @@ book's स्पष्ट ग्रह table.
 | Column | Meaning |
 |---|---|
 | `date` | Gregorian date of the row (Kathmandu sunrise) |
-| `body` | `mars`, `mercury`, `jupiter`, `venus` or `saturn` |
+| `body` | `mars`, `mercury`, `jupiter`, `venus`, `saturn` or `rahu` |
 | `longitude` | As printed: sign, degree, minute, second |
 | `source` | `hand` (read off the page) or `ocr` (two OCR passes agree) |
 | `book`, `pdf_page` | Which book and page |

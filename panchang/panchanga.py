@@ -205,7 +205,7 @@ def _limb(angle, width, names, day, rise, next_rise):
 
 def _planet_longitude(body: str, day: date) -> float:
     if body == "rahu":
-        return surya.rahu(surya.ujjain_mean_sunrise(day))
+        return ketaki.rahu_of_day(day)
     return ketaki.at_sunrise(body, day)
 
 
@@ -246,7 +246,7 @@ def planet_events(day: date, gate: int) -> list[dict]:
     one, and "again" when a planet in वक्री motion re-enters a division it has
     left (printed पुनः; 2083 p21 "२ पुनःपू.फा. १ मा मंगल"). The day runs from
     the printed sunrise; Mars to Saturn are timed by ketaki.table_longitude,
-    Rahu linearly.
+    Rahu linearly from the geometric sunrise.
     """
     rise, after = surya.sunrise(day), surya.sunrise(day + timedelta(days=1))
     events = []
@@ -259,9 +259,14 @@ def planet_events(day: date, gate: int) -> list[dict]:
             ahead = (x - a) % 360 if step > 0 else (a - x) % 360
             if not 0 < ahead <= abs(step):
                 continue
-            jd = rise + ahead / abs(step) * (after - rise)
-            if body != "rahu":
-                jd = _refine(body, x, jd, rise, after)
+            if body == "rahu":
+                # Linear between the rows, which the book runs from the
+                # geometric sunrise for राहु: all six of its lines in 2083 to
+                # the minute or one off (from the printed sunrise, 2-3 early).
+                start, end = ketaki.sunrise(day), ketaki.sunrise(day + timedelta(days=1))
+                jd = start + ahead / abs(step) * (end - start)
+            else:
+                jd = _refine(body, x, rise + ahead / abs(step) * (after - rise), rise, after)
             # The division entered starts at x going forward, ends at x going back.
             inside = surya.norm(x + (1e-7 if step > 0 else -1e-7))
             entry = _ending(0, None, jd, day)
@@ -453,8 +458,8 @@ def day_row(day: date, bs_month: int, gate: int) -> dict:
             "moon": arc(moon),
             # Mars to Saturn by the Ketaki tables, at Ketaki's sunrise.
             **{body: arc(ketaki.at_sunrise(body, day)) for body in ketaki.PLANETS},
-            # Not at Kathmandu sunrise; see surya.RAHU_OFFSET.
-            "rahu": arc(surya.rahu(surya.ujjain_mean_sunrise(day))),
+            # Ketaki's mean राहु at 06:00 Kathmandu mean time.
+            "rahu": arc(ketaki.rahu_of_day(day)),
         },
         # In seconds; the book prints मि।से with a sign.
         "belantar": round(surya.equation_of_time(day) * 60),
@@ -754,7 +759,7 @@ def kundali(rows: list[dict]) -> dict:
     rise = ketaki.sunrise(day)
     signs = {"sun": int(surya.true_sun(rise) // SIGN_WIDTH)}
     signs.update({body: int(ketaki.at_sunrise(body, day) // SIGN_WIDTH) for body in ketaki.PLANETS})
-    rahu = surya.rahu(surya.ujjain_mean_sunrise(day))
+    rahu = ketaki.rahu_of_day(day)
     signs["rahu"], signs["ketu"] = int(rahu // SIGN_WIDTH), int(surya.norm(rahu + 180) // SIGN_WIDTH)
     return {"date": day.isoformat(), "lagna": signs["sun"], "signs": signs}
 

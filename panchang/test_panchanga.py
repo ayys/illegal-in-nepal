@@ -376,7 +376,7 @@ class BookTest(unittest.TestCase):
         for day, (sun, moon, rahu, belantar) in table.items():
             spashta = rows[day]["spashta"]
             # Sun within 2″ (exact sines; the table is up to 3.7″ off).
-            for body, want, tolerance in (("sun", sun, 2), ("moon", moon, moon_tolerance), ("rahu", rahu, 3)):
+            for body, want, tolerance in (("sun", sun, 2), ("moon", moon, moon_tolerance), ("rahu", rahu, 1)):
                 with self.subTest(day=day, body=body):
                     self.assertArc(f"{day} {body}", spashta[body], want, tolerance)
             sign, mins, secs = belantar[0], *belantar[1:].split(":")

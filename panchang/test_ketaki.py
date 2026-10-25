@@ -40,7 +40,8 @@ def residuals(source: str) -> dict[str, list[tuple[str, float]]]:
             continue
         day = date.fromisoformat(row["date"])
         out.setdefault(row["body"], []).append(
-            (row["date"], seconds(degrees(row["longitude"]), ketaki.at_sunrise(row["body"], day))))
+            (row["date"], seconds(degrees(row["longitude"]),
+                                  ketaki.rahu_of_day(day) if row["body"] == "rahu" else ketaki.at_sunrise(row["body"], day))))
     return out
 
 
@@ -61,6 +62,12 @@ class WorkedExampleTest(unittest.TestCase):
                               ("venus", "10:29:48:14"), ("saturn", "5:17:19:20")):
             with self.subTest(body=body):
                 self.assertLessEqual(abs(seconds(ketaki.heliocentric(body, self.jd)[0], degrees(printed))), 20)
+
+    def test_rahu(self):
+        # p58: 5477 days of राहु motion, "राहोर्मध्यमा गतिः" 2:9:45:9; with the
+        # क्षेपक 9:27:37, the mean राहु 0:7:22:9 (before the books' offset).
+        mean = ketaki.rahu(self.jd) - ketaki.RAHU_OFFSET
+        self.assertLessEqual(abs(seconds(mean, degrees("0:7:22:9"))), 1)
 
     def test_karsha(self):
         jupiter, saturn = ketaki.karsha(self.jd)
@@ -85,7 +92,7 @@ class BookTest(unittest.TestCase):
 
     def test_ocr(self):
         # (median, 90th percentile) bounds, arc-seconds, over two years.
-        bounds = {"saturn": (1, 1), "jupiter": (1, 1), "mars": (1.5, 3), "venus": (2, 7), "mercury": (3, 6)}
+        bounds = {"saturn": (1, 1), "jupiter": (1, 1), "mars": (1.5, 3), "venus": (2, 7), "mercury": (3, 6), "rahu": (0.5, 1)}
         for body, values in residuals("ocr").items():
             errors = sorted(abs(e) for _, e in values)
             with self.subTest(body=body, n=len(errors)):

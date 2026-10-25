@@ -77,11 +77,6 @@ GEOMETRIC = 0.0
 # swing of the errors is 4 pala and only 21 match.
 DINAMANA_SHIFT = 22 / 60
 DINAMANA_HORIZON = -30 / 60
-# The book's राहु follows a fixed daily moment, not local sunrise: at sunrise
-# the residual swings ~10″ between April and January. At Ujjain mean sunrise
-# it sits this far behind the Lahiri mean node in both 2082 and 2083.
-# Evidence: the स्पष्ट ग्रह table, 2082 book p20 and 2083 book p21.
-RAHU_OFFSET = -50.4 / 3600
 # Mean solar days per sidereal rotation; the lagna advances 360° in this.
 SIDEREAL_DAY = 0.99726957
 
@@ -283,19 +278,6 @@ def sunrise(day: date, horizon: float = HORIZON) -> float:
 
 def sunset(day: date, horizon: float = HORIZON) -> float:
     return _sun_event(day, False, horizon)
-
-
-def ujjain_mean_sunrise(day: date) -> float:
-    """6:00 local mean time at Ujjain (6:42 NST), the SS's day start."""
-    return local_julian_day(day, 6 + NST.utcoffset(None).total_seconds() / 3600 - UJJAIN_LONGITUDE / 15)
-
-
-def rahu(jd: float) -> float:
-    """Mean lunar node (Meeus, Astronomical Algorithms ch. 22), made
-    sidereal with Lahiri, plus the fitted RAHU_OFFSET. Retrograde, ~3′11″/day."""
-    t = _centuries(jd)
-    node = 125.04452 - 1934.136261 * t + 0.0020708 * t * t + t ** 3 / 450000
-    return norm(node - lahiri(jd) + RAHU_OFFSET)
 
 
 def lagna_starts(day: date) -> list[tuple[int, float]]:

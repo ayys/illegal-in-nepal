@@ -1,5 +1,5 @@
-"""Snapshots: the whole of 2083 as printed text, and Mars to Saturn from
-1970 to 2100.
+"""Snapshots: the whole of 2083 as printed text, and Mars to Saturn and राहु
+from 1970 to 2100.
 
 The book tests check a few pages against print; these catch any change
 anywhere else. The planet snapshot also pins the Ketaki table rows that the
@@ -63,6 +63,7 @@ def planets_text() -> list[str]:
     day, end = date(1970, 1, 1), date(2100, 12, 31)
     while day <= end:
         values = [round(ketaki.at_sunrise(body, day) * 3600) for body in ketaki.PLANETS]
+        values.append(round(ketaki.rahu_of_day(day) * 3600))
         lines.append(day.isoformat() + " " + " ".join(map(str, values)))
         day += timedelta(days=11)
     return lines

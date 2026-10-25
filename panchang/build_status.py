@@ -12,6 +12,7 @@ import unittest
 from datetime import date
 from pathlib import Path
 
+import ketaki
 import panchanga
 import surya
 import test_panchanga as book
@@ -121,8 +122,8 @@ def rahu_residuals() -> list[tuple[str, float, float]]:
     for table in (book.SPASHTA_2082, book.SPASHTA):
         for day, (_, _, rahu, _) in table.items():
             want = deg(rahu)
-            at = lambda jd: ((surya.rahu(jd) - want + 180) % 360 - 180) * 3600
-            out.append((day.isoformat(), at(surya.sunrise(day)), at(surya.ujjain_mean_sunrise(day))))
+            at = lambda jd: ((ketaki.rahu(jd) - want + 180) % 360 - 180) * 3600
+            out.append((day.isoformat(), at(surya.sunrise(day)), at(ketaki.mean_sunrise(ketaki.sunrise(day)))))
     return out
 
 
@@ -228,7 +229,7 @@ def constants_sections() -> list[tuple[str, list[tuple[str, str, str]]]]:
         ]),
         ("Fitted to 2082 + 2083 books", [
             ("MOON_APOGEE_CORRECTION", "−1.71°", "Added to mean Moon apogee — tithi/nak times; constant Apr 2025–Jan 2027"),
-            ("RAHU_OFFSET", "−50.4″", "After Lahiri, Rahu taken at Ujjain mean sunrise (fixed daily moment)"),
+            ("ketaki.RAHU_OFFSET", "+16.2″", "Ketaki's mean राहु at 06:00 Kathmandu mean time; 325/363 printed values to the second"),
             ("(not in surya.py)", "ceil sunrise / floor sunset", "Printed clock minutes"),
         ]),
         ("Lahiri / Ketaki frame", [
@@ -237,7 +238,7 @@ def constants_sections() -> list[tuple[str, list[tuple[str, str, str]]]]:
             ("Obliquity", "23.439291° − 0.0130042·T", "Declination, oblique ascension"),
             ("HORIZON", "−34′ (−34/60°)", "Disc centre + refraction only"),
             ("SIDEREAL_DAY", "0.99726957", "Lagna advance rate after sunrise"),
-            ("Rahu mean node", "125.04452 − 1934.136261·T + …", "At Ujjain 6:00 LMT, then − Lahiri + RAHU_OFFSET"),
+            ("राहु", "9:27:37 + 11:22:13:58/चक्र − (A/19° + A/46′)", "Ketaki pp48-58"),
             ("Not used for book match", "SS trepidation (600/yuga), 24° obl., −0.83° horizon", "Earlier experiments"),
         ]),
         ("Display & rounding", [

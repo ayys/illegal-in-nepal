@@ -36,13 +36,13 @@ measured from this PDF.
 | 20 | माघ कृष्ण (Jan 2026) | Limb ends; स्पष्ट ग्रह; Makara sankranti after sunset (2082 माघ starts Jan 15) | `BOOK_2082`, `SPASHTA_2082`, `data/month_starts.csv` |
 
 The 2082 book was not used to fit anything except `MOON_APOGEE_CORRECTION`
-and `RAHU_OFFSET`, which it shares with 2083 (see
+and `ketaki.RAHU_OFFSET`, which it shares with 2083 (see
 [CALIBRATION.md](CALIBRATION.md)).
 
 ### The स्पष्ट ग्रह tables of both books: Mars to Saturn
 
 Every fortnight page prints a स्पष्ट ग्रह row for every day.
-`data/book_planets.csv` holds 1841 of their Mars–Saturn values (both books,
+`data/book_planets.csv` holds 1841 of their Mars–Saturn values and 359 of राहु (both books,
 nearly every page), each with its book and PDF page:
 
 - **hand:** all five planets on 2083 p21 (Jan 8-12, 2027), and Mercury on
