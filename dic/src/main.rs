@@ -3,6 +3,7 @@
 //! GET /search?q=<query>  up to 20 dictionary entries as JSON
 //! GET /wotd              today's word as JSON
 //! GET /crossword         today's crossword as JSON
+//! GET /word?slug=<page>  one entry as JSON, read from SITE/shabdakosh/<page>.html
 //! GET /<path>.png        a link-preview card for SITE/<path>.html; the
 //!                        word-of-the-day page's card shows today's word
 //!
@@ -12,6 +13,7 @@
 mod crossword;
 mod og;
 mod search;
+mod word;
 mod wotd;
 
 use std::collections::HashMap;
@@ -118,6 +120,7 @@ struct App {
     wotd: Feed<Vec<wotd::Entry>>,
     crossword: Feed<crossword::Lexicon>,
     searches: Mutex<HashMap<String, Arc<String>>>,
+    words: Mutex<HashMap<String, Arc<Vec<u8>>>>,
     wotd_json: Daily,
     wotd_png: Daily,
     crossword_json: Daily,
@@ -126,8 +129,10 @@ struct App {
 impl App {
     /// Returns true once every feed has loaded.
     fn refresh(&self) -> bool {
+        // New search data means the site was rebuilt, pages included.
         if self.search.refresh() {
             self.searches.lock().unwrap().clear();
+            self.words.lock().unwrap().clear();
         }
         if self.wotd.refresh() {
             self.wotd_json.clear();
@@ -146,6 +151,7 @@ impl App {
             "/search" => self.search(params),
             "/wotd" => self.wotd(),
             "/crossword" => self.crossword(),
+            "/word" => self.word(params),
             _ if url.ends_with(".png") => self.image(&url),
             _ => Response::from_data(Vec::new()).with_status_code(404),
         };
@@ -199,6 +205,41 @@ impl App {
         }
     }
 
+    fn word(&self, params: &str) -> Response<std::io::Cursor<Vec<u8>>> {
+        let slug = form_urlencoded::parse(params.as_bytes())
+            .find(|(k, _)| k == "slug")
+            .map(|(_, v)| v.trim_end_matches(".html").to_owned())
+            .unwrap_or_default();
+        if !word::valid(&slug) {
+            return failure(404);
+        }
+        if let Some(hit) = self.words.lock().unwrap().get(&slug).cloned() {
+            return json(hit.to_vec(), 3600);
+        }
+        let html = match self.page(&format!("/shabdakosh/{slug}")) {
+            Ok(html) => html,
+            Err(code) => return failure(code),
+        };
+        let Some(entry) = word::parse(&html) else { return failure(404) };
+        let body = Arc::new(serde_json::to_vec(&entry).expect("entry serializes"));
+        let mut cache = self.words.lock().unwrap();
+        if cache.len() >= CACHE_CAP {
+            cache.clear();
+        }
+        cache.insert(slug, body.clone());
+        json(body.to_vec(), 3600)
+    }
+
+    /// SITE<path>.html, or the status to answer with.
+    fn page(&self, path: &str) -> Result<String, u16> {
+        let url = format!("{}{path}.html", self.site);
+        match ureq::get(&url).timeout(Duration::from_secs(10)).set("User-Agent", "og-image").call() {
+            Ok(response) => response.into_string().map_err(|_| 502),
+            Err(ureq::Error::Status(404, _)) => Err(404),
+            Err(_) => Err(502),
+        }
+    }
+
     fn image(&self, url: &str) -> Response<std::io::Cursor<Vec<u8>>> {
         if !url.starts_with('/') || url.contains(['?', '#']) || url.contains("..") {
             return Response::from_data(Vec::new()).with_status_code(404);
@@ -211,14 +252,9 @@ impl App {
         if let Ok(png) = std::fs::read(&cached) {
             return image(png, "public, max-age=86400".into());
         }
-        let page = format!("{}{}.html", self.site, &url[..url.len() - ".png".len()]);
-        let html = match ureq::get(&page).timeout(Duration::from_secs(10)).set("User-Agent", "og-image").call() {
-            Ok(response) => match response.into_string() {
-                Ok(html) => html,
-                Err(_) => return Response::from_data(Vec::new()).with_status_code(502),
-            },
-            Err(ureq::Error::Status(404, _)) => return Response::from_data(Vec::new()).with_status_code(404),
-            Err(_) => return Response::from_data(Vec::new()).with_status_code(502),
+        let html = match self.page(&url[..url.len() - ".png".len()]) {
+            Ok(html) => html,
+            Err(code) => return Response::from_data(Vec::new()).with_status_code(code),
         };
         let section = url.trim_start_matches('/').split('/').next().unwrap_or("");
         let footer = match SECTIONS.iter().find(|(dir, _)| *dir == section) {
@@ -280,8 +316,12 @@ fn image(png: Vec<u8>, cache_control: String) -> Response<std::io::Cursor<Vec<u8
 }
 
 fn unavailable() -> Response<std::io::Cursor<Vec<u8>>> {
+    failure(503)
+}
+
+fn failure(code: u16) -> Response<std::io::Cursor<Vec<u8>>> {
     Response::from_data(Vec::new())
-        .with_status_code(503)
+        .with_status_code(code)
         .with_header(header("Access-Control-Allow-Origin", "*"))
         .with_header(header("Cache-Control", "no-store"))
 }
@@ -321,6 +361,7 @@ fn main() {
         crossword: Feed::new(&data, "crossword.json.gz", crossword::Lexicon::parse),
         site,
         searches: Mutex::default(),
+        words: Mutex::default(),
         wotd_json: Daily::default(),
         wotd_png: Daily::default(),
         crossword_json: Daily::default(),
