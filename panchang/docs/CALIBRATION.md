@@ -406,3 +406,34 @@ against the book's 28:43 on 07-31. The book's station times come from a
 computation other than its स्पष्ट ग्रह column, and two years of it do not
 identify which.
 
+## 9. उदय/अस्त: the moment matches, the date often doesn't
+
+`panchanga.heliacal_events` puts an उदय or अस्त where Ketaki's elongation
+crosses the Surya Siddhanta's arc (Mars 17°, Mercury 14°/12°, Jupiter 11°,
+Venus 10°/8°, Saturn 15°). Seven of the book's 17 are there to the
+minute: the book's elongation at them is 14.00°, 14.00°, 12.00°, 12.01°,
+11.95°, 12.00° and 15.00°.
+
+The other ten are a different kind of miss. For six of the eight Mercury
+and Jupiter ones, the book's clock is ours within 2-42 minutes, and the date
+is off by a whole number of days:
+
+| Page | Event | Ours − book |
+|---|---|---|
+| 11 | Mercury पूर्व अस्त | −5 days, +2 min |
+| 13 | Mercury पश्चिम उदय | −1 day, +2 min |
+| 19 | Mercury पूर्व अस्त | −3 days, −9 min |
+| 21 | Mercury पश्चिम उदय | +8 days, +15 min |
+| 10 | Jupiter पूर्व उदय | +5 days, −20 min |
+| 24 | Mercury पूर्व उदय | −2 days, +34 min |
+
+A random arc would land at a random time of day, so the book times the
+event as we do and dates it some other way. Tested for the date and
+rejected: time-degrees (कालांश, oblique ascension) against the same arcs; a
+modern ephemeris (pyephem) for elongation and for separation with latitude;
+and Ketaki's own लोपदर्शन rule (p290-291: the rising or setting times of the
+planet and the Sun differing by 110, 150, 110, 90, 66, 130 पल for the Moon
+to Saturn, divided by cos φ · cos δ). That rule puts the crossings 1-5
+days from the book's dates, even for the seven exact ones. Open;
+`test_rail.HELIACAL_OPEN` pins the ten offsets.
+
