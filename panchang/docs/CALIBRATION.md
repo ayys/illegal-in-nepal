@@ -380,3 +380,29 @@ Sun and 9″ of Moon. Three independent sets of book data reject the table:
 
 The 2063–2076 sankrantis agree (section 3.2). `surya._manda` uses
 `math.sin` and `math.asin`.
+
+## 8. वक्री/मार्गी times: open
+
+The 13 stations the 2083 book prints are all found, and none extra, but
+their minutes are not: `ketaki.station` (the turn of the kinked tables)
+lands within 8 minutes for Mars on p21 and 2-14 hours off for the rest
+(`test_rail.STATIONS`, rms 437 min). Tried and rejected:
+
+| Rule | Result (ours − book) |
+|---|---|
+| Ketaki's own daily motion, verses 35-36 (p188-190: the शीघ्र table difference × 10/9 ÷ 4, 6·10, 2, 3, 2, on the मन्दस्पष्ट motion), zero interpolated between sunrises | off by up to 3 days |
+| The शीघ्र केन्द्र reaching a 10° row (where that motion changes sign) | Mars वक्री exact (केन्द्र 200.002°), Mars मार्गी 0.05° short, Venus 0.23° (9 h) |
+| A fixed वक्र केन्द्र per planet, by the table, at-the-moment, mean-mean or mean-planet/true-Sun केन्द्र | no constant: Mercury 139-154° and 209-228° |
+| A parabola through three daily rows | two clusters, +130 to +240 and −105 to −410 min |
+| Cubic and quartic fits over 5 to 9 days | rms 164 to 1350 min |
+| The kink the rows imply (steady motion either side, the middle day's step fixing the moment) | rms 225 to 480 min, by which of two days is taken |
+
+The last explains why nothing built on the rows can work for every
+station. Some printed times contradict the book's own rows. Jupiter's daily
+steps on 2026-12-05 to -10 are +1.93′, +1.93′, +1.93′, +1.92′, −0.32′,
+which puts the turn at the sunrise of 12-09, but the book prints 11:54.
+Saturn's वक्री has steps +0.39′, −0.90′, −1.27′ (turn at 05:xx on 08-01),
+against the book's 28:43 on 07-31. The book's station times come from a
+computation other than its स्पष्ट ग्रह column, and two years of it do not
+identify which.
+

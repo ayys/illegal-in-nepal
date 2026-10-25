@@ -24,7 +24,7 @@ python3 mutation_check.py                          # every rule must fail a test
 | Sun, Moon, Rahu spashta | Sun within 4″, Rahu within 3″, Moon within 15″ (p21) | `SPASHTA`, `SUN_MOON` |
 | Mars to Saturn spashta (2082 and 2083, 1841 values) | median 0.2″ Saturn, 0.3″ Jupiter, 0.9″ Mars, 1.4″ Venus, 1.8″ Mercury; 90% within 0.5, 0.6, 1.7, 5.8, 4.5″; every hand-read value within 4″ | `data/book_planets.csv`, `test_ketaki.py` |
 | Rail planet lines, 2083 pp2-27 (179) | every line found on the same गते; Mars to Saturn 138/164 within a minute, 75 exact, all within 30″ of position; Rahu 4-20 min late |
-| वक्री/मार्गी (13) | exactly the book's 13, none extra; Mars p21 within 8 min, the rest 2-14 hours off (open, each pinned) | `data/book_rail.csv`, `test_rail.py` |
+| वक्री/मार्गी (13) | exactly the book's 13, none extra; Mars p21 within 8 min, the rest 2-14 hours off (open, each pinned; some printed times contradict the book's own rows, [CALIBRATION.md §8](CALIBRATION.md#8-वक्रीमार्गी-times-open)) | `data/book_rail.csv`, `test_rail.py` |
 | राशि प्रवेश box (22 pages) | 18 exact; the other 4 are where the book's box disagrees with its own rail | `test_rail.py` |
 | उदय/अस्त (17) | exactly the book's 17, none extra; 7 within an hour, 10 one to eight days off (open, each pinned) | `test_rail.py` |
 | Printed text, 2083 pp2, 21 and two पुष्य rows, 11 headers | every cell but 12 (each listed: 1 pala or minute, or 2 at a rounding edge, one misprint, one end the book files a day early) | `test_render.py` |
