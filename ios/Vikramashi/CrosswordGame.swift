@@ -195,6 +195,31 @@ final class CrosswordGame {
 
     // MARK: Typing
 
+    /// What a key can do in a cell: start an अक्षर or sign the one there.
+    enum Key {
+        case letter
+        case mark
+    }
+
+    /// Nil for keys that can't go in a cell: conjuncts, halant, digits.
+    static func kind(of text: String) -> Key? {
+        guard let scalar = text.unicodeScalars.first, text.unicodeScalars.count == 1 else { return nil }
+        switch scalar.value {
+        case 0x0905...0x0914, 0x0915...0x0939: return .letter
+        case 0x093E...0x094C, 0x0901...0x0903: return .mark
+        default: return nil
+        }
+    }
+
+    /// A key from the keyboard.
+    func input(_ text: String) {
+        switch Self.kind(of: text) {
+        case .letter: type(text)
+        case .mark: mark(text.unicodeScalars.first!)
+        case nil: rejected += 1
+        }
+    }
+
     /// A consonant or independent vowel: the cell just typed in stays put
     /// until the next letter, which moves on to the next empty cell.
     func type(_ letter: String) {

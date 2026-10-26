@@ -62,6 +62,7 @@ struct HomeView: View {
                 } else {
                     recent
                 }
+                KeyboardTip()
             }
             .padding(.horizontal, 20)
             .padding(.top, 8)
@@ -246,6 +247,42 @@ struct WordRow: View {
         }
         .padding(.vertical, 12)
         .contentShape(Rectangle())
+    }
+}
+
+/// Points to the system keyboard that comes with the app, until dismissed.
+struct KeyboardTip: View {
+    @AppStorage("keyboardTipHidden") private var hidden = false
+
+    var body: some View {
+        if !hidden {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Label("नेपाली किबोर्ड", systemImage: "keyboard")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.rust)
+                    Spacer()
+                    Button {
+                        withAnimation { hidden = true }
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(.mute)
+                    }
+                    .accessibilityLabel("लुकाउनुहोस्")
+                }
+                Text("जुनसुकै एपमा Nepali Romanized Pro लेआउटमा नेपाली लेख्नुहोस्।")
+                    .font(.serif(17))
+                    .foregroundStyle(.ink)
+                Text("Settings → General → Keyboard → Keyboards → Add New Keyboard → Vikramashi")
+                    .font(.footnote)
+                    .foregroundStyle(.mute)
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(.card, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(.rule, lineWidth: 0.5))
+        }
     }
 }
 

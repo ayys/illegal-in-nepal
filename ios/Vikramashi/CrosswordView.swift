@@ -101,7 +101,15 @@ struct CrosswordView: View {
                 Solved(game: game)
             } else {
                 ClueBar(game: game)
-                AksharKeyboard(game: game)
+                NepaliKeyboard(
+                    style: KeyboardStyle(background: .wash.opacity(0.6), key: .card, specialKey: .wash,
+                                         text: .ink, markText: .rust),
+                    purpose: .crossword,
+                    accepts: { CrosswordGame.kind(of: $0) != nil },
+                    insert: game.input,
+                    delete: game.delete
+                )
+                .sensoryFeedback(.error, trigger: game.rejected)
             }
         }
     }
@@ -216,99 +224,6 @@ struct ClueBar: View {
                 .frame(width: 44, height: 52)
         }
         .accessibilityLabel(label)
-    }
-}
-
-/// Letters in varga order; the top row holds vowel signs, or for one
-/// keystroke the independent vowels.
-struct AksharKeyboard: View {
-    let game: CrosswordGame
-    @State private var vowels = false
-
-    private static let signs = ["ा", "ि", "ी", "ु", "ू", "े", "ै", "ो", "ौ", "ृ"]
-    private static let independent = ["अ", "आ", "इ", "ई", "उ", "ऊ", "ए", "ऐ", "ओ", "औ"]
-    private static let consonants = [
-        ["क", "ख", "ग", "घ", "ङ", "च", "छ", "ज", "झ", "ट"],
-        ["ठ", "ड", "ढ", "ण", "त", "थ", "द", "ध", "न", "प"],
-        ["फ", "ब", "भ", "म", "य", "र", "ल", "व", "श", "ष"],
-    ]
-
-    var body: some View {
-        VStack(spacing: 7) {
-            HStack(spacing: 5) {
-                if vowels {
-                    ForEach(Self.independent, id: \.self) { vowel in
-                        key(vowel, tinted: true) {
-                            game.type(vowel)
-                            vowels = false
-                        }
-                    }
-                } else {
-                    ForEach(Self.signs, id: \.self) { sign in
-                        key("◌" + sign, tinted: true) { game.mark(sign.unicodeScalars.first!) }
-                    }
-                }
-            }
-            ForEach(Self.consonants, id: \.self) { row in
-                HStack(spacing: 5) {
-                    ForEach(row, id: \.self) { letter in
-                        key(letter) { game.type(letter) }
-                    }
-                }
-            }
-            HStack(spacing: 5) {
-                Button {
-                    vowels.toggle()
-                } label: {
-                    Text(vowels ? "◌ा" : "अ")
-                        .frame(maxWidth: .infinity, minHeight: 44)
-                }
-                .buttonStyle(KeyStyle(selected: vowels))
-                .accessibilityLabel(vowels ? "मात्रा" : "स्वर")
-                key("स") { game.type("स") }
-                key("ह") { game.type("ह") }
-                key("ऋ") { game.type("ऋ") }
-                key("◌ँ", tinted: true) { game.mark("\u{0901}") }
-                key("◌ं", tinted: true) { game.mark("\u{0902}") }
-                key("◌ः", tinted: true) { game.mark("\u{0903}") }
-                Button(action: game.delete) {
-                    Image(systemName: "delete.left")
-                        .frame(maxWidth: .infinity, minHeight: 44)
-                }
-                .buttonStyle(KeyStyle())
-                .accessibilityLabel("मेटाउनुहोस्")
-            }
-        }
-        .padding(.horizontal, 4)
-        .padding(.top, 8)
-        .padding(.bottom, 6)
-        .background(.wash.opacity(0.6))
-        .sensoryFeedback(.error, trigger: game.rejected)
-    }
-
-    private func key(_ label: String, tinted: Bool = false, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(label)
-                .frame(maxWidth: .infinity, minHeight: 44)
-        }
-        .buttonStyle(KeyStyle(tinted: tinted))
-    }
-}
-
-struct KeyStyle: ButtonStyle {
-    var tinted = false
-    var selected = false
-
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.system(size: 21))
-            .foregroundStyle(tinted || selected ? Color.rust : Color.ink)
-            .background(
-                RoundedRectangle(cornerRadius: 7, style: .continuous)
-                    .fill(configuration.isPressed || selected ? Color.wash : Color.card)
-                    .shadow(color: .black.opacity(0.18), radius: 0, x: 0, y: 1)
-            )
-            .scaleEffect(configuration.isPressed ? 0.94 : 1)
     }
 }
 
