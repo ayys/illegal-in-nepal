@@ -23,10 +23,10 @@ REPO = ayys/illegal-in-nepal
 
 app-dictionary:
 	mkdir -p $(dir $(APP_DICTIONARY))
-	tag=$$(gh release list --repo $(REPO) --limit 100 --json tagName,isDraft \
-	  --jq '[.[] | select(.isDraft | not) | select(.tagName | startswith("dictionary-"))][0].tagName') && \
-	gh release download "$$tag" --repo $(REPO) --pattern dictionary-v1.sqlite.gz --output - | gunzip > $(APP_DICTIONARY) && \
-	echo "Bundled $$tag"
+	url=$$(curl -fsSL "https://api.github.com/repos/$(REPO)/releases?per_page=100" | python3 -c \
+	  'import json, sys; r = sorted((x for x in json.load(sys.stdin) if x["tag_name"].startswith("dictionary-") and not x["draft"] and not x["prerelease"]), key=lambda x: x["tag_name"])[-1]; print(next(a["browser_download_url"] for a in r["assets"] if a["name"] == "dictionary-v1.sqlite.gz"))') && \
+	curl -fsSL "$$url" | gunzip > $(APP_DICTIONARY) && \
+	echo "Bundled $$url"
 
 # A dictionary built here instead, for trying changes; it is older than any
 # release, so the app replaces it with the newest whole dictionary.
