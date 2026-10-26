@@ -101,6 +101,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A1000000000000000000000B /* Build configuration list for PBXNativeTarget "Vikramashi" */;
 			buildPhases = (
+				B1000000000000000000000F /* Check bundled dictionary */,
 				A10000000000000000000007 /* Sources */,
 				A10000000000000000000003 /* Frameworks */,
 				A10000000000000000000008 /* Resources */,
@@ -195,6 +196,29 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		B1000000000000000000000F /* Check bundled dictionary */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Vikramashi/Dictionary/dictionary.sqlite",
+			);
+			name = "Check bundled dictionary";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# The app works offline from the dictionary it ships with.\nif [ ! -f \"$SCRIPT_INPUT_FILE_0\" ]; then\n  echo \"error: No bundled dictionary. Run: make -C shabdakosh app-dictionary\"\n  exit 1\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A10000000000000000000007 /* Sources */ = {

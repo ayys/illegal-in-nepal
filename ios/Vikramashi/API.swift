@@ -1,11 +1,12 @@
-//! Client for dic.illegal-in-nepal.org (the Rust service in dic/).
+//! The dictionary comes from the copy on the phone (Shabdakosh); only the
+//! daily crossword comes from dic.illegal-in-nepal.org (the service in dic/).
 
 import Foundation
 
-/// One search hit, as dic/src/search.rs serializes it.
-struct Entry: Decodable, Identifiable, Hashable, Sendable {
+/// One search hit: a row of the site's search data.
+struct Entry: Identifiable, Hashable, Sendable {
     let word: String
-    /// Page file name, with its .html.
+    /// Page name, without .html.
     let slug: String
     let grammar: String
     let preview: String
@@ -14,8 +15,8 @@ struct Entry: Decodable, Identifiable, Hashable, Sendable {
     var route: WordRoute { WordRoute(slug: slug) }
 }
 
-/// Today's word, as dic/src/wotd.rs serializes it.
-struct WordOfDay: Codable, Hashable, Sendable {
+/// Today's word, picked as the site picks it.
+struct WordOfDay: Hashable, Sendable {
     /// The Nepal day, YYYY-MM-DD.
     let day: String
     let word: String
@@ -34,30 +35,39 @@ enum API {
         /// The service answers 503 until its data has loaded.
         case unavailable
         case status(Int)
+        case notFound
+        case noWordToday
 
         var errorDescription: String? {
             switch self {
-            case .unavailable: "शब्दकोश तयार हुँदैछ। केही बेरपछि फेरि प्रयास गर्नुहोस्।"
-            case .status(404): "यो शब्द भेटिएन।"
+            case .unavailable: "पहेली तयार हुँदैछ। केही बेरपछि फेरि प्रयास गर्नुहोस्।"
             case .status(let code): "सर्भरले \(code) फर्कायो।"
+            case .notFound: "यो शब्द भेटिएन।"
+            case .noWordToday: "आजको शब्द भेटिएन।"
             }
         }
     }
 
     static func search(_ query: String) async throws -> [Entry] {
-        try await get(base.appending(path: "search").appending(queryItems: [URLQueryItem(name: "q", value: query)]))
+        try await dictionary().search(query)
     }
 
     static func wordOfDay() async throws -> WordOfDay {
-        try await get(base.appending(path: "wotd"))
+        guard let word = try await dictionary().wordOfDay(Nepal.today) else { throw Failure.noWordToday }
+        return word
+    }
+
+    static func word(_ route: WordRoute) async throws -> WordPage {
+        guard let page = try await dictionary().entry(route.slug) else { throw Failure.notFound }
+        return page
+    }
+
+    private static func dictionary() async throws -> OfflineStore {
+        try await MainActor.run { try Shabdakosh.shared.ready() }
     }
 
     static func crossword() async throws -> Puzzle {
         try await get(base.appending(path: "crossword"))
-    }
-
-    static func word(_ route: WordRoute) async throws -> WordPage {
-        try await get(base.appending(path: "word").appending(queryItems: [URLQueryItem(name: "slug", value: route.slug)]))
     }
 
     private static func get<T: Decodable>(_ url: URL) async throws -> T {

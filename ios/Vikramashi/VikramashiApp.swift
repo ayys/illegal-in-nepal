@@ -3,6 +3,7 @@ import SwiftUI
 @main
 struct VikramashiApp: App {
     @State private var library = Library()
+    @Environment(\.scenePhase) private var scenePhase
 
     init() {
         Theme.setUp()
@@ -20,6 +21,12 @@ struct VikramashiApp: App {
             }
             .tint(.rust)
             .environment(library)
+        }
+        // Keep the dictionary current, quietly, whenever the app comes back.
+        .onChange(of: scenePhase, initial: true) { _, phase in
+            if phase == .active {
+                Task { await Shabdakosh.shared.update() }
+            }
         }
     }
 }
