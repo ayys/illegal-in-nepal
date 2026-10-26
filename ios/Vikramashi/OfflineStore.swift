@@ -7,7 +7,7 @@ import Foundation
 import SQLite3
 
 actor OfflineStore {
-    static let schema = 1
+    static let schema = 2
 
     enum Failure: LocalizedError {
         case open(String)
@@ -41,6 +41,7 @@ actor OfflineStore {
     private let connection: Connection
     private var db: OpaquePointer { connection.db }
     private var index: SearchIndex?
+    private var lexicon: CrosswordLexicon?
 
     /// Opens a dictionary read-only. Files are replaced, never changed in
     /// place, so SQLite may treat them as immutable.
@@ -76,6 +77,9 @@ actor OfflineStore {
         return handle
     }
 
+    /// Ordered lists an update splices (app_db.LISTS), with their columns.
+    private static let lists = [("search", "word, slug"), ("wotd", "word, slug"), ("crossword", "word, clue")]
+
     /// Applies an update from app_db.py to the dictionary at `url`, in place,
     /// as app_db.apply does: the caller works on a copy and swaps it in.
     /// Returns the version it brings the dictionary to.
@@ -110,14 +114,14 @@ actor OfflineStore {
         do {
             try run("DELETE FROM entries WHERE slug IN (SELECT slug FROM u.removed)")
             try run("INSERT OR REPLACE INTO entries SELECT * FROM u.entries")
-            for table in ["search", "wotd"] {
+            for (table, cols) in lists {
                 let range = (theirs[table] ?? "").split(separator: ":").map(String.init)
                 guard range.count == 2 else { continue }
-                try run("CREATE TEMP TABLE spliced(id INTEGER PRIMARY KEY, word TEXT, slug TEXT)")
-                try run("INSERT INTO spliced(word, slug) SELECT word, slug FROM main.\(table) WHERE id < ? ORDER BY id",
+                try run("CREATE TEMP TABLE spliced(id INTEGER PRIMARY KEY, \(cols))")
+                try run("INSERT INTO spliced(\(cols)) SELECT \(cols) FROM main.\(table) WHERE id < ? ORDER BY id",
                         [range[0]])
-                try run("INSERT INTO spliced(word, slug) SELECT word, slug FROM u.\(table) ORDER BY id")
-                try run("INSERT INTO spliced(word, slug) SELECT word, slug FROM main.\(table) WHERE id >= ? ORDER BY id",
+                try run("INSERT INTO spliced(\(cols)) SELECT \(cols) FROM u.\(table) ORDER BY id")
+                try run("INSERT INTO spliced(\(cols)) SELECT \(cols) FROM main.\(table) WHERE id >= ? ORDER BY id",
                         [range[1]])
                 try run("DELETE FROM main.\(table)")
                 try run("INSERT INTO main.\(table) SELECT * FROM spliced")
@@ -164,6 +168,22 @@ actor OfflineStore {
             WordOfDay(day: day, word: Self.text(row, 0), sense: Self.text(row, 1).withoutSenseNumber,
                       slug: Self.text(row, 2))
         }.first
+    }
+
+    // MARK: Crossword
+
+    /// The crossword lexicon's [word, clue] rows, in order; loaded once.
+    func crosswordLexicon() -> CrosswordLexicon {
+        if let lexicon { return lexicon }
+        let rows = Self.rows(db, "SELECT word, clue FROM crossword ORDER BY id", []) { (Self.text($0, 0), Self.text($0, 1)) }
+        let lexicon = CrosswordLexicon(rows)
+        self.lexicon = lexicon
+        return lexicon
+    }
+
+    /// The puzzle for a Nepal day, YYYY-MM-DD.
+    func crossword(_ day: String) -> Puzzle? {
+        crosswordLexicon().puzzle(for: day)
     }
 
     // MARK: Search

@@ -10,6 +10,7 @@ on:
       - "shabdakosh/shabdakosh.json.gz"
       - "shabdakosh/generator.py"
       - "shabdakosh/wotd_lib.py"
+      - "shabdakosh/crossword_lib.py"
       - "shabdakosh/app_db.py"
   workflow_dispatch:
 
@@ -38,23 +39,23 @@ jobs:
           echo "TAG=$tag" >> "$GITHUB_ENV"
           make shabdakosh.json
           uv run --with aiofiles --with tqdm python -m unittest test_app_db
-          uv run app_db.py full "$tag" dictionary-v1.sqlite
+          uv run app_db.py full "$tag" dictionary-v2.sqlite
       - name: Build update from the last release
         working-directory: shabdakosh
         run: |
           previous=$(gh release list --limit 100 --json tagName,isDraft \
             --jq '[.[] | select(.isDraft | not) | select(.tagName | startswith("dictionary-"))][0].tagName // ""')
-          if [ -n "$previous" ] && gh release download "$previous" --pattern dictionary-v1.sqlite.gz --dir previous; then
-            gunzip previous/dictionary-v1.sqlite.gz
-            uv run app_db.py update previous/dictionary-v1.sqlite dictionary-v1.sqlite dictionary-v1-update.sqlite
-            gzip -9 dictionary-v1-update.sqlite
+          if [ -n "$previous" ] && gh release download "$previous" --pattern dictionary-v2.sqlite.gz --dir previous; then
+            gunzip previous/dictionary-v2.sqlite.gz
+            uv run app_db.py update previous/dictionary-v2.sqlite dictionary-v2.sqlite dictionary-v2-update.sqlite
+            gzip -9 dictionary-v2-update.sqlite
           fi
-          gzip -9 dictionary-v1.sqlite
-          ls -l dictionary-v1*.gz
+          gzip -9 dictionary-v2.sqlite
+          ls -l dictionary-v2*.gz
       - name: Publish release
         working-directory: shabdakosh
         run: |
-          gh release create "$TAG" dictionary-v1*.sqlite.gz \
+          gh release create "$TAG" dictionary-v2*.sqlite.gz \
             --title "शब्दकोश $TAG" \
-            --notes "Offline dictionary for the Vikramashi iOS app (schema 1), built from $GITHUB_SHA. dictionary-v1.sqlite.gz is the whole dictionary; dictionary-v1-update.sqlite.gz updates the release before this one." \
+            --notes "Offline dictionary for the Vikramashi iOS app (schema 2), built from $GITHUB_SHA. dictionary-v2.sqlite.gz is the whole dictionary; dictionary-v2-update.sqlite.gz updates the release before this one." \
             --latest=false

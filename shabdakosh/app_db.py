@@ -6,8 +6,9 @@
 # ]
 # ///
 """The iOS app's offline dictionary (ios/): one SQLite file holding what the
-site's pages, search data and word-of-the-day list hold, made by the same code
-(generator.py, wotd_lib.py) so the app agrees with the site.
+site's pages, search data, word-of-the-day list and crossword lexicon hold,
+made by the same code (generator.py, wotd_lib.py, crossword_lib.py) so the app
+agrees with the site.
 
   app_db.py full <version> <out.sqlite>          the whole dictionary
   app_db.py update <old.sqlite> <new.sqlite> <out.sqlite>
@@ -16,11 +17,12 @@ site's pages, search data and word-of-the-day list hold, made by the same code
 The app ships with a full dictionary and applies updates on top of it, one
 release after another; .github/workflows/dictionary.yml publishes both.
 
-Tables, SCHEMA 1 (the app refuses other schemas):
+Tables, SCHEMA 2 (the app refuses other schemas):
   meta(key, value)        schema, version, entries; in an update also base
-                          (the version it applies to) and search / wotd:
-                          "from:to" if the update's rows of that list replace
-                          the old rows with ids from..to-1, "" if unchanged
+                          (the version it applies to) and, for each list
+                          (search, wotd, crossword), "from:to" if the update's
+                          rows of it replace the old rows with ids from..to-1,
+                          "" if unchanged
   entries(slug, word, grammar, preview, body)
                           one per page. grammar and preview are the search
                           data's; body is JSON [[grammar, [sense, ...]], ...]
@@ -29,6 +31,8 @@ Tables, SCHEMA 1 (the app refuses other schemas):
   search(id, word, slug)  search-data.json.gz's rows, in order
   wotd(id, word, slug)    wotd.json.gz's rows, in order; the sense is the
                           entry's preview without its number
+  crossword(id, word, clue)
+                          crossword.json.gz's rows, in order
   removed(slug)           in an update only: entries to delete
 """
 
@@ -40,9 +44,10 @@ import sys
 from pathlib import Path
 
 import generator
+from crossword_lib import build_lexicon
 from wotd_lib import flatten_entries
 
-SCHEMA = 1
+SCHEMA = 2
 LINK = re.compile(r'<a href="\./([^"]+?)\.html">(.*?)</a>')
 TABLES = """
     CREATE TABLE meta(key TEXT PRIMARY KEY, value TEXT NOT NULL);
@@ -50,7 +55,10 @@ TABLES = """
                          preview TEXT NOT NULL, body TEXT NOT NULL) WITHOUT ROWID;
     CREATE TABLE search(id INTEGER PRIMARY KEY, word TEXT NOT NULL, slug TEXT NOT NULL);
     CREATE TABLE wotd(id INTEGER PRIMARY KEY, word TEXT NOT NULL, slug TEXT NOT NULL);
+    CREATE TABLE crossword(id INTEGER PRIMARY KEY, word TEXT NOT NULL, clue TEXT NOT NULL);
 """
+# Ordered lists an update splices, with their columns after id.
+LISTS = {"search": ("word", "slug"), "wotd": ("word", "slug"), "crossword": ("word", "clue")}
 
 
 def spans(linked: str) -> list[list[str]]:
@@ -105,6 +113,7 @@ def full(words_data: list, version: str, out: Path) -> int:
     db.executemany("INSERT INTO search(word, slug) VALUES (?, ?)", search)
     db.executemany("INSERT INTO wotd(word, slug) VALUES (?, ?)",
                    ((e["word"], e["slug"]) for e in flatten_entries(words_data)))
+    db.executemany("INSERT INTO crossword(word, clue) VALUES (?, ?)", build_lexicon(words_data))
     db.executemany("INSERT INTO meta VALUES (?, ?)",
                    [("schema", str(SCHEMA)), ("version", version), ("entries", str(len(entries)))])
     return finish(db, len(entries))
@@ -125,18 +134,18 @@ def update(old_path: Path, new_path: Path, out: Path) -> int:
     db.executemany("INSERT INTO entries VALUES (?, ?, ?, ?, ?)", changed)
     db.executemany("INSERT INTO removed VALUES (?)", removed)
     splices = {}
-    for table in ("search", "wotd"):
+    for table, columns in LISTS.items():
         rows, splices[table] = splice(
             [r[1:] for r in old.execute(f"SELECT * FROM {table} ORDER BY id")],
             [r[1:] for r in new.execute(f"SELECT * FROM {table} ORDER BY id")],
         )
-        db.executemany(f"INSERT INTO {table}(word, slug) VALUES (?, ?)", rows)
+        db.executemany(f"INSERT INTO {table}({', '.join(columns)}) VALUES (?, ?)", rows)
     db.executemany("INSERT INTO meta VALUES (?, ?)", [
         ("schema", str(SCHEMA)), ("version", new_meta["version"]), ("entries", new_meta["entries"]),
-        ("base", old_meta["version"]), ("search", splices["search"]), ("wotd", splices["wotd"]),
+        ("base", old_meta["version"]), *splices.items(),
     ])
-    print(f"{len(changed)} changed, {len(removed)} removed; search {splices['search'] or 'same'}, "
-          f"wotd {splices['wotd'] or 'same'}")
+    print(f"{len(changed)} changed, {len(removed)} removed; "
+          + ", ".join(f"{t} {s or 'same'}" for t, s in splices.items()))
     return finish(db, len(changed) + len(removed))
 
 
@@ -163,13 +172,14 @@ def apply(dictionary: Path, update_path: Path) -> None:
     with db:
         db.execute("DELETE FROM entries WHERE slug IN (SELECT slug FROM u.removed)")
         db.execute("INSERT OR REPLACE INTO entries SELECT * FROM u.entries")
-        for table in ("search", "wotd"):
+        for table, columns in LISTS.items():
             if meta[table]:
                 start, end = map(int, meta[table].split(":"))
-                db.execute("CREATE TEMP TABLE spliced(id INTEGER PRIMARY KEY, word TEXT, slug TEXT)")
-                db.execute(f"INSERT INTO spliced(word, slug) SELECT word, slug FROM main.{table} WHERE id < ? ORDER BY id", (start,))
-                db.execute(f"INSERT INTO spliced(word, slug) SELECT word, slug FROM u.{table} ORDER BY id")
-                db.execute(f"INSERT INTO spliced(word, slug) SELECT word, slug FROM main.{table} WHERE id >= ? ORDER BY id", (end,))
+                cols = ", ".join(columns)
+                db.execute(f"CREATE TEMP TABLE spliced(id INTEGER PRIMARY KEY, {cols})")
+                db.execute(f"INSERT INTO spliced({cols}) SELECT {cols} FROM main.{table} WHERE id < ? ORDER BY id", (start,))
+                db.execute(f"INSERT INTO spliced({cols}) SELECT {cols} FROM u.{table} ORDER BY id")
+                db.execute(f"INSERT INTO spliced({cols}) SELECT {cols} FROM main.{table} WHERE id >= ? ORDER BY id", (end,))
                 db.execute(f"DELETE FROM main.{table}")
                 db.execute(f"INSERT INTO main.{table} SELECT * FROM spliced")
                 db.execute("DROP TABLE spliced")

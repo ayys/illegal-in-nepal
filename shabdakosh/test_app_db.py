@@ -12,7 +12,7 @@ DATA = Path(__file__).with_name("shabdakosh.json")
 
 def tables(path: Path) -> dict:
     db = sqlite3.connect(path)
-    out = {t: sorted(db.execute(f"SELECT * FROM {t}")) for t in ("entries", "search", "wotd")}
+    out = {t: sorted(db.execute(f"SELECT * FROM {t}")) for t in ("entries", "search", "wotd", "crossword")}
     out["meta"] = dict(db.execute("SELECT key, value FROM meta"))
     db.close()
     return out
@@ -46,6 +46,8 @@ class AppDictionaryTest(unittest.TestCase):
         changed[10]["definitions"][0]["senses"] = ["नयाँ अर्थ।"]
         removed = changed.pop(20)
         changed.append({"word": "परीक्षणशब्द", "definitions": [{"grammar": "ना.", "senses": ["जाँच।"]}]})
+        # A crossword word: three akshars, with a noun clue.
+        changed.append({"word": "कपडा", "definitions": [{"grammar": "ना.", "senses": ["लुगा बनाउने वस्तु।"]}]})
         new = self.build(changed, "dictionary-2026.01.02.0000-new")
 
         update = self.dir / "update.sqlite"
@@ -75,7 +77,7 @@ class AppDictionaryTest(unittest.TestCase):
         update = self.dir / "update-lists.sqlite"
         app_db.update(a, b, update)
         meta = dict(sqlite3.connect(update).execute("SELECT key, value FROM meta"))
-        self.assertEqual((meta["search"], meta["wotd"]), ("", ""))
+        self.assertEqual((meta["search"], meta["wotd"], meta["crossword"]), ("", "", ""))
         app_db.apply(a, update)
         self.assertEqual(tables(a), tables(b))
 

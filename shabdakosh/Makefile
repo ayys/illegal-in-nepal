@@ -24,13 +24,13 @@ REPO = ayys/illegal-in-nepal
 app-dictionary:
 	mkdir -p $(dir $(APP_DICTIONARY))
 	url=$$(curl -fsSL "https://api.github.com/repos/$(REPO)/releases?per_page=100" | python3 -c \
-	  'import json, sys; r = sorted((x for x in json.load(sys.stdin) if x["tag_name"].startswith("dictionary-") and not x["draft"] and not x["prerelease"]), key=lambda x: x["tag_name"])[-1]; print(next(a["browser_download_url"] for a in r["assets"] if a["name"] == "dictionary-v1.sqlite.gz"))') && \
+	  'import json, sys; r = sorted((x for x in json.load(sys.stdin) if x["tag_name"].startswith("dictionary-") and not x["draft"] and not x["prerelease"]), key=lambda x: x["tag_name"])[-1]; print(next(a["browser_download_url"] for a in r["assets"] if a["name"] == "dictionary-v2.sqlite.gz"))') && \
 	curl -fsSL "$$url" | gunzip > $(APP_DICTIONARY) && \
 	echo "Bundled $$url"
 
 # A dictionary built here instead, for trying changes; it is older than any
 # release, so the app replaces it with the newest whole dictionary.
-app-dictionary-local: shabdakosh.json
+app-dictionary-local: shabdakosh.json generator.py wotd_lib.py crossword_lib.py app_db.py
 	mkdir -p $(dir $(APP_DICTIONARY))
 	uv run app_db.py full dictionary-0000.00.00.0000-local $(APP_DICTIONARY)
 
